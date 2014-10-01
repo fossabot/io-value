@@ -1,0 +1,67 @@
+html /deep/ io-boolean,
+html /deep/ io-boolean-icon,
+html /deep/ io-string,
+html /deep/ io-number,
+html /deep/ io-object {
+  touch-action: none;
+  display: inline-block !important;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  touch-action: none;
+}
+
+html /deep/ io-boolean::shadow > #value:focus,
+html /deep/ io-boolean-icon::shadow > #value:focus,
+html /deep/ io-string::shadow > #value:focus,
+html /deep/ io-number::shadow > #value:focus,
+html /deep/ io-object::shadow > #value:focus {
+  outline: 0;
+  background: rgba(0,0,0,0.25);
+  color: rgba(255,255,255,1);
+}
+
+html /deep/ io-boolean::shadow > #value,
+html /deep/ io-boolean-icon::shadow > #value {
+  cursor: pointer;
+}
+
+html /deep/ io-boolean-icon /deep/ core-icon {
+  width: 1em;
+  height: 1em;
+}
+
+html /deep/ io-number::shadow > #value {
+  overflow-x: hidden;
+  white-space: nowrap;
+  cursor: ew-resize;
+}
+
+
+html /deep/ io-object::shadow > #value {
+  vertical-align: top;
+  display: inline-block;
+}
+html /deep/ io-object::shadow > #value > io-value {
+  display: block;
+  margin-left: 0.5em;
+}
+html /deep/ io-object::shadow > #value > io-value::after {
+  content: ', ';
+}
+html /deep/ io-object::shadow > #value >  io-value.last::after {
+  content: '';
+}
+html /deep/ io-object::shadow > #value::before {
+  content: '{';
+}
+html /deep/ io-object::shadow > #value::after {
+  content: '}';
+}
+html /deep/ io-object.array::shadow > #value::before {
+  content: '[';
+}
+html /deep/ io-object.array::shadow > #value::after {
+  content: ']';
+}

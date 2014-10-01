@@ -1,0 +1,292 @@
+<!--
+Copyright (c) 2014 Aleksandar Rodic @arodic
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+
+Custom input element for numeric data type. It is a replacement for `<input>` element. The element value is displayed as a text.
+
+Example:
+
+    <io-number value="3.141592653589793" toDeg="true" step="-2"></io-number>
+
+Renders something like this:
+
+    180
+
+__Note__: You can click and drag to change the value or double-click to focus and select value.
+
+@element io-number
+@homepage http://arodic.github.com/components/io-number/index.html
+@demo http://arodic.github.com/components/io-number/demo.html
+@blurb Custom input element for numeric data type.
+@status alpha
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="stylesheet" href="theme.css" shim-shadowdom>
+
+<polymer-element name="io-number">
+  <template>
+    <span id="value" tabindex="0" spellcheck="false" contenteditable></span>
+  </template>
+  <script type="text/javascript">
+
+    /**
+     * Fired when an value attribute is changed by a user action
+     * 
+     * @event io-changed
+     * @param {Object} detail
+     * @param {Object} detail.element the input element
+     * @param {Object} detail.value new value
+     * @param {Object} detail.delta value - oldValue delta
+     */
+
+    (function() {
+
+      var style = document.createElement('style');
+      style.type = 'text/css';
+      var css = 'body.ew-resize, body.ew-resize * {cursor: ew-resize}';
+      style.appendChild(document.createTextNode(css));
+      document.getElementsByTagName('head')[0].appendChild(style);
+
+      var validKeys = [46, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 189, 190, 37, 38, 39, 40, 8, 9];
+
+      var oldValue, selection, range, rect;
+
+      var delta = 0;
+      var deltaStep = 5;
+      var x = 0;
+      var y = 0;
+      var xOld = 0;
+
+      Polymer({
+
+        publish: {
+  
+          /**
+           * Input value.
+           *
+           * @attribute value
+           * @type number
+           * @default 0
+           */
+          value: 0,
+
+          /**
+           * Determines if the input can be edited by user action.
+           *
+           * @attribute editable
+           * @type boolean
+           * @default true
+           */
+          editable: true,
+
+          /**
+           * Minimum value.
+           *
+           * @attribute min
+           * @type number
+           * @default -Infinity
+           */
+          min: -Infinity,
+
+          /**
+           * Maximum value.
+           *
+           * @attribute max
+           * @type number
+           * @default Infinity
+           */
+          max: Infinity,
+
+          /**
+           * Step increment when dragging in powers of 10.
+           * 
+           * 10^-2 = 0.01; 10^-1 = 0.1; 10^0 = 1; 10^1 = 10
+           *
+           * @attribute step
+           * @type number
+           * @default -3
+           */
+          step: -3,
+
+          /**
+           * Enables conversion to degrees (for display only).
+           *
+           * @attribute toDeg
+           * @type boolean
+           * @default false
+           */
+          toDeg: false
+          
+        },
+
+        observe: {
+          'min max': 'clampValue'
+        },
+
+        eventDelegates: {
+          'keydown': 'keydownAction',
+          'down': 'downAction',
+          'track': 'trackAction',
+          'up': 'upAction',
+          'focus': 'focusAction',
+          'blur': 'blurAction',
+          'contextmenu': 'contextAction',
+          'dblclick': 'contextAction'
+        },
+
+        /**
+         * Rounded display value
+         * @property displayValue
+         * @type number
+         */
+        displayValue: 0,
+        focused: false,
+        ready: function() {
+          this.stepChanged();
+          this.displayValueChanged();
+        },
+        keydownAction: function(event) {
+          // TODO: number keyboard on mobile
+          event.stopPropagation();
+          if(event.which == 13) {
+            this.blurValue();
+            return;
+          }
+          oldValue = this.value;
+          if (!this.editable || validKeys.indexOf(event.which) == -1) {
+            return;
+          }
+          setTimeout(function(){
+            this.readValue();
+            this.fire('io-changed',
+              { element: this,
+                value: this.value,
+                delta: this.value - oldValue
+              }
+            );
+          }.bind(this), 1);
+        },
+        blurValue: function() {
+          this.$.value.blur();
+        },
+        clampValue: function() {
+          this.value = Math.min(Math.max(this.value, this.min), this.max);
+        },
+        contextAction: function(event) {
+          event.preventDefault();
+          this.$.value.focus();
+        },
+        downAction: function(event) {
+          event.stopPropagation();
+          event.preventDefault();
+          document.body.classList.toggle("ew-resize", true);
+          xOld = event.clientX;
+          delta = 0;
+        },
+        upAction: function(event) {
+          event.stopPropagation();
+          event.preventDefault();
+          document.body.classList.toggle("ew-resize", false);
+        },
+        trackAction: function(event) {
+          event.stopPropagation();
+          event.preventDefault();
+          oldValue = this.value;
+          x = event.clientX;
+          y = event.clientY;
+          delta += x - xOld;
+          xOld = event.clientX;
+          while (Math.abs(delta) > deltaStep) {
+            if (delta > deltaStep) {
+              if (this.toDeg) this.value += Math.pow(10, this.step) / 180 * Math.PI;
+              else this.value += Math.pow(10, this.step);
+              delta -= deltaStep;
+            }
+            if (delta < -deltaStep) {
+              if (this.toDeg) this.value -= Math.pow(10, this.step) / 180 * Math.PI;
+              else this.value -= Math.pow(10, this.step);
+              delta += deltaStep;
+            }
+          }
+          this.clampValue();
+          if (this.value != oldValue) {
+            this.fire('io-changed',
+              { element: this,
+                value: this.value,
+                delta: this.value - oldValue
+              }
+            );
+          }
+        },
+        focusAction: function(event) {
+          selection = window.getSelection();
+          selection.removeAllRanges();
+          range = document.createRange();
+          this.$.value.textContent = this.displayValue;
+          range.selectNodeContents(this.$.value);
+          selection.addRange(range);
+          this.focused = true;
+        },
+        blurAction: function() {
+          this.readValue();
+          selection = window.getSelection();
+          selection.removeAllRanges();
+          this.focused = false;
+          this.valueChanged();
+          this.readValue();
+          this._match = this.displayValue.toString().match(this.regEx);
+          this.$.value.textContent = this._match ? parseFloat(this._match[1]) : this.displayValue;
+        },
+        readValue: function() {
+          if (!isNaN(this.$.value.textContent) && (this.$.value.textContent.slice(-1) != '.')) {
+            if (this.toDeg)
+              this.value = parseFloat(this.$.value.textContent) / 180 * Math.PI;
+            else
+              this.value = parseFloat(this.$.value.textContent);
+          }
+        },
+        valueChanged: function() {
+          if (this.value < this.min) this.min = this.value;
+          if (this.value > this.max) this.max = this.value;
+          if (!this.focused) {
+            if (this.toDeg)
+              this.displayValue = this.value / Math.PI * 180;
+            else
+              this.displayValue = this.value;
+          }
+        },
+        displayValueChanged: function() {
+          this._match = this.displayValue.toString().match(this.regEx);
+          this.$.value.textContent = this._match ? parseFloat(this._match[1]) : this.displayValue;
+        },
+        toDegChanged: function() {
+          this.valueChanged();
+        },
+        stepChanged: function() {
+          if (this.step < 0) {
+            this.regEx = new RegExp("(^-?\\d+\\.\\d{" + Math.abs(this.step) + "})(\\d)");
+          } else {
+            this.regEx = new RegExp("(^-?\\d+\\.\\d{" + 1 + "})(\\d)");
+          }
+        }
+      });
+
+    })();
+  </script>
+</polymer-element>
