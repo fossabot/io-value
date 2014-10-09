@@ -26,8 +26,8 @@ Renders something like this:
     [0,1,"apple",false]
 
 @element io-object
-@homepage http://akirodic.com/components/io-object/index.html
-@demo http://akirodic.com/components/io-object/demo.html
+@homepage http://akirodic.com/components/io-bundle/index.html
+@demo http://akirodic.com/components/io-bundle/demo.html
 @blurb Custom input element for object data type.
 @status alpha
 -->
@@ -43,11 +43,14 @@ Renders something like this:
 
 <polymer-element name="io-object">
   <template>
-    <io-boolean-icon value="{{expanded}}" trueIcon="unfold-less" falseIcon="unfold-more"></io-boolean-icon>
-    <span id="value">
+    <template if="{{collapsable}}">
+        <io-boolean-icon value="{{expanded}}" trueIcon="expand-more" falseIcon="chevron-right">
+        </io-boolean-icon>
+    </template>
+    <span id="value" horizontal layout>
         <template if="{{expanded}}">
             <template repeat="{{key, i in keys}}">
-                <io-value value="{{value[key]}}" class="{{i == (keys.length - 1) ? 'last' : ''}}" editable="{{editable}}" min="{{min}}" max="{{max}}" step="{{step}}" toDeg="{{toDeg}}">{{key}}:
+                <io-value flex value="{{value[key]}}" class="{{i == (keys.length - 1) ? 'last' : ''}}" editable="{{editable}}" min="{{min}}" max="{{max}}" step="{{step}}" toDeg="{{toDeg}}"><template if="{{labeled}}">{{key}}:</template>
                 </io-value> 
             </template>
         </template>
@@ -131,7 +134,44 @@ Renders something like this:
          * @type boolean
          * @default true
          */
-        expanded: true
+        expanded: true,
+
+        /**
+         * Determines if the element can be collapsed
+         *
+         * @attribute collapsable
+         * @type boolean
+         * @default true
+         */
+        collapsable: true,
+
+        /**
+         * Determines the key labels are snown
+         *
+         * @attribute labeled
+         * @type boolean
+         * @default true
+         */
+        labeled: true,
+
+        /**
+         * Determines if the items are displayed inline via CSS selector
+         *
+         * @attribute inline
+         * @type boolean
+         * @default false
+         */
+        inline: false,
+
+        /**
+         * Determines if brackets and commas are displayed via CSS selector
+         *
+         * @attribute naked
+         * @type boolean
+         * @default false
+         */
+        naked: false
+
       },
 
       keys: null,
@@ -158,6 +198,12 @@ Renders something like this:
         for (var key in this.value) {
             this.keys.push(key);
         }
+      },
+      inlineChanged: function() {
+        this.setAttribute('inline', this.inline);
+      },
+      nakedChanged: function() {
+        this.setAttribute('naked', this.naked);
       },
       onInputChanged: function(event) {
         event.stopPropagation();

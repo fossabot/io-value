@@ -1,5 +1,7 @@
 ## io-bundle
 
+A collection of I/O web components for various data types.
+
 ![io-bundle](http://akirodic.com/components/io-bundle/preview.png "io-bundle")
 
 ##### [Documentation](http://akirodic.com/components/io-bundle/index.html)

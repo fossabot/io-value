@@ -3,6 +3,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+  <title>io-bundle demo</title>
   <link rel="import" href="io-bundle.html">
   <style type="text/css">
     html {
@@ -11,37 +12,74 @@
     body{
       width: 100%;
       height: 100%;
-      background: #f3eee8;
       margin: 0;
       font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 13px;
     }
+
+    .io {
+      background: #f3eee8;
+    }
+
+    body > p > span{
+      display: inline-block;
+      text-align: right;
+      width: 110px;
+      margin: 0 1em;
+    }
+
+    #vector {
+      width: 300px;
+    }
   </style>
 </head>
 <body unresolved>
-  <io-boolean-icon></io-boolean-icon><br/>
-  <io-boolean></io-boolean><br/>
-  <io-value value="1337"></io-value><br/>
-  <io-value value="Hello string"></io-value><br/>
-  <io-value id="array"></io-value><br/>
-  <io-value id="object"></io-value><br/>
-
+  <p>
+    <span>&lt;io-boolean-icon&gt;</span>
+    <io-boolean-icon class="io"></io-boolean-icon>
+  </p>
+  <p>
+    <span>&lt;io-boolean&gt;</span>
+    <io-boolean class="io"></io-boolean>
+  </p>
+  <p>
+    <span>&lt;io-number&gt;</span>
+    <io-number value="1337" class="io"></io-number>
+  </p>
+  <p>
+    <span>&lt;io-string&gt;</span>
+    <io-string value="Hello string" class="io"></io-string>
+  </p>
+  <p>
+    <span>&lt;io-object&gt;</span>
+    <io-object id="array" class="io"></io-object>
+  </p>
+  <p>
+    <span>&lt;io-object&gt;</span>
+    <io-object id="object" class="io"></io-object>
+  </p>
+  <p>
+    <span>&lt;io-object&gt;</span>
+    <io-object id="vector" class="io" labeled="false" collapsable="false" inline naked></io-object>
+  </p>
   <script>
-  var obj, arr;
-  window.addEventListener('polymer-ready', function(){
-    arr = document.querySelector('#array');
-    obj = document.querySelector('#object');
-    arr.value = [1,2,3,4,5];
-    obj.value = {a:'asd'};
-  });
-    // setTimeout(function(){
-    //   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    //   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    //   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    //   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-    //   ga('create', 'UA-53420116-1', 'auto');
-    //   ga('send', 'pageview');
-    // },1000);
+    var obj, arr;
+    window.addEventListener('polymer-ready', function(){
+      arr = document.querySelector('#array');
+      obj = document.querySelector('#object');
+      vec = document.querySelector('#vector');
+      arr.value = [1, 2, 3, 4, 5];
+      obj.value = {answer: 42};
+      vec.value = [0, 0, 0, 1];
+    });
+    setTimeout(function(){
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-53420116-1', 'auto');
+      ga('send', 'pageview');
+    },1000);
   </script>
 </body>
 </html>

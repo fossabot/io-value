@@ -38,30 +38,34 @@ html /deep/ io-number::shadow > #value {
   cursor: ew-resize;
 }
 
-
 html /deep/ io-object::shadow > #value {
   vertical-align: top;
+  /*width: 100%;*/
+}
+
+html /deep/ io-object:not([inline])::shadow > #value {
   display: inline-block;
 }
-html /deep/ io-object::shadow > #value > io-value {
+
+html /deep/ io-object:not([inline])::shadow > #value > io-value {
   display: block;
   margin-left: 0.5em;
 }
-html /deep/ io-object::shadow > #value > io-value::after {
+html /deep/ io-object:not([naked])::shadow > #value > io-value::after {
   content: ', ';
 }
-html /deep/ io-object::shadow > #value >  io-value.last::after {
+html /deep/ io-object:not([naked])::shadow > #value >  io-value.last::after {
   content: '';
 }
-html /deep/ io-object::shadow > #value::before {
+html /deep/ io-object:not([naked])::shadow > #value::before {
   content: '{';
 }
-html /deep/ io-object::shadow > #value::after {
+html /deep/ io-object:not([naked])::shadow > #value::after {
   content: '}';
 }
-html /deep/ io-object.array::shadow > #value::before {
+html /deep/ io-object:not([naked]).array::shadow > #value::before {
   content: '[';
 }
-html /deep/ io-object.array::shadow > #value::after {
+html /deep/ io-object:not([naked]).array::shadow > #value::after {
   content: ']';
 }
