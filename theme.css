@@ -5,11 +5,6 @@ html /deep/ io-number,
 html /deep/ io-object {
   touch-action: none;
   display: inline-block !important;
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  touch-action: none;
 }
 
 html /deep/ io-boolean::shadow > #value:focus,
@@ -40,7 +35,6 @@ html /deep/ io-number::shadow > #value {
 
 html /deep/ io-object::shadow > #value {
   vertical-align: top;
-  /*width: 100%;*/
 }
 
 html /deep/ io-object:not([inline])::shadow > #value {
