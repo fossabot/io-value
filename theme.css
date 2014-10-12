@@ -2,7 +2,8 @@ html /deep/ io-boolean,
 html /deep/ io-boolean-icon,
 html /deep/ io-string,
 html /deep/ io-number,
-html /deep/ io-object {
+html /deep/ io-object,
+html /deep/ io-options {
   touch-action: none;
   display: inline-block !important;
 }
@@ -11,14 +12,16 @@ html /deep/ io-boolean::shadow > #value:focus,
 html /deep/ io-boolean-icon::shadow > #value:focus,
 html /deep/ io-string::shadow > #value:focus,
 html /deep/ io-number::shadow > #value:focus,
-html /deep/ io-object::shadow > #value:focus {
+html /deep/ io-object::shadow > #value:focus,
+html /deep/ io-options::shadow > #value:focus {
   outline: 0;
   background: rgba(0,0,0,0.25);
   color: rgba(255,255,255,1);
 }
 
 html /deep/ io-boolean::shadow > #value,
-html /deep/ io-boolean-icon::shadow > #value {
+html /deep/ io-boolean-icon::shadow > #value,
+html /deep/ io-options::shadow > #value {
   cursor: pointer;
 }
 
@@ -62,4 +65,12 @@ html /deep/ io-object:not([naked]).array::shadow > #value::before {
 }
 html /deep/ io-object:not([naked]).array::shadow > #value::after {
   content: ']';
+}
+
+html /deep/ io-options::shadow > nested-menu {
+  position: absolute;
+  display: none;
+}
+html /deep/ io-options::shadow > nested-menu[expanded] {
+  display: inline-block;
 }

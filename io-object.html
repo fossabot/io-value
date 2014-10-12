@@ -178,12 +178,9 @@ See `theme.css` for styling reference.
 
       keys: null,
 
-      eventDelegates: {
-        'io-changed': 'onInputChanged'
-      },
-
       ready: function() {
         this.value = this.value || {};
+        this.shadowRoot.addEventListener('io-changed', this.onInputChanged.bind(this));
       },
       valueChanged: function() {        
         this.classList.toggle('array', this.value instanceof Array);
