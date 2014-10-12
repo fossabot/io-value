@@ -16,7 +16,7 @@ limitations under the License.
 
 <!--
 
-Custom input element for numeric data type. It is a replacement for `<input>` element. The element value is displayed as a text.
+I/O web component for number data type.
 
 Example:
 
@@ -26,12 +26,14 @@ Renders something like this:
 
     180
 
+See `theme.css` for styling reference.
+
 __Note__: You can click and drag to change the value or double-click to focus and select value.
 
 @element io-number
 @homepage https://github.com/arodic/io-bundle
 @demo http://akirodic.com/components/io-bundle/demo.html
-@blurb Custom input element for numeric data type.
+@blurb I/O web component for number data type.
 @status alpha
 -->
 
@@ -157,6 +159,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
          */
         displayValue: 0,
         focused: false,
+
         ready: function() {
           this.stepChanged();
           this.displayValueChanged();

@@ -21,7 +21,11 @@
       background: #f3eee8;
     }
 
-    body > p > span{
+    body > div {
+      margin: 1em 0;
+    }
+
+    body > div > span{
       display: inline-block;
       text-align: right;
       width: 110px;
@@ -34,34 +38,34 @@
   </style>
 </head>
 <body unresolved>
-  <p>
+  <div>
     <span>&lt;io-boolean-icon&gt;</span>
     <io-boolean-icon class="io"></io-boolean-icon>
-  </p>
-  <p>
+  </div>
+  <div>
     <span>&lt;io-boolean&gt;</span>
     <io-boolean class="io"></io-boolean>
-  </p>
-  <p>
+  </div>
+  <div>
     <span>&lt;io-number&gt;</span>
     <io-number value="1337" class="io"></io-number>
-  </p>
-  <p>
+  </div>
+  <div>
     <span>&lt;io-string&gt;</span>
     <io-string value="Hello string" class="io"></io-string>
-  </p>
-  <p>
+  </div>
+  <div>
     <span>&lt;io-object&gt;</span>
     <io-object id="array" class="io"></io-object>
-  </p>
-  <p>
+  </div>
+  <div>
     <span>&lt;io-object&gt;</span>
     <io-object id="object" class="io"></io-object>
-  </p>
-  <p>
+  </div>
+  <div>
     <span>&lt;io-object&gt;</span>
     <io-object id="vector" class="io" labeled="false" collapsable="false" inline naked></io-object>
-  </p>
+  </div>
   <script>
     var obj, arr;
     window.addEventListener('polymer-ready', function(){
