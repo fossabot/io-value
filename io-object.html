@@ -15,11 +15,11 @@ limitations under the License.
 -->
 
 <!--
-Custom input element for object data type.
+I/O web component for Object data type.
 
 Example:
 
-    <io-object value="[0,1,"apple",false]"></io-object>
+    <io-object value="[0,1,"apple",false]" inline labeled="false"></io-object>
 
 Renders something like this:
 
@@ -28,7 +28,7 @@ Renders something like this:
 @element io-object
 @homepage https://github.com/arodic/io-bundle
 @demo http://akirodic.com/components/io-bundle/demo.html
-@blurb Custom input element for object data type.
+@blurb I/O web component for Object data type.
 @status alpha
 -->
 
@@ -75,7 +75,7 @@ Renders something like this:
          * Input value.
          *
          * @attribute value
-         * @type array
+         * @type Object
          * @default [0,0,0]
          */
         value: null,
@@ -137,7 +137,7 @@ Renders something like this:
         expanded: true,
 
         /**
-         * Determines if the element can be collapsed
+         * Determines if the element can be collapsed.
          *
          * @attribute collapsable
          * @type boolean
@@ -146,7 +146,7 @@ Renders something like this:
         collapsable: true,
 
         /**
-         * Determines the key labels are snown
+         * Determines the key labels are snown.
          *
          * @attribute labeled
          * @type boolean
@@ -155,7 +155,7 @@ Renders something like this:
         labeled: true,
 
         /**
-         * Determines if the items are displayed inline via CSS selector
+         * Determines if the items are displayed inline.
          *
          * @attribute inline
          * @type boolean
@@ -164,7 +164,7 @@ Renders something like this:
         inline: false,
 
         /**
-         * Determines if brackets and commas are displayed via CSS selector
+         * Determines if brackets and commas are displayed.
          *
          * @attribute naked
          * @type boolean
@@ -176,17 +176,17 @@ Renders something like this:
 
       keys: null,
 
-      ready: function() {
-        this.keys = [];
-        if (!this.value) this.value = {};
-        this.shadowRoot.addEventListener('io-changed', this.onInputChanged.bind(this));
+      eventDelegates: {
+        'io-changed': 'onInputChanged'
       },
-      valueChanged: function() {
-        if (this.observer) this.observer.close();
-        
-        var isArray = this.value instanceof Array;
-        this.classList.toggle('array', isArray);
 
+      ready: function() {
+        this.value = this.value || {};
+      },
+      valueChanged: function() {        
+        this.classList.toggle('array', this.value instanceof Array);
+
+        if (this.observer) this.observer.close();
         this.observer = new ObjectObserver(this.value);
         this.observer.open(function(added, removed, changed, getOldValueFn) {
           this.updateKeys();
@@ -194,16 +194,15 @@ Renders something like this:
         this.updateKeys();
       },
       updateKeys: function() {
-        this.keys.length = 0;;
-        for (var key in this.value) {
-            this.keys.push(key);
-        }
+        this.keys = Object.keys(this.value);
       },
       inlineChanged: function() {
-        this.setAttribute('inline', this.inline);
+        if (this.inline) this.setAttribute('inline', true);
+        else this.removeAttribute('inline');
       },
       nakedChanged: function() {
-        this.setAttribute('naked', this.naked);
+        if (this.naked) this.setAttribute('naked', true);
+        else this.removeAttribute('naked');
       },
       onInputChanged: function(event) {
         event.stopPropagation();

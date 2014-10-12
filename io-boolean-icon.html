@@ -15,7 +15,7 @@ limitations under the License.
 -->
 
 <!--
-Custom input element for boolean data type. Displays value as core-icon.
+I/O web component for boolean data type. Displays value as core-icon.
 
 Example:
 
@@ -31,7 +31,7 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
 @extends io-boolean
 @homepage https://github.com/arodic/io-bundle
 @demo http://akirodic.com/components/io-bundle/demo.html
-@blurb Custom input element for boolean data type. Displays value as string.
+@blurb I/O web component for boolean data type. Displays value as core-icon.
 @status alpha
 -->
 
@@ -43,7 +43,7 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
 
 <polymer-element name="io-boolean-icon" extends="io-boolean">
   <template>
-    <core-icon id="value" icon="{{value ? trueIcon : falseIcon}}" tabindex="0"></core-icon>
+    <core-icon id="value" icon="{{value ? trueIcon : falseIcon}}" tabindex="0"><content></content></core-icon>
   </template>
   <script type="text/javascript">
 
