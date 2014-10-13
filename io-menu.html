@@ -1,0 +1,297 @@
+<!--
+Copyright (c) 2014 Aleksandar Rodic @arodic
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+
+Nested menu with touch support and a simple API.
+
+Example:
+
+    <io-menu options="options"></io-menu>
+
+`options` attribute is an array with lebels, actions and suboptions:
+
+    options = [
+      { label: "Options", options: [
+        { label: "Option1", options: [
+          { label: "Suboption1", action: function() {} },
+          { label: "Suboption2", action: someFunction,
+          { label: "Suboption3", action: otherFunction, arguments: ['argument'] }
+        ] }
+      }
+    ]
+
+@element io-menu
+@homepage http://akirodic.com/components/io-menu/index.html
+@demo http://akirodic.com/components/io-menu/demo.html
+@blurb Nested menu with touch support and a simple API.
+@status alpha
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="io-menu-option.html">
+
+<link href="theme.css" rel="stylesheet" type="text/css" shim-shadowdom>
+
+<polymer-element name="io-menu" oncontextmenu="return false;">
+  <template>
+    <template if="{{expanded || noHide}}">
+      <template repeat="{{option in options}}">
+        <template if="{{option.type == 'divider'}}"><hr /></template>
+        <template if="{{option.type != 'divider'}}">
+          <io-menu-option
+            options="{{option.options}}"
+            label="{{option.label}}"
+            icon="{{option.icon}}"
+            action="{{option.action}}"
+            button="{{option.button}}"
+            arguments="{{option.arguments}}"
+            autoExpand="{{option.autoExpand}}"
+            orientation="{{option.orientation || 'vertical'}}">
+          </io-menu-option>
+        </template>
+      </template>
+    </template>
+  </template>
+  <script type="text/javascript">
+  (function() {
+    var x = 0, y = 0, v = 0, tempV;
+    var previousOption;
+    var previousParent;
+    var timeout;
+
+    /**
+     * Fired when menu action is executed.
+     * 
+     * @event io-menu-option-clicked
+     * @param {Object} menu
+     */
+
+    Polymer({
+      publish: {
+
+        /**
+         * Array of item objects.
+         *
+         * @attribute options
+         * @type array
+         * @default []
+         */
+        options: null,
+
+        /**
+         * Expanded state
+         *
+         * @attribute expanded
+         * @type boolean
+         * @default true
+         */
+        expanded: false,
+
+        /**
+         * Keep visible when not expanded.
+         *
+         * @attribute noHide
+         * @type boolean
+         * @default false
+         */
+        noHide: false,
+
+        /**
+         * Number of milliseconds before swithcing options when cursor is moving sideways.
+         *
+         * @attribute holdTime
+         * @type number
+         * @default 500
+         */
+        holdTime: 500,
+
+        /**
+         * Orientation of menu options
+         *
+         * @attribute orientation
+         * @type string
+         * @default vertical
+         */
+        orientation: "vertical",
+
+        // TODO
+        context: false,
+        contextParent: null,
+
+        enabled: true,
+        
+        /**
+         * Should primary button activate the menu
+         *
+         * @attribute usePrimary
+         * @type boolean
+         * @default false
+         */
+        usePrimary: false,
+
+        /**
+         * Should opening the menu require ctrl key to be pressed?
+         *
+         * @attribute requireCtrl
+         * @type boolean
+         * @default false
+         */
+        requireCtrl: false
+      },
+      isSubmenu: false,
+      optionElems: null,
+      eventDelegates: {
+        'down': 'hover',
+        'mousemove': 'hover',
+        'blur': 'blurAction',
+        'io-menu-option-clicked': 'collapse'
+      },
+      ready: function() {
+        this.orientationChanged();
+        window.addEventListener('scroll', this.collapse.bind(this));
+
+        this._expand = this.expand.bind(this);
+        this._expandPrimary = this.expandPrimary.bind(this);
+      },
+      hover: function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.expanded = true;
+        var option = this.getHoveredItem(event);
+        if (option && option != previousOption && option.autoExpand) {
+          var style = window.getComputedStyle(option);
+          var display = style.getPropertyValue('display');
+          clearTimeout(timeout);
+          if (v > 0 || option.parentNode != previousParent) {
+            previousOption = option;
+            previousParent = option.parentNode;
+            option.expand();
+          } else {
+            timeout = setTimeout(function() {
+              previousOption = option;
+              previousParent = option.parentNode;
+              option.expand();
+            }.bind(this), this.holdTime);
+          }
+        }
+      },
+      getHoveredItem: function(event) {
+        if (event.changedTouches) event = event.changedTouches[0];
+        if (this.orientation == 'vertical') {
+          tempV = Math.abs(event.pageY - y) / 2 - (event.pageX - x);
+        } else {
+          tempV = Math.abs(event.pageX - x) / 2 - (event.pageY - y);
+        }
+        v = tempV;
+        x = event.pageX - window.pageXOffset;
+        y = event.pageY - window.pageYOffset;
+        if (this.optionElems && this.optionElems.length) {
+          for (var i = 0; i < this.optionElems.length; i++) {
+            if (
+              this.optionElems[i].rect.left <= x &&
+              (this.optionElems[i].rect.left + this.optionElems[i].rect.width) >= x &&
+              this.optionElems[i].rect.top <= y &&
+              (this.optionElems[i].rect.top + this.optionElems[i].rect.height) >= y
+            ) {
+              return this.optionElems[i];
+            }
+          }
+        }
+      },
+      blurAction: function(event, detail, target) {
+        if (!this.isSubmenu) {
+          if (!event.relatedTarget) {
+            target.expanded = false;
+          }
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        this.expanded = false;
+      },
+      collapse: function(event) {
+        this.expanded = false;
+        for (var i = 0; i < this.optionElems.length; i++) {
+          this.optionElems[i].collapse();
+        }
+      },
+
+      expand: function(event) {
+        if (!this.enabled) return; //todo
+        if (this.requireCtrl && !event.ctrlKey) return; //todo
+        event.preventDefault();
+        event.stopPropagation();
+        this.expanded = true;
+        if (this._parentNode) {
+          var rect = this._parentNode.getBoundingClientRect();
+          this.style.top = event.clientY + 2 - rect.top + 'px';
+          this.style.left = event.clientX + 2 - rect.left + 'px';
+        }
+      },
+
+      expandPrimary: function(event) {
+        if (!this.usePrimary) return;
+        event.preventDefault();
+        event.stopPropagation();
+        this.expand(event);
+      },
+
+      updateOptionElems: function() {
+        this.optionElems = this.querySelectorAll('* /deep/ io-menu-option');
+        for (var i = 0; i < this.optionElems.length; i++) {
+          this.optionElems[i].update();
+        }
+      },
+      expandedChanged: function() {
+        if (this.expanded) {
+          this.setAttribute('expanded', this.expanded);
+          setTimeout(function() {
+            this.updateOptionElems();
+            if (this.optionElems.length) {
+              this.optionElems[0].focus();
+            }
+          }.bind(this), 1);
+        } else {
+          this.removeAttribute('expanded');
+          document.activeElement.blur();
+        }
+      },
+      orientationChanged: function() {
+        if (this.orientation) {
+          this.setAttribute('orientation', this.orientation);
+        } else {
+          this.removeAttribute('orientation');
+        }
+      },
+      contextChanged: function() {
+        if (this.context) {
+          this._parentNode = this.contextParent || this.parentNode;
+          this._parentNode.addEventListener('contextmenu', this._expand);
+          this._parentNode.addEventListener('click', this._expandPrimary);
+          this.setAttribute('context', this.context);
+        } else {
+          this._parentNode.removeEventListener('contextmenu', this._expand);
+          this._parentNode.removeEventListener('click', this._expandPrimary);
+          this._parentNode = null;
+          this.removeAttribute('context');
+        }
+      }
+    });
+
+  })();
+  </script>
+</polymer-element>

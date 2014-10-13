@@ -1,0 +1,218 @@
+<!--
+Copyright (c) 2014 Aleksandar Rodic @arodic
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+
+Menu option used internally by io-menu.
+You should never need to create this element expcicitly.
+It is automatically created by io-menu.
+
+@element io-menu-option
+@homepage http://akirodic.com/components/io-menu/index.html
+@demo http://akirodic.com/components/io-menu/demo.html
+@blurb Menu option used internally by io-menu.
+@status alpha
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-icons/core-icons.html">
+<link rel="import" href="../core-icon/core-icon.html">
+<link rel="import" href="io-menu-option.html">
+
+<link href="theme.css" rel="stylesheet" type="text/css" shim-shadowdom>
+
+<polymer-element name="io-menu-option" tabindex="0">
+  <template>
+    <template if="{{expanded && options.length}}">
+      <io-menu expanded="true"
+        options="{{options}}"
+        orientation="{{orientation}}"
+        parentHeight="{{rect.heigh}}"
+        parentWidth="{{rect.width}}"
+        isSubmenu>
+      </io-menu>
+    </template>
+    <template if="{{icon}}"><core-icon icon="{{icon}}"></core-icon></template>&nbsp;{{label}}&nbsp;
+  </template>
+  <script type="text/javascript">
+    Polymer('io-menu-option', {
+      publish: {
+
+        /**
+         * Array of item objects.
+         *
+         * @attribute options
+         * @type array
+         * @default []
+         */
+        options: null,
+
+        /**
+         * Orientation of menu options
+         *
+         * @attribute orientation
+         * @type string
+         * @default vertical
+         */
+        orientation: null,
+
+        /**
+         * Label to be displayed with the option
+         *
+         * @attribute label
+         * @type string
+         * @default null
+         */
+        label: null,
+
+        /**
+         * Icon to be displayed with the option
+         *
+         * @attribute icon
+         * @type string
+         * @default null
+         */
+        icon: null,
+
+        /**
+         * Function to be fired when option is selected
+         *
+         * @attribute action
+         * @type function
+         * @default null
+         */
+        action: null,
+
+        /**
+         * Reference to a button element in case the action requires button to be clicked.
+         *
+         * @attribute button
+         * @type HTMLElement
+         * @default null
+         */
+        button: null,
+
+        /**
+         * Arguments to be passed into action function
+         *
+         * @attribute arguments
+         * @type Array
+         * @default null
+         */
+        arguments: null,
+
+        /**
+         * Expanded state
+         *
+         * @attribute expanded
+         * @type boolean
+         * @default true
+         */
+        expanded: false,
+
+        /**
+         * Expand on pointer hover
+         *
+         * @attribute autoExpand
+         * @type boolean
+         * @default true
+         */
+        autoExpand: true,
+      },
+      active: false,
+      observe: {
+        'options label icon action active expanded' : 'update'
+      },
+      eventDelegates: {
+        'focus': 'expand',
+        'blur': 'collapse',
+        'keydown': 'onKeyDown',
+        'click': 'fireAction',
+      },
+      ready: function() {
+        function stopPropagation(event) { event.stopPropagation(); }
+        PolymerGestures.addEventListener(this, 'down', stopPropagation);
+        this.orientationChanged();
+      },
+      fireAction: function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        if (this.button) {
+          this.button.click();
+        } 
+        if (typeof this.action == 'function') {
+          if (this.arguments instanceof Array) {
+            this.action.apply(null, this.arguments);
+          } else {
+            this.action.apply(null, [this.arguments]);
+          }
+        }
+        this.fire('io-menu-option-clicked', {
+          label: this.label,
+          action: this.action,
+          arguments: this.arguments
+        });
+        if (typeof this.action === 'function' || this.arguments || this.button) {
+          // TODO: debug collapse
+          this.collapse();
+        }
+      },
+      expand: function(event) {
+        this.focus();
+        this.expanded = true;
+        Platform.flush();
+      },
+      collapse: function(event) {
+        this.blur();
+        this.expanded = false;
+        Platform.flush();
+      },
+      onKeyDown: function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        if (event.which == 13) {
+          this._fireAction(event);
+        } else if (event.which == 37) {
+          this.fire('key-pressed', { option: this, key: 'left' });
+        } else if (event.which == 38) {
+          this.fire('key-pressed', { option: this, key: 'up' });
+        } else if (event.which == 39) {
+          this.fire('key-pressed', { option: this, key: 'right' });
+        } else if (event.which == 40) {
+          this.fire('key-pressed', { option: this, key: 'down' });
+        } else if (event.which == 9) {
+          this.fire('key-pressed', { option: this, key: 'tab' });
+        }
+      },
+      update: function() {
+        this.active = this.action || this.arguments || (this.options && this.options.length);
+        this.classList.toggle('active', this.active);
+        clearTimeout(this.timeout);
+        this.timeout = setTimeout(function() {
+          this.rect = this.getBoundingClientRect();
+        }.bind(this), 1);
+      },
+      expandedChanged: function() {
+        if (this.expanded) this.setAttribute('expanded', this.expanded);
+        else this.removeAttribute('expanded');
+      },
+      orientationChanged: function() {
+        if (this.orientation) this.setAttribute('orientation', this.orientation);
+        else this.removeAttribute('orientation');
+      }
+    });
+  </script>
+</polymer-element>

@@ -8,7 +8,7 @@
 <body unresolved>
   <core-component-page></core-component-page>
   <script>
-    document.addEventListener('WebComponentsReady', function(){
+    document.addEventListener('WebComponentsReady', function() {
       var page = document.querySelector('core-component-page');
       page.sources = [
         'io-boolean.html',
@@ -16,7 +16,9 @@
         'io-number.html',
         'io-object.html',
         'io-string.html',
-        'io-value.html'
+        'io-value.html',
+        'io-menu.html',
+        'io-menu-option.html'
       ];
     });
     setTimeout(function(){

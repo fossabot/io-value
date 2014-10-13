@@ -1,6 +1,7 @@
 ## io-bundle
 
 A collection of I/O web components for various data types.
+Includes a menu with touch support and a simple API.
 
 ![io-bundle](http://akirodic.com/components/io-bundle/preview.png "io-bundle")
 
