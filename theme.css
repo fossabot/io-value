@@ -65,7 +65,6 @@ html /deep/ io-object:not([naked]).array::shadow > #value::before {
 }
 html /deep/ io-object:not([naked]).array::shadow > #value::after {
   content: ']';
-<<<<<<< HEAD
 }
 
 html /deep/ io-options::shadow > nested-menu {
@@ -90,6 +89,7 @@ html /deep/ io-menu {
   border-radius: 2px;
   background: #666;
   box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.5);
+  z-index: 2;
 }
 html /deep/ io-menu[nohide],
 html /deep/ io-menu[expanded] {
