@@ -18,7 +18,6 @@
   "license": "Apache 2.0",
   "dependencies": {
     "polymer": "Polymer/polymer#~0.4.2",
-    "core-icons": "Polymer/core-icons#~0.4.2",
-    "nested-menu": "arodic/nested-menu#~0.4.0"
+    "core-icons": "Polymer/core-icons#~0.4.2"
   }
 }

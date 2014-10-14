@@ -36,13 +36,13 @@ See `theme.css` for styling reference.
 -->
 
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../nested-menu/nested-menu.html">
+<link rel="import" href="io-menu.html">
 
 <link rel="stylesheet" href="theme.css" shim-shadowdom>
 
 <polymer-element name="io-options">
   <template>
-    <nested-menu id="menu" options="{{menuOptions}}"></nested-menu>
+    <io-menu id="menu" options="{{menuOptions}}"></io-menu>
     <span id="value" tabindex="0">{{displayValue}}</span><br />
   </template>
   <script type="text/javascript">

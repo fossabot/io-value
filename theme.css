@@ -67,11 +67,11 @@ html /deep/ io-object:not([naked]).array::shadow > #value::after {
   content: ']';
 }
 
-html /deep/ io-options::shadow > nested-menu {
+html /deep/ io-options::shadow > io-menu {
   position: absolute;
   display: none;
 }
-html /deep/ io-options::shadow > nested-menu[expanded] {
+html /deep/ io-options::shadow > io-menu[expanded] {
   display: inline-block;
 }
 
