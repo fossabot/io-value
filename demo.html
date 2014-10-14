@@ -23,6 +23,7 @@
 
     body > div {
       margin: 1em 0;
+      position: relative;
     }
 
     body > div > span{
@@ -70,18 +71,70 @@
     <span>&lt;io-options&gt;</span>
     <io-options id="options" class="io"></io-options>
   </div>
+  <div>
+    <span>&lt;io-menu&gt;</span>
+    <io-menu id="horizontal" noHide></io-menu>
+  </div>
+  <div>
+    <span>&lt;io-menu&gt;</span>
+    <io-menu id="vertical" orientation="horizontal" noHide></io-menu>
+  </div>
+  <div style="height:400px;">
+    <span>&lt;io-menu&gt;</span>
+    <io-menu id="context" context></io-menu>
+  </div>
   <script>
-    var obj, arr, options;
-    window.addEventListener('polymer-ready', function(){
+    var obj, arr, horizontal, vertical, context;
+    window.addEventListener('polymer-ready', function() {
       arr = document.querySelector('#array');
       obj = document.querySelector('#object');
       vec = document.querySelector('#vector');
-      options = document.querySelector('#options');
+      horizontal = document.querySelector('#horizontal');
+      vertical = document.querySelector('#vertical');
+      context = document.querySelector('#context');
+      
       arr.value = [1, 2, 3, 4, 5];
       obj.value = {answer: 42};
       vec.value = [0, 0, 0, 1];
       options.options = [1,2,["three", 3]];
       options.value = 1;
+
+      horizontal.options = vertical.options = context.options = [
+        { label: "Options", icon: "close", options: [
+          { label: "Option1", options: [
+            { label: "Suboption1", action: function(){ alert('Suboption1'); } },
+            { label: "Suboption2", action: function(msg){ alert(msg); }, arguments: ['Suboption2'] },
+            { label: "Suboption3", action: function(msg1, msg2){ alert(msg1+msg2); }, arguments: ['Suboption','3'] }
+          ] },
+          { label: "Option2", options: [
+            { label: "Suboption4", action: alert, arguments: ['Suboption4'] },
+            { label: "Suboption5", action: alert, arguments: ['Suboption', '5'] },
+            { label: "Suboption6", action: alert, arguments: 'Suboption 6' }
+          ] },
+          { label: "Option3", options: [
+            { label: "suboption7" },
+            { label: "suboption8" },
+            { label: "suboption9" }
+          ] } 
+        ] },
+        { type: "divider" },
+        { label: "Suboptions", options: [
+          { label: "Suboption1", options: [
+            { label: "Suboption2", orientation: "horizontal", options: [
+              { label: "suboption3a" },
+              { label: "suboption3b" },
+              { label: "suboption3c" },
+              { label: "Suboption3d", options: [
+                { label: "Suboption4", options: [
+                  { label: "Suboption5", options: [
+                    { label: "Suboption6" }
+                  ] } 
+                ] } 
+              ] } 
+            ] } 
+          ] } 
+        ] }
+      ];
     });
     setTimeout(function(){
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

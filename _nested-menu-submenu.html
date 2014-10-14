@@ -1,0 +1,121 @@
+<polymer-element name="nested-menu-submenu">
+  <script type="text/javascript">
+    (function() {
+
+      var MARGIN = 8;
+      
+      Polymer({
+        publish: {
+          options: null,
+          top: 0,
+          left: 0,
+          parentWidth: 0,
+          parentHeight: 0,
+          autofocus: false
+        },
+
+        observe: {
+          'parentHeight parentWidth': 'nudge'
+        },
+
+        ready: function() {
+          this.setAttribute('tabindex', 0);
+          this._onKeyPressed = this.onKeyPressed.bind(this);
+          this.addEventListener('key-pressed', this._onKeyPressed);
+        },
+
+        domReady: function() {
+          this.nudge();
+          this.focus();
+          this.fire('submenu-ready');
+        },
+
+        onKeyPressed: function( event ) {
+          event.stopPropagation();
+
+          var scope = this;
+
+          var options = Array.prototype.slice.call(this.shadowRoot.querySelectorAll('menu-option'));
+          var option = event.detail.option;
+          var style = window.getComputedStyle(option);
+          var display = style.getPropertyValue('display');
+
+          function previous() {
+            options[(options.indexOf(option) + options.length - 1) % (options.length)].focus();
+          }
+          function next() {
+            options[(options.indexOf(option) + 1) % (options.length)].focus();
+          }
+          function up() {
+            if(scope.parentNode.host.localName == 'menu-option') {
+              scope.parentNode.host.focus();
+            }
+          }
+          function down() {
+            var submenu = Array.prototype.slice.call(option.shadowRoot.querySelectorAll('menu-nested-submenu'));
+            var options = [];
+            if (submenu.length) {
+              options = Array.prototype.slice.call(submenu[0].shadowRoot.querySelectorAll('menu-option'));
+              if (options.length) {
+                options[0].focus();
+              }            
+            }
+          }
+          function tab() {
+            var i = (options.indexOf(option) + 1);
+            if (i > options.length - 1) {
+              // TODO: handle submenus better
+              // Make possible to traverse menu with tab
+              down();
+            } else {
+              next();
+            }
+          }
+
+          switch (event.detail.key) {
+            // TODO: fix back to main menu on menu-bar-menu
+            case 'up':
+                if (display == 'inline-block') up();
+                else previous();
+              break;
+            case 'down':
+                if (display == 'inline-block') down();
+                else next();
+              break;
+            case 'left':
+                if (display == 'inline-block') previous();
+                else up();
+              break;
+            case 'right':
+                if (display == 'inline-block') next();
+                else down();
+              break;
+            case 'tab':
+              tab();
+              break;
+          }
+
+        },
+
+        nudge: function() {
+          this.rect = this.getBoundingClientRect();
+          // Todo: check scroll
+          // nudge up
+          var bottomDist = (this.rect.bottom + MARGIN) - window.innerHeight;
+          if (bottomDist > 0) this.top = - bottomDist;
+          // nudge left
+          var rightDist = (this.rect.right - this.left) - window.innerWidth;
+          if (rightDist > 0 && this.parentWidth === 0) this.left = - rightDist;
+          else if (rightDist > - this.parentWidth) this.left = - this.rect.width;
+          // else this.left = this.parentWidth;
+        },
+        topChanged: function() {
+          this.style.top = this.top + 'px';
+        },
+        leftChanged: function() {
+          this.style.left = this.left + 'px';
+        }
+      });
+    })();
+  </script>
+</polymer-element>
