@@ -50,7 +50,7 @@ See `theme.css` for styling reference.
         </io-boolean-icon>
     </template>
     <span id="value" horizontal layout>
-        <template if="{{expanded}}">
+        <template if="{{expanded || !collapsable}}">
             <template repeat="{{key, i in keys}}">
                 <io-value flex value="{{value[key]}}" class="{{i == (keys.length - 1) ? 'last' : ''}}" editable="{{editable}}" min="{{min}}" max="{{max}}" step="{{step}}" toDeg="{{toDeg}}"><template if="{{labeled}}">{{key}}:</template>
                 </io-value> 
@@ -136,7 +136,7 @@ See `theme.css` for styling reference.
          * @type boolean
          * @default true
          */
-        expanded: true,
+        expanded: false,
 
         /**
          * Determines if the element can be collapsed.
