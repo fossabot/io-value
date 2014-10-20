@@ -15,14 +15,13 @@ limitations under the License.
 -->
 
 <!--
-
 Nested menu with touch support and a simple API.
 
 Example:
 
     <io-menu options="options"></io-menu>
 
-`options` attribute is an array with lebels, actions and suboptions:
+`options` attribute is an array with option attributes and suboptions:
 
     options = [
       { label: "Options", options: [
@@ -35,19 +34,19 @@ Example:
     ]
 
 @element io-menu
-@homepage http://akirodic.com/components/io-menu/index.html
-@demo http://akirodic.com/components/io-menu/demo.html
+@homepage https://github.com/arodic/io-bundle
+@demo http://akirodic.com/components/io-bundle/demo.html
 @blurb Nested menu with touch support and a simple API.
 @status alpha
 -->
-
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="io-menu-option.html">
 
-<link href="theme.css" rel="stylesheet" type="text/css" shim-shadowdom>
+<link href="io-menu-veil.css" rel="stylesheet" type="text/css" shim-shadowdom>
 
-<polymer-element name="io-menu" oncontextmenu="return false;">
+<polymer-element name="io-menu" oncontextmenu="return false;"  tabindex="0" class="io-bundle">
   <template>
+    <link href="io-menu.css" rel="stylesheet" type="text/css" shim-shadowdom>
     <template if="{{expanded || noHide}}">
       <template repeat="{{option in options}}">
         <template if="{{option.type == 'divider'}}"><hr /></template>
@@ -59,8 +58,8 @@ Example:
             action="{{option.action}}"
             button="{{option.button}}"
             arguments="{{option.arguments}}"
-            autoExpand="{{option.autoExpand}}"
-            orientation="{{option.orientation || 'vertical'}}">
+            autoExpand="{{option.autoExpand || autoExpand}}"
+            horizontal="{{option.horizontal}}">
           </io-menu-option>
         </template>
       </template>
@@ -72,6 +71,10 @@ Example:
     var previousOption;
     var previousParent;
     var timeout;
+
+    var veil = document.createElement('div');
+    document.body.appendChild(veil);
+    veil.id = "io-menu-veil";
 
     /**
      * Fired when menu action is executed.
@@ -99,7 +102,16 @@ Example:
          * @type boolean
          * @default true
          */
-        expanded: false,
+        expanded: {value: false, reflect: true},
+
+        /**
+         * Expand on pointer hover
+         *
+         * @attribute autoExpand
+         * @type boolean
+         * @default false
+         */
+        autoExpand: {value: false, reflect: true},
 
         /**
          * Keep visible when not expanded.
@@ -120,16 +132,16 @@ Example:
         holdTime: 500,
 
         /**
-         * Orientation of menu options
+         * horizontal orientation
          *
-         * @attribute orientation
-         * @type string
-         * @default vertical
+         * @attribute horizontal
+         * @type boolean
+         * @default false
          */
-        orientation: "vertical",
+        horizontal: {value: false, reflect: true},
 
         // TODO
-        context: false,
+        context: {value: false, reflect: true},
         contextParent: null,
 
         enabled: true,
@@ -155,53 +167,63 @@ Example:
       isSubmenu: false,
       optionElems: null,
       eventDelegates: {
-        'down': 'hover',
-        'mousemove': 'hover',
-        'blur': 'blurAction',
+        'mousedown': 'onDown',
+        'mousemove': 'onHover',
         'io-menu-option-clicked': 'collapse'
       },
       ready: function() {
-        this.orientationChanged();
         window.addEventListener('scroll', this.collapse.bind(this));
-
         this._expand = this.expand.bind(this);
+        this._collapse = this.collapse.bind(this);
         this._expandPrimary = this.expandPrimary.bind(this);
       },
-      hover: function(event) {
+      onHover: function(event) {
         event.preventDefault();
         event.stopPropagation();
-        this.expanded = true;
         var option = this.getHoveredItem(event);
-        if (option && option != previousOption && option.autoExpand) {
-          var style = window.getComputedStyle(option);
-          var display = style.getPropertyValue('display');
+        if (option && option != previousOption && this.autoExpand) {
+          this.expanded = true;
           clearTimeout(timeout);
           if (v > 0 || option.parentNode != previousParent) {
             previousOption = option;
             previousParent = option.parentNode;
-            option.expand();
+            this.expandOption(option);
           } else {
             timeout = setTimeout(function() {
               previousOption = option;
               previousParent = option.parentNode;
-              option.expand();
+              this.expandOption(option);
             }.bind(this), this.holdTime);
           }
         }
       },
+      onDown: function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.expanded = true;
+        var option = this.getHoveredItem(event);
+        if (option) {
+          previousOption = option;
+          previousParent = option.parentNode;
+          this.expandOption(option);
+        }
+      },
       getHoveredItem: function(event) {
         if (event.changedTouches) event = event.changedTouches[0];
-        if (this.orientation == 'vertical') {
-          tempV = Math.abs(event.pageY - y) / 2 - (event.pageX - x);
-        } else {
+        if (this.horizontal) {
           tempV = Math.abs(event.pageX - x) / 2 - (event.pageY - y);
+        } else {
+          tempV = Math.abs(event.pageY - y) / 2 - (event.pageX - x);
         }
         v = tempV;
         x = event.pageX - window.pageXOffset;
         y = event.pageY - window.pageYOffset;
+        //
+        this.updateOptionElems();
         if (this.optionElems && this.optionElems.length) {
           for (var i = 0; i < this.optionElems.length; i++) {
             if (
+              this.optionElems[i].rect &&
               this.optionElems[i].rect.left <= x &&
               (this.optionElems[i].rect.left + this.optionElems[i].rect.width) >= x &&
               this.optionElems[i].rect.top <= y &&
@@ -212,21 +234,20 @@ Example:
           }
         }
       },
-      blurAction: function(event, detail, target) {
-        if (!this.isSubmenu) {
-          if (!event.relatedTarget) {
-            target.expanded = false;
-          }
-          return;
-        }
+
+      collapse: function(event) {
         event.preventDefault();
         event.stopPropagation();
         this.expanded = false;
+        previousOption = null;
+        previousParent = null;
+        this.collapseOptions();
       },
-      collapse: function(event) {
-        this.expanded = false;
-        for (var i = 0; i < this.optionElems.length; i++) {
-          this.optionElems[i].collapse();
+      collapseOptions: function() {
+        if (this.optionElems && this.optionElems.length) {
+          for (var i = this.optionElems.length; i--;) {
+            this.optionElems[i].expanded = false;
+          }
         }
       },
 
@@ -242,52 +263,43 @@ Example:
           this.style.left = event.clientX + 2 - rect.left + 'px';
         }
       },
-
       expandPrimary: function(event) {
         if (!this.usePrimary) return;
         event.preventDefault();
         event.stopPropagation();
         this.expand(event);
       },
+      expandOption: function(option) {
+        option._menu = option.shadowRoot.querySelector('io-menu');
+        if (option._menu) option._menu.collapseOptions();
+        this.collapseOptions();
+        option.expanded = true;
+      },
+      expandedChanged: function() {
+        veil.classList.toggle('visible', this.expanded);
+        if (this.expanded) {
+          veil.addEventListener('down', this._collapse);
+        } else {
+          veil.removeEventListener('down', this._collapse);
+        }
+      },
 
       updateOptionElems: function() {
-        this.optionElems = this.querySelectorAll('* /deep/ io-menu-option');
-        for (var i = 0; i < this.optionElems.length; i++) {
+        this.optionElems = this.shadowRoot.querySelectorAll('io-menu-option');
+        for (var i = this.optionElems.length; i--;) {
           this.optionElems[i].update();
         }
       },
-      expandedChanged: function() {
-        if (this.expanded) {
-          this.setAttribute('expanded', this.expanded);
-          setTimeout(function() {
-            this.updateOptionElems();
-            if (this.optionElems.length) {
-              // this.optionElems[0].focus();
-            }
-          }.bind(this), 1);
-        } else {
-          this.removeAttribute('expanded');
-          document.activeElement.blur();
-        }
-      },
-      orientationChanged: function() {
-        if (this.orientation) {
-          this.setAttribute('orientation', this.orientation);
-        } else {
-          this.removeAttribute('orientation');
-        }
-      },
       contextChanged: function() {
+        this.autoExpand = this.context;
         if (this.context) {
           this._parentNode = this.contextParent || this.parentNode;
           this._parentNode.addEventListener('contextmenu', this._expand);
           this._parentNode.addEventListener('click', this._expandPrimary);
-          this.setAttribute('context', this.context);
         } else {
           this._parentNode.removeEventListener('contextmenu', this._expand);
           this._parentNode.removeEventListener('click', this._expandPrimary);
           this._parentNode = null;
-          this.removeAttribute('context');
         }
       }
     });

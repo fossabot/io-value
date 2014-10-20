@@ -1,0 +1,12 @@
+:host {
+  touch-action: none;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+}
+:host > .io-bundle-value {
+  cursor: pointer;
+}
+:host > .io-bundle-label {
+  cursor: pointer;
+}

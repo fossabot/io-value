@@ -15,20 +15,13 @@ limitations under the License.
 -->
 
 <!--
-
 Custom input element for any data type. Once the value is set, this element will insert appropriate input element into its shadow DOM and bind the `value` attribute to it.
 
-Example:
-
-    <io-value value="Hi"></io-value>
-
-Renders something like this:
-
-    Hi
+Supported input types are: `io-boolean`, `io-number`, `io-string` and `io-object`
 
 See `theme.css` for styling reference.
 
-__Note__: For attributes and detailed information see `io-string`, `io-boolean` and `io-number`
+__Note__: For attributes and detailed information see `io-boolean`, `io-number`, `io-string` and `io-object`
 
 @element io-value
 @homepage https://github.com/arodic/io-bundle
@@ -36,70 +29,64 @@ __Note__: For attributes and detailed information see `io-string`, `io-boolean` 
 @blurb Custom input element for any data type.
 @status alpha
 -->
-
 <link rel="import" href="../polymer/polymer.html">
 
-<link rel="stylesheet" href="theme.css" shim-shadowdom>
-
 <polymer-element name="io-value">
-  <template>
-    <content></content><span id="value"></span>
-  </template>
+  <template></template>
   <script type="text/javascript">
     Polymer({
 
       publish: {
-        value: null,
+        value: undefined,
         editable: true,
         min: -Infinity,
         max: Infinity,
-        step: -3,
-        toDeg: false
+        step: -1,
+        toDeg: false,
+        label: null,
+        labeled: true,
+        iotype: {value: null, reflect: true}
       },
 
       io: null,
-      ioType: null,
 
-      valueChanged: function() {
+      observe: {
+        'value label': 'createElement'
+      },
 
-        var type = null;
-
-        if (typeof this.value == "undefined") {
-          this.$.value.innerHTML = '';
-          this.ioType = "undefined";
-          this.io.unbindAll();
+      createElement: function() {
+        if (this.value === undefined || this.value === null || this.value === NaN) {
+          this.shadowRoot.innerHTML = this.label + ': ' +  this.value;
+          this.iotype = '' + this.value;
           return;
-        };
-
-        
-        if (typeof this.value == "boolean") type = "io-boolean";
-        else if (typeof this.value == "number") type = "io-number";
-        else if (typeof this.value == "string") type = "io-string";
-        else if (typeof this.value == "object") {
-          if (this.value instanceof Float32Array || this.value instanceof Array) {
-            type = "io-object";
-          } else {
-            type = "io-object";
-          }
         }
 
-        if (type && this.ioType != type) {
-          this.$.value.innerHTML = '';
-          this.ioType = type;
+        if (typeof this.value == 'function') {
+          this.iotype = 'function';
+          this.shadowRoot.innerHTML = this.label + ': function';
+          return;
+        }
+
+        if (typeof this.value == 'boolean') type = 'io-boolean';
+        else if (typeof this.value == 'number') type = 'io-number';
+        else if (typeof this.value == 'string') type = 'io-string';
+        else if (typeof this.value == 'object') type = 'io-object';
+        if (type && this.iotype != type) {
+          this.shadowRoot.innerHTML = '';
+          this.iotype = type;
           this.io = document.createElement(type);
-          this.io.bindProperty('value', new PathObserver(this, 'value'));
-          this.io.bindProperty('editable', new PathObserver(this, 'editable'));
-          this.io.bindProperty('min', new PathObserver(this, 'min'));
-          this.io.bindProperty('max', new PathObserver(this, 'max'));
-          this.io.bindProperty('step', new PathObserver(this, 'step'));
-          this.io.bindProperty('toDeg', new PathObserver(this, 'toDeg'));
-          this.$.value.appendChild(this.io);
+          this.shadowRoot.appendChild(this.io);
+          this.io.bind('value', new PathObserver(this, 'value'));
+          this.io.bind('editable', new PathObserver(this, 'editable'));
+          this.io.bind('min', new PathObserver(this, 'min'));
+          this.io.bind('max', new PathObserver(this, 'max'));
+          this.io.bind('step', new PathObserver(this, 'step'));
+          this.io.bind('toDeg', new PathObserver(this, 'toDeg'));
+          this.io.bind('label', new PathObserver(this, 'label'));
+          this.io.bind('labeled', new PathObserver(this, 'labeled'));
           return;
         }
 
-        if (typeof this.value == "function") {
-          this.$.value.innerHTML = 'function';
-        }
 
       }
 

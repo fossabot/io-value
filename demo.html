@@ -1,10 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
   <title>io-bundle demo</title>
+  <script src="../platform/platform.js"></script>
+  <link rel="import" href="../polymer/polymer.html">
   <link rel="import" href="io-bundle.html">
+  <link rel="stylesheet" href="theme.css" shim-shadowdom>
   <style type="text/css">
     html {
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -17,11 +20,8 @@
       font-size: 13px;
     }
 
-    .io {
-      background: #f3eee8;
-    }
-
     body > div {
+      background: #f3eee8;
       margin: 1em 0;
       position: relative;
     }
@@ -32,44 +32,44 @@
       width: 110px;
       margin: 0 1em;
     }
-
-    #vector {
-      width: 150px;
-    }
   </style>
 </head>
 <body unresolved>
   <div>
     <span>&lt;io-boolean-icon&gt;</span>
-    <io-boolean-icon class="io"></io-boolean-icon>
+    <io-boolean-icon></io-boolean-icon>
   </div>
   <div>
     <span>&lt;io-boolean&gt;</span>
-    <io-boolean class="io"></io-boolean>
+    <io-boolean></io-boolean>
   </div>
   <div>
     <span>&lt;io-number&gt;</span>
-    <io-number value="1337" class="io"></io-number>
+    <io-number value="1337"></io-number>
   </div>
   <div>
     <span>&lt;io-string&gt;</span>
-    <io-string value="Hello string" class="io"></io-string>
+    <io-string value="Hello string"></io-string>
   </div>
   <div>
     <span>&lt;io-object&gt;</span>
-    <io-object id="array" class="io"></io-object>
+    <io-value id="array" expanded></io-value>
   </div>
   <div>
     <span>&lt;io-object&gt;</span>
-    <io-object id="object" class="io"></io-object>
+    <io-object id="object"></io-object>
   </div>
   <div>
     <span>&lt;io-object&gt;</span>
-    <io-object id="vector" class="io" labeled="false" collapsable="false" inline naked></io-object>
+    <io-object id="vector" labeled="false" collapsable="false" inline naked></io-object>
+  </div>
+  <div>
+    <span>&lt;io-inspector&gt;</span>
+    <io-inspector id="inspector"></io-inspector>
   </div>
   <div>
     <span>&lt;io-options&gt;</span>
-    <io-options id="options" class="io"></io-options>
+    <io-options id="options"></io-options>
   </div>
   <div>
     <span>&lt;io-menu&gt;</span>
@@ -77,18 +77,20 @@
   </div>
   <div>
     <span>&lt;io-menu&gt;</span>
-    <io-menu id="vertical" orientation="horizontal" noHide></io-menu>
+    <io-menu id="vertical" horizontal noHide></io-menu>
   </div>
   <div style="height:400px;">
     <span>&lt;io-menu&gt;</span>
     <io-menu id="context" context></io-menu>
   </div>
   <script>
-    var obj, arr, horizontal, vertical, context;
+    var obj, arr, horizontal, vertical, context, options;
     window.addEventListener('polymer-ready', function() {
       arr = document.querySelector('#array');
       obj = document.querySelector('#object');
       vec = document.querySelector('#vector');
+      options = document.querySelector('#options');
+      inspector = document.querySelector('#inspector');
       horizontal = document.querySelector('#horizontal');
       vertical = document.querySelector('#vertical');
       context = document.querySelector('#context');
@@ -96,11 +98,13 @@
       arr.value = [1, 2, 3, 4, 5];
       obj.value = {answer: 42};
       vec.value = [0, 0, 0, 1];
+      inspector.value = document.body.childNodes;
       options.options = [1,2,["three", 3]];
       options.value = 1;
 
+
       horizontal.options = vertical.options = context.options = [
-        { label: "Options", icon: "close", options: [
+        { label: "Options", autoExpand: true, icon: "close", options: [
           { label: "Option1", options: [
             { label: "Suboption1", action: function(){ alert('Suboption1'); } },
             { label: "Suboption2", action: function(msg){ alert(msg); }, arguments: ['Suboption2'] },
@@ -118,9 +122,9 @@
           ] } 
         ] },
         { type: "divider" },
-        { label: "Suboptions", options: [
+        { label: "Suboptions", autoExpand: true, options: [
           { label: "Suboption1", options: [
-            { label: "Suboption2", orientation: "horizontal", options: [
+            { label: "Suboption2", horizontal: true, options: [
               { label: "suboption3a" },
               { label: "suboption3b" },
               { label: "suboption3c" },

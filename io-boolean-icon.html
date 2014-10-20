@@ -19,11 +19,7 @@ I/O web component for boolean data type. Displays value as core-icon.
 
 Example:
 
-    <io-boolean-icon value="true" trueIcon="check-box-outline" falseIcon="check-box-outline-blank"></io-boolean-icon>
-
-Renders something like this:
-
-    [trueIcon]
+    <io-boolean-icon value="true"></io-boolean-icon>
 
 See `theme.css` for styling reference.
 
@@ -36,16 +32,17 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
 @blurb I/O web component for boolean data type. Displays value as core-icon.
 @status alpha
 -->
-
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../core-icons/core-icons.html">
-=<link rel="import" href="io-boolean.html">
+<link rel="import" href="io-boolean.html">
 
-<link rel="stylesheet" href="theme.css" shim-shadowdom>
-
-<polymer-element name="io-boolean-icon" extends="io-boolean">
+<polymer-element name="io-boolean-icon" extends="io-boolean" class="io-bundle">
   <template>
-    <core-icon id="value" icon="{{value ? trueIcon : falseIcon}}" tabindex="0"><content></content></core-icon>
+    <link rel="stylesheet" href="io-boolean-icon.css" shim-shadowdom>
+    <template if="{{labeled && label}}">
+      <span class="io-bundle-label" on-tap="{{labelClicked}}">{{label}}</span>:
+    </template>
+    <core-icon class="io-bundle-value" icon="{{value ? trueIcon : falseIcon}}" tabindex="0"><content></content></core-icon>
   </template>
   <script type="text/javascript">
 
@@ -56,6 +53,21 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
      * @param {Object} detail
      * @param {Object} detail.element the input element
      * @param {Object} detail.value new value
+     */
+
+    /**
+     * Fired when label is clicked
+     *
+     * @event io-label-clicked
+     * @param {Object} detail
+     * @param {Object} detail.label label
+     * @param {Object} detail.value value
+     */
+
+    /**
+     * Toggles the value.
+     *
+     * @method toggle
      */
 
     Polymer({
@@ -96,10 +108,28 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
          * @type string
          * @default 'check-box-outline-blank'
          */
-        falseIcon: 'check-box-outline-blank'
-        
-      }
+        falseIcon: 'check-box-outline-blank',
 
+        /**
+         * Label.
+         *
+         * @attribute label
+         * @type string
+         * @default null
+         */
+        label: null,
+
+        /**
+         * Determines if the label is displayed.
+         *
+         * @attribute labeled
+         * @type boolean
+         * @default true
+         */
+        labeled: true
+
+      }
+ 
     });
 
   </script>

@@ -1,0 +1,31 @@
+:host {
+  touch-action: none;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+}
+:host > .io-bundle-value {
+  vertical-align: top;
+}
+:host(:not([inline])) > .io-bundle-value {
+  display: inline-block;
+}
+:host(:not([inline])) > .io-bundle-value > io-value {
+  display: block;
+  margin-left: 0.5em;
+}
+:host(:not([naked])) > .io-bundle-value > io-value:not(:last-of-type)::after {
+  content: ', ';
+}
+:host(:not([naked])) > .io-bundle-value::before {
+  content: '{';
+}
+:host(:not([naked])) > .io-bundle-value::after {
+  content: '}';
+}
+:host(:not([naked]).array) > .io-bundle-value::before {
+  content: '[';
+}
+:host(:not([naked]).array) > .io-bundle-value::after {
+  content: ']';
+}

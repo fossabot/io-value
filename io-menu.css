@@ -1,0 +1,43 @@
+:host {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  touch-action: none;
+  display: none;
+  position: relative;
+  z-index: 100;
+}
+:host([nohide]) {
+  display: inline-block;
+}
+:host([expanded]) {
+  display: inline-block;
+  z-index: 102;
+}
+:host([context]) {
+  position: absolute;
+}
+:host([issubmenu]) {
+  position: absolute;
+  top: 0;
+  left: 100%;
+}
+:host([issubmenu][horizontal]) {
+  left: 0;
+  top: 100%;
+}
+:host([horizontal])::shadow > io-menu-option::shadow > io-menu {
+  top: 100%;
+  left: 0;
+}
+:host([horizontal])::shadow > io-menu-option {
+  display: inline-block;
+}
+:host::shadow > io-menu-option {
+  display: block;
+}
+:host([horizontal])::shadow > hr {
+  display: none;
+  /* TODO: implement horizontal divider */
+}

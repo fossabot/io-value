@@ -15,34 +15,31 @@ limitations under the License.
 -->
 
 <!--
-
 Menu option used internally by io-menu.
-You should never need to create this element expcicitly.
+You should never need to create this element explicitly.
 It is automatically created by io-menu.
 
 @element io-menu-option
-@homepage http://akirodic.com/components/io-menu/index.html
-@demo http://akirodic.com/components/io-menu/demo.html
+@homepage https://github.com/arodic/io-bundle
+@demo http://akirodic.com/components/io-bundle/demo.html
 @blurb Menu option used internally by io-menu.
 @status alpha
 -->
-
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../core-icons/core-icons.html">
 <link rel="import" href="../core-icon/core-icon.html">
-<link rel="import" href="io-menu-option.html">
 
-<link href="theme.css" rel="stylesheet" type="text/css" shim-shadowdom>
-
-<polymer-element name="io-menu-option" tabindex="0">
+<polymer-element name="io-menu-option" tabindex="0" class="io-bundle">
   <template>
+    <link href="io-menu-option.css" rel="stylesheet" type="text/css" shim-shadowdom>
     <template if="{{expanded && options.length}}">
-      <io-menu expanded="true"
+      <io-menu expanded
         options="{{options}}"
-        orientation="{{orientation}}"
+        horizontal="{{horizontal}}"
         parentHeight="{{rect.heigh}}"
         parentWidth="{{rect.width}}"
-        isSubmenu>
+        autoExpand
+        issubmenu>
       </io-menu>
     </template>
     <template if="{{icon}}"><core-icon icon="{{icon}}"></core-icon></template>&nbsp;{{label}}&nbsp;
@@ -61,13 +58,13 @@ It is automatically created by io-menu.
         options: null,
 
         /**
-         * Orientation of menu options
+         * horizontal orientation
          *
-         * @attribute orientation
-         * @type string
-         * @default vertical
+         * @attribute horizontal
+         * @type boolean
+         * @default false
          */
-        orientation: null,
+        horizontal: {value: false, reflect: true},
 
         /**
          * Label to be displayed with the option
@@ -121,31 +118,21 @@ It is automatically created by io-menu.
          * @type boolean
          * @default true
          */
-        expanded: false,
+        expanded: {value: false, reflect: true},
 
-        /**
-         * Expand on pointer hover
-         *
-         * @attribute autoExpand
-         * @type boolean
-         * @default true
-         */
-        autoExpand: true,
+        // TODO
+        active: {value: false, reflect: true},
       },
-      active: false,
       observe: {
         'options label icon action active expanded' : 'update'
       },
       eventDelegates: {
-        'focus': 'expand',
-        'blur': 'collapse',
         'keydown': 'onKeyDown',
-        'click': 'fireAction',
+        'tap': 'fireAction',
       },
       ready: function() {
         function stopPropagation(event) { event.stopPropagation(); }
         PolymerGestures.addEventListener(this, 'down', stopPropagation);
-        this.orientationChanged();
       },
       fireAction: function(event) {
         event.stopPropagation();
@@ -160,58 +147,29 @@ It is automatically created by io-menu.
             this.action.apply(null, [this.arguments]);
           }
         }
-        this.fire('io-menu-option-clicked', {
-          label: this.label,
-          action: this.action,
-          arguments: this.arguments
-        });
         if (typeof this.action === 'function' || this.arguments || this.button) {
+          this.fire('io-menu-option-clicked', {
+            label: this.label,
+            action: this.action,
+            arguments: this.arguments
+          });
           // TODO: debug collapse
-          this.collapse();
+          this.expanded = false;
         }
-      },
-      expand: function(event) {
-        this.focus();
-        this.expanded = true;
-        Platform.flush();
-      },
-      collapse: function(event) {
-        this.blur();
-        this.expanded = false;
-        Platform.flush();
       },
       onKeyDown: function(event) {
         event.stopPropagation();
         event.preventDefault();
         if (event.which == 13) {
-          this._fireAction(event);
-        } else if (event.which == 37) {
-          this.fire('key-pressed', { option: this, key: 'left' });
-        } else if (event.which == 38) {
-          this.fire('key-pressed', { option: this, key: 'up' });
-        } else if (event.which == 39) {
-          this.fire('key-pressed', { option: this, key: 'right' });
-        } else if (event.which == 40) {
-          this.fire('key-pressed', { option: this, key: 'down' });
-        } else if (event.which == 9) {
-          this.fire('key-pressed', { option: this, key: 'tab' });
+          this.fireAction(event);
         }
       },
       update: function() {
-        this.active = this.action || this.arguments || (this.options && this.options.length);
-        this.classList.toggle('active', this.active);
-        clearTimeout(this.timeout);
-        this.timeout = setTimeout(function() {
-          this.rect = this.getBoundingClientRect();
-        }.bind(this), 1);
-      },
-      expandedChanged: function() {
-        if (this.expanded) this.setAttribute('expanded', this.expanded);
-        else this.removeAttribute('expanded');
-      },
-      orientationChanged: function() {
-        if (this.orientation) this.setAttribute('orientation', this.orientation);
-        else this.removeAttribute('orientation');
+        this.active = (this.action && true) ||
+          (this.arguments && true) ||
+          (this.options && this.options.length);
+        // TODO: timeout?
+        this.rect = this.getBoundingClientRect();
       }
     });
   </script>

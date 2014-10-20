@@ -18,12 +18,7 @@ limitations under the License.
 I/O web component for Object data type.
 
 Example:
-
     <io-object value="[0,1,"apple",false]" inline labeled="false"></io-object>
-
-Renders something like this:
-
-    [0,1,"apple",false]
 
 See `theme.css` for styling reference.
 
@@ -33,7 +28,6 @@ See `theme.css` for styling reference.
 @blurb I/O web component for Object data type.
 @status alpha
 -->
-
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="io-boolean.html">
 <link rel="import" href="io-boolean-icon.html">
@@ -41,22 +35,24 @@ See `theme.css` for styling reference.
 <link rel="import" href="io-number.html">
 <link rel="import" href="io-value.html">
 
-<link rel="stylesheet" href="theme.css" shim-shadowdom>
-
-<polymer-element name="io-object">
+<polymer-element name="io-object" class="io-bundle">
   <template>
-    <template if="{{collapsable}}">
-        <io-boolean-icon value="{{expanded}}" trueIcon="expand-more" falseIcon="chevron-right">
-        </io-boolean-icon>
+    <link rel="stylesheet" href="io-object.css" shim-shadowdom>
+    <template if="{{labeled && label}}">
+      <span class="io-bundle-label" on-tap="{{labelClicked}}">{{label}}</span>:
     </template>
-    <span id="value" horizontal layout>
+    <span id="value" class="io-bundle-value">
+        <template if="{{collapsable}}">
+            <io-boolean-icon value="{{expanded}}" trueIcon="expand-more" falseIcon="chevron-right">
+            </io-boolean-icon>
+        </template>
         <template if="{{expanded || !collapsable}}">
             <template repeat="{{key, i in keys}}">
-                <io-value flex value="{{value[key]}}" class="{{i == (keys.length - 1) ? 'last' : ''}}" editable="{{editable}}" min="{{min}}" max="{{max}}" step="{{step}}" toDeg="{{toDeg}}"><template if="{{labeled}}">{{key}}:</template>
+                <io-value value="{{value[key]}}" editable="{{editable}}" min="{{min}}" max="{{max}}" step="{{step}}" toDeg="{{toDeg}}" labeled="{{labeled}}" label="{{key}}">
                 </io-value> 
             </template>
         </template>
-        <template if="{{!expanded}}">{{value.constructor.name}}[{{keys.length}}]</template>
+        <template if="{{collapsable && !expanded}}"><span class="io-bundle-constructor">{{value.constructor.name}}</span>[{{keys.length}}]</template>
     </span>
   </template>
   <script type="text/javascript">
@@ -69,7 +65,16 @@ See `theme.css` for styling reference.
      * @param {Object} detail.element the input element
      * @param {Object} detail.value new value
      */
-    
+
+    /**
+     * Fired when label is clicked
+     *
+     * @event io-label-clicked
+     * @param {Object} detail
+     * @param {Object} detail.label label
+     * @param {Object} detail.value value
+     */
+
     Polymer({
 
       publish: {
@@ -118,7 +123,7 @@ See `theme.css` for styling reference.
          * @type number
          * @default -3
          */
-        step: -3,
+        step: -1,
 
         /**
          * Enables conversion to degrees (for display only).
@@ -130,15 +135,6 @@ See `theme.css` for styling reference.
         toDeg: false,
 
         /**
-         * Expanded state
-         *
-         * @attribute expanded
-         * @type boolean
-         * @default true
-         */
-        expanded: false,
-
-        /**
          * Determines if the element can be collapsed.
          *
          * @attribute collapsable
@@ -148,7 +144,16 @@ See `theme.css` for styling reference.
         collapsable: true,
 
         /**
-         * Determines the key labels are snown.
+         * Label.
+         *
+         * @attribute label
+         * @type string
+         * @default null
+         */
+        label: null,
+
+        /**
+         * Determines if the label is displayed.
          *
          * @attribute labeled
          * @type boolean
@@ -157,55 +162,71 @@ See `theme.css` for styling reference.
         labeled: true,
 
         /**
+         * Expanded state
+         * Uses CSS attribute selector.
+         *
+         * @attribute expanded
+         * @type boolean
+         * @default false
+         */
+        expanded: {value: false, reflect: true},
+
+        /**
          * Determines if the items are displayed inline.
+         * Uses CSS attribute selector.
          *
          * @attribute inline
          * @type boolean
          * @default false
          */
-        inline: false,
+        inline: {value: false, reflect: true},
 
         /**
          * Determines if brackets and commas are displayed.
+         * Uses CSS attribute selector.
          *
          * @attribute naked
          * @type boolean
          * @default false
          */
-        naked: false
+        naked: {value: false, reflect: true},
+
+        keys: null
 
       },
 
-      keys: null,
 
       ready: function() {
-        this.value = this.value || {};
-        this.shadowRoot.addEventListener('io-changed', this.onInputChanged.bind(this));
+        this.shadowRoot.addEventListener('io-changed', function(event) {
+          event.stopPropagation();
+          this.fire('io-changed', { element: this, value: this.value });
+        }.bind(this));
       },
-      valueChanged: function() {        
-        this.classList.toggle('array', this.value instanceof Array);
-
+      valueChanged: function() {
         if (this.observer) this.observer.close();
-        this.observer = new ObjectObserver(this.value);
+        this.classList.toggle('array', this.value instanceof Array);
+        // TODO: find better way to observe mutations. This technique beraks three-attributes in FF
+        if (this.value instanceof Array) {
+            this.observer = new ArrayObserver(this.value);
+        } else {
+            this.observer = new ObjectObserver(this.value);
+        }
         this.observer.open(function(added, removed, changed, getOldValueFn) {
           this.updateKeys();
-        }.bind(this));        
+        }.bind(this));
         this.updateKeys();
       },
       updateKeys: function() {
         this.keys = Object.keys(this.value);
+        // for (var i = this.keys.length; i--;) {
+        //     var desc = Object.getOwnPropertyDescriptor(this.value, this.keys[i]);
+        //     if (desc.set || desc.get) {
+        //         console.log(this.keys[i]);
+        //     }
+        // }
       },
-      inlineChanged: function() {
-        if (this.inline) this.setAttribute('inline', true);
-        else this.removeAttribute('inline');
-      },
-      nakedChanged: function() {
-        if (this.naked) this.setAttribute('naked', true);
-        else this.removeAttribute('naked');
-      },
-      onInputChanged: function(event) {
-        event.stopPropagation();
-        this.fire('io-changed', { element: this, value: this.value });
+      labelClicked: function() {
+        this.fire('io-label-clicked', {label: this.label, value: this.value});
       }
     });
 

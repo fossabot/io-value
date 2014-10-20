@@ -15,16 +15,11 @@ limitations under the License.
 -->
 
 <!--
-
 I/O web component for number data type.
 
 Example:
 
     <io-number value="3.141592653589793" toDeg="true" step="-2"></io-number>
-
-Renders something like this:
-
-    180
 
 See `theme.css` for styling reference.
 
@@ -36,14 +31,15 @@ __Note__: You can click and drag to change the value or double-click to focus an
 @blurb I/O web component for number data type.
 @status alpha
 -->
-
 <link rel="import" href="../polymer/polymer.html">
 
-<link rel="stylesheet" href="theme.css" shim-shadowdom>
-
-<polymer-element name="io-number">
+<polymer-element name="io-number" class="io-bundle">
   <template>
-    <span id="value" tabindex="0" spellcheck="false" contenteditable></span>
+    <link rel="stylesheet" href="io-number.css" shim-shadowdom>
+    <template if="{{labeled && label}}">
+      <span class="io-bundle-label" on-tap="{{labelClicked}}">{{label}}</span>:
+    </template>
+    <span id="value" class="io-bundle-value" tabindex="0" spellcheck="false" contenteditable></span>
   </template>
   <script type="text/javascript">
 
@@ -55,6 +51,15 @@ __Note__: You can click and drag to change the value or double-click to focus an
      * @param {Object} detail.element the input element
      * @param {Object} detail.value new value
      * @param {Object} detail.delta value - oldValue delta
+     */
+
+    /**
+     * Fired when label is clicked
+     *
+     * @event io-label-clicked
+     * @param {Object} detail
+     * @param {Object} detail.label label
+     * @param {Object} detail.value value
      */
 
     (function() {
@@ -124,7 +129,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
            * @type number
            * @default -3
            */
-          step: -3,
+          step: -1,
 
           /**
            * Enables conversion to degrees (for display only).
@@ -133,8 +138,26 @@ __Note__: You can click and drag to change the value or double-click to focus an
            * @type boolean
            * @default false
            */
-          toDeg: false
-          
+          toDeg: false,
+
+          /**
+           * Label.
+           *
+           * @attribute label
+           * @type string
+           * @default null
+           */
+          label: null,
+
+          /**
+           * Determines if the label is displayed.
+           *
+           * @attribute labeled
+           * @type boolean
+           * @default true
+           */
+          labeled: true
+
         },
 
         observe: {
@@ -269,9 +292,9 @@ __Note__: You can click and drag to change the value or double-click to focus an
           if (this.value > this.max) this.max = this.value;
           if (!this.focused) {
             if (this.toDeg)
-              this.displayValue = this.value / Math.PI * 180;
+              this.displayValue = this.value / Math.PI * 180 || '';
             else
-              this.displayValue = this.value;
+              this.displayValue = this.value || '';
           }
         },
         displayValueChanged: function() {
@@ -287,6 +310,9 @@ __Note__: You can click and drag to change the value or double-click to focus an
           } else {
             this.regEx = new RegExp("(^-?\\d+\\.\\d{" + 1 + "})(\\d)");
           }
+        },
+        labelClicked: function() {
+          this.fire('io-label-clicked', {label: this.label, value: this.value});
         }
       });
 

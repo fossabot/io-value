@@ -21,10 +21,6 @@ Example:
 
     <io-boolean value="true" trueStr="Yes" falseStr="No"></io-boolean>
 
-Renders something like this:
-
-    Yes
-
 See `theme.css` for styling reference.
 
 __Note__: When you tab-focus this element you can use enter/spacebar to toggle the value.
@@ -35,14 +31,15 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
 @blurb I/O web component for boolean data type.
 @status alpha
 -->
-
 <link rel="import" href="../polymer/polymer.html">
 
-<link rel="stylesheet" href="theme.css" shim-shadowdom>
-
-<polymer-element name="io-boolean">
+<polymer-element name="io-boolean" class="io-bundle">
   <template>
-    <span id="value" tabindex="0">{{value ? trueStr : falseStr}}</span>
+    <link rel="stylesheet" href="io-boolean.css" shim-shadowdom>
+    <template if="{{labeled && label}}">
+      <span class="io-bundle-label" on-tap="{{labelClicked}}">{{label}}</span>:
+    </template>
+    <span class="io-bundle-value" tabindex="0">{{value ? trueStr : falseStr}}</span>
   </template>
   <script type="text/javascript">
 
@@ -53,6 +50,15 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
      * @param {Object} detail
      * @param {Object} detail.element the input element
      * @param {Object} detail.value new value
+     */
+
+    /**
+     * Fired when label is clicked
+     *
+     * @event io-label-clicked
+     * @param {Object} detail
+     * @param {Object} detail.label label
+     * @param {Object} detail.value value
      */
 
     Polymer({
@@ -93,7 +99,25 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
          * @type string
          * @default 'false'
          */
-        falseStr: 'false'
+        falseStr: 'false',
+
+        /**
+         * Label.
+         *
+         * @attribute label
+         * @type string
+         * @default null
+         */
+        label: null,
+
+        /**
+         * Determines if the label is displayed.
+         *
+         * @attribute labeled
+         * @type boolean
+         * @default true
+         */
+        labeled: true
 
       },
 
@@ -105,9 +129,6 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
 
       validKeys: [13, 32], // enter, spacebar
 
-      ready: function() {
-        // this.$.value.setAttribute('tabindex', 1);
-      },
       clickAction: function(event) {
         if (!this.editable) return;
         event.preventDefault();
@@ -127,6 +148,9 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
       toggle: function() {
         this.value = !this.value;
         this.fire('io-changed', { element: this, value: this.value });
+      },
+      labelClicked: function() {
+        this.fire('io-label-clicked', {label: this.label, value: this.value});
       }
     });
   </script>

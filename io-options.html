@@ -15,16 +15,11 @@ limitations under the License.
 -->
 
 <!--
-
 I/O web component for string data type.
 
 Example:
 
-    <io-options value="Hi"></io-options>
-
-Renders something like this:
-
-    Hi
+    <io-options value="1" options=[1,2,[3: 'trree']]></io-options>
 
 See `theme.css` for styling reference.
 
@@ -34,16 +29,17 @@ See `theme.css` for styling reference.
 @blurb I/O web component for string data type.
 @status alpha
 -->
-
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="io-menu.html">
 
-<link rel="stylesheet" href="theme.css" shim-shadowdom>
-
-<polymer-element name="io-options">
+<polymer-element name="io-options" class="io-bundle">
   <template>
-    <io-menu id="menu" options="{{menuOptions}}"></io-menu>
-    <span id="value" tabindex="0">{{displayValue}}</span><br />
+    <link rel="stylesheet" href="io-options.css" shim-shadowdom>
+    <template if="{{labeled && label}}">
+      <span class="io-bundle-label" on-tap="{{labelClicked}}">{{label}}</span>:
+    </template>
+    <io-menu id="menu" options="{{menuOptions}}" autoExpand></io-menu>
+    <span id="value" class="io-bundle-value" tabindex="0">{{displayValue}}</span>
   </template>
   <script type="text/javascript">
 
@@ -89,6 +85,24 @@ See `theme.css` for styling reference.
          */
         editable: true,
 
+        /**
+         * Label.
+         *
+         * @attribute label
+         * @type string
+         * @default null
+         */
+        label: null,
+
+        /**
+         * Determines if the label is displayed.
+         *
+         * @attribute labeled
+         * @type boolean
+         * @default true
+         */
+        labeled: true
+
       },
 
       menuOptions: null,
@@ -133,6 +147,7 @@ See `theme.css` for styling reference.
             }
           }
         }
+
         this.displayValue = this.value;
       },
       setValue: function( value ) {
@@ -162,6 +177,9 @@ See `theme.css` for styling reference.
         //     this.value = this.options[0];
         //   }
         // }
+      },
+      labelClicked: function() {
+        this.fire('io-label-clicked', {label: this.label, value: this.value});
       }
 
     });
