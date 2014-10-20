@@ -41,7 +41,7 @@ See `theme.css` for styling reference.
     <template if="{{labeled && label}}">
       <span class="io-bundle-label" on-tap="{{labelClicked}}">{{label}}</span>:
     </template>
-    <span id="value" class="io-bundle-value">
+    <span id="value">
         <template if="{{collapsable}}">
             <io-boolean-icon value="{{expanded}}" trueIcon="expand-more" falseIcon="chevron-right">
             </io-boolean-icon>
@@ -203,6 +203,7 @@ See `theme.css` for styling reference.
         }.bind(this));
       },
       valueChanged: function() {
+        if (typeof this.value !== 'object') return;
         if (this.observer) this.observer.close();
         this.classList.toggle('array', this.value instanceof Array);
         // TODO: find better way to observe mutations. This technique beraks three-attributes in FF
