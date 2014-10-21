@@ -166,6 +166,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
 
         eventDelegates: {
           'keydown': 'keydownAction',
+          'keyup': 'keydownAction',
           'down': 'downAction',
           'track': 'trackAction',
           'up': 'upAction',
@@ -188,6 +189,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
           this.displayValueChanged();
         },
         keydownAction: function(event) {
+          event.stopPropagation();
           // TODO: number keyboard on mobile
           event.stopPropagation();
           if(event.which == 13) {

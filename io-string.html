@@ -108,12 +108,14 @@ See `theme.css` for styling reference.
 
         eventDelegates: {
           'keydown': 'keydownAction',
+          'keyup': 'keydownAction',
           'tap': 'downAction',
           'focus': 'downAction',
           'blur': 'blurAction'
         },
 
         keydownAction: function(event) {
+          event.stopPropagation();
           if (!this.editable || invalidKeys.indexOf(event.which) != -1) {
             event.preventDefault();
             return;
@@ -121,7 +123,7 @@ See `theme.css` for styling reference.
           this.updateValue();
         },
         downAction: function(event) {
-          setTimeout(function(){ // TODO: unhack
+          setTimeout(function() { // TODO: unhack
             if (!this.focused) {
               selection = window.getSelection();
               selection.removeAllRanges();
@@ -130,7 +132,7 @@ See `theme.css` for styling reference.
               selection.addRange(range);
               this.focused = true;
             }
-          }.bind(this),100);
+          }.bind(this), 100);
         },
         blurAction: function() {
           this.value = this.$.value.textContent;
