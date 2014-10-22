@@ -6,6 +6,7 @@ html /deep/ .io-bundle-value {
 html /deep/ .io-bundle-value:focus {
   outline: 0;
 }
+
 html /deep/ io-object::shadow > .io-bundle-value {
   color: inherit;
 }

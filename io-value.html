@@ -38,13 +38,13 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
 
       publish: {
         value: undefined,
-        editable: true,
-        min: -Infinity,
-        max: Infinity,
-        step: -1,
-        toDeg: false,
-        label: null,
-        labeled: true,
+        // editable: true,
+        // min: -Infinity,
+        // max: Infinity,
+        // step: -1,
+        // toDeg: false,
+        label: '',
+        // labeled: true,
         iotype: {value: null, reflect: true}
       },
 
@@ -55,6 +55,7 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
       },
 
       createElement: function() {
+
         if (this.value === undefined || this.value === null || this.value === NaN) {
           this.shadowRoot.innerHTML = this.label + ': ' +  this.value;
           this.iotype = '' + this.value;
@@ -77,13 +78,14 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
           this.io = document.createElement(type);
           this.shadowRoot.appendChild(this.io);
           this.io.bind('value', new PathObserver(this, 'value'));
-          this.io.bind('editable', new PathObserver(this, 'editable'));
-          this.io.bind('min', new PathObserver(this, 'min'));
-          this.io.bind('max', new PathObserver(this, 'max'));
-          this.io.bind('step', new PathObserver(this, 'step'));
-          this.io.bind('toDeg', new PathObserver(this, 'toDeg'));
+          // TODO remove?
+          // this.io.bind('editable', new PathObserver(this, 'editable'));
+          // this.io.bind('min', new PathObserver(this, 'min'));
+          // this.io.bind('max', new PathObserver(this, 'max'));
+          // this.io.bind('step', new PathObserver(this, 'step'));
+          // this.io.bind('toDeg', new PathObserver(this, 'toDeg'));
           this.io.bind('label', new PathObserver(this, 'label'));
-          this.io.bind('labeled', new PathObserver(this, 'labeled'));
+          // this.io.bind('labeled', new PathObserver(this, 'labeled'));
           return;
         }
 

@@ -71,18 +71,18 @@ It is automatically created by io-menu.
          *
          * @attribute label
          * @type string
-         * @default null
+         * @default ''
          */
-        label: null,
+        label: '',
 
         /**
          * Icon to be displayed with the option
          *
          * @attribute icon
          * @type string
-         * @default null
+         * @default ''
          */
-        icon: null,
+        icon: '',
 
         /**
          * Function to be fired when option is selected
@@ -127,14 +127,14 @@ It is automatically created by io-menu.
         'options label icon action active expanded' : 'update'
       },
       eventDelegates: {
-        'keydown': 'onKeyDown',
-        'tap': 'fireAction',
+        'keydown': 'keydownAction',
+        'tap': 'tapAction',
       },
       ready: function() {
         function stopPropagation(event) { event.stopPropagation(); }
         PolymerGestures.addEventListener(this, 'down', stopPropagation);
       },
-      fireAction: function(event) {
+      tapAction: function(event) {
         event.stopPropagation();
         event.preventDefault();
         if (this.button) {
@@ -157,11 +157,11 @@ It is automatically created by io-menu.
           this.expanded = false;
         }
       },
-      onKeyDown: function(event) {
+      keydownAction: function(event) {
         event.stopPropagation();
         event.preventDefault();
         if (event.which == 13) {
-          this.fireAction(event);
+          this.tapAction(event);
         }
       },
       update: function() {

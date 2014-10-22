@@ -26,40 +26,22 @@ See `theme.css` for styling reference.
 __Note__: When you tab-focus this element you can use enter/spacebar to toggle the value.
 
 @element io-boolean
+@extends io-base
 @homepage https://github.com/arodic/io-bundle
 @demo http://akirodic.com/components/io-bundle/demo.html
 @blurb I/O web component for boolean data type.
 @status alpha
 -->
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="io-base.html">
 
-<polymer-element name="io-boolean" class="io-bundle">
+<polymer-element name="io-boolean" extends="io-base">
   <template>
+    <shadow></shadow>
     <link rel="stylesheet" href="io-boolean.css" shim-shadowdom>
-    <template if="{{labeled && label}}">
-      <span class="io-bundle-label" on-tap="{{labelClicked}}">{{label}}</span>:
-    </template>
-    <span class="io-bundle-value" tabindex="0">{{value ? trueStr : falseStr}}</span>
+    <span id="value" class="io-bundle-value" tabindex="0">{{value ? trueStr : falseStr}}</span>
   </template>
   <script type="text/javascript">
-
-    /**
-     * Fired when value attribute is changed by user action
-     *
-     * @event io-changed
-     * @param {Object} detail
-     * @param {Object} detail.element the input element
-     * @param {Object} detail.value new value
-     */
-
-    /**
-     * Fired when label is clicked
-     *
-     * @event io-label-clicked
-     * @param {Object} detail
-     * @param {Object} detail.label label
-     * @param {Object} detail.value value
-     */
 
     Polymer({
 
@@ -73,15 +55,6 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
          * @default false
          */
         value: false,
-
-        /**
-         * Determines if the input can be edited by user action.
-         *
-         * @attribute editable
-         * @type boolean
-         * @default true
-         */
-        editable: true,
 
         /**
          * String to display when value is true.
@@ -101,42 +74,24 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
          */
         falseStr: 'false',
 
-        /**
-         * Label.
-         *
-         * @attribute label
-         * @type string
-         * @default null
-         */
-        label: null,
-
-        /**
-         * Determines if the label is displayed.
-         *
-         * @attribute labeled
-         * @type boolean
-         * @default true
-         */
-        labeled: true
-
       },
 
       eventDelegates: {
         'keydown': 'keydownAction',
-        'mousedown': 'clickAction',
-        'touchstart': 'clickAction'
+        'down': 'downAction',
       },
 
       validKeys: [13, 32], // enter, spacebar
 
-      clickAction: function(event) {
-        if (!this.editable) return;
+      downAction: function(event) {
+        if (this.disabled) return;
         event.preventDefault();
         event.stopPropagation();
         this.toggle();
       },
       keydownAction: function(event) {
-        if (!this.editable || this.validKeys.indexOf(event.which) == -1) return;
+        if (this.disabled || this.validKeys.indexOf(event.which) == -1) return;
+        event.preventDefault();
         event.stopPropagation();
         this.toggle();
       },
@@ -147,10 +102,15 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
        */
       toggle: function() {
         this.value = !this.value;
+        /**
+         * Fired when value attribute is changed by user action
+         *
+         * @event io-changed
+         * @param {Object} detail
+         * @param {Object} detail.element the input element
+         * @param {Object} detail.value new value
+         */
         this.fire('io-changed', { element: this, value: this.value });
-      },
-      labelClicked: function() {
-        this.fire('io-label-clicked', {label: this.label, value: this.value});
       }
     });
   </script>

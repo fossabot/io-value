@@ -24,6 +24,7 @@ Example:
 See `theme.css` for styling reference.
 
 @element io-options
+@extends io-base
 @homepage https://github.com/arodic/io-bundle
 @demo http://akirodic.com/components/io-bundle/demo.html
 @blurb I/O web component for string data type.
@@ -31,26 +32,16 @@ See `theme.css` for styling reference.
 -->
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="io-menu.html">
+<link rel="import" href="io-base.html">
 
-<polymer-element name="io-options" class="io-bundle">
+<polymer-element name="io-options" extends="io-base">
   <template>
+    <shadow></shadow>
     <link rel="stylesheet" href="io-options.css" shim-shadowdom>
-    <template if="{{labeled && label}}">
-      <span class="io-bundle-label" on-tap="{{labelClicked}}">{{label}}</span>:
-    </template>
     <io-menu id="menu" options="{{menuOptions}}" autoExpand></io-menu>
     <span id="value" class="io-bundle-value" tabindex="0">{{displayValue}}</span>
   </template>
   <script type="text/javascript">
-
-    /**
-     * Fired when an value attribute is changed by a user action
-     * 
-     * @event io-changed
-     * @param {Object} detail
-     * @param {Object} detail.element the input element
-     * @param {Object} detail.value new value
-     */
     
     Polymer({
 
@@ -60,8 +51,8 @@ See `theme.css` for styling reference.
          * currently selected value.
          *
          * @attribute value
-         * @type string
-         * @default 0
+         * @type *
+         * @default null
          */
         value: null,
         
@@ -74,34 +65,7 @@ See `theme.css` for styling reference.
          * @type Array
          * @default null
          */
-        options: null,
-
-        /**
-         * Determines if the input can be edited by user action.
-         *
-         * @attribute editable
-         * @type boolean
-         * @default true
-         */
-        editable: true,
-
-        /**
-         * Label.
-         *
-         * @attribute label
-         * @type string
-         * @default null
-         */
-        label: null,
-
-        /**
-         * Determines if the label is displayed.
-         *
-         * @attribute labeled
-         * @type boolean
-         * @default true
-         */
-        labeled: true
+        options: null
 
       },
 
@@ -116,12 +80,20 @@ See `theme.css` for styling reference.
         this.options = this.options || [],
         this._expand = this.expand.bind(this);
         this.$.menu.addEventListener('action-fired', function(){
+          /**
+           * Fired when an value attribute is changed by a user action
+           * 
+           * @event io-changed
+           * @param {Object} detail
+           * @param {Object} detail.element the input element
+           * @param {Object} detail.value new value
+           */
           this.fire('io-changed', { input: this });
         }.bind(this));
       },
 
       expand: function(event) {
-        if (!this.editable) return;
+        if (this.disabled) return;
         event.preventDefault();
         event.stopPropagation();
         // TODO: focus first option on keydown or automatically
@@ -170,16 +142,6 @@ See `theme.css` for styling reference.
             });
           }
         }
-        // if (this.value === "") {
-        //   if (this.options[i] instanceof Array && this.options[i].length == 2) {
-        //     this.value = this.options[0][1];
-        //   } else {
-        //     this.value = this.options[0];
-        //   }
-        // }
-      },
-      labelClicked: function() {
-        this.fire('io-label-clicked', {label: this.label, value: this.value});
       }
 
     });

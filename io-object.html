@@ -23,6 +23,7 @@ Example:
 See `theme.css` for styling reference.
 
 @element io-object
+@extends io-base
 @homepage https://github.com/arodic/io-bundle
 @demo http://akirodic.com/components/io-bundle/demo.html
 @blurb I/O web component for Object data type.
@@ -34,13 +35,12 @@ See `theme.css` for styling reference.
 <link rel="import" href="io-string.html">
 <link rel="import" href="io-number.html">
 <link rel="import" href="io-value.html">
+<link rel="import" href="io-base.html">
 
-<polymer-element name="io-object" class="io-bundle">
+<polymer-element name="io-object" extends="io-base">
   <template>
+    <shadow></shadow>
     <link rel="stylesheet" href="io-object.css" shim-shadowdom>
-    <template if="{{labeled && label}}">
-      <span class="io-bundle-label" on-tap="{{labelClicked}}">{{label}}</span>:
-    </template>
     <span id="value">
         <template if="{{collapsable}}">
             <io-boolean-icon value="{{expanded}}" trueIcon="expand-more" falseIcon="chevron-right">
@@ -48,7 +48,7 @@ See `theme.css` for styling reference.
         </template>
         <template if="{{expanded || !collapsable}}">
             <template repeat="{{key, i in keys}}">
-                <io-value value="{{value[key]}}" editable="{{editable}}" min="{{min}}" max="{{max}}" step="{{step}}" toDeg="{{toDeg}}" labeled="{{labeled}}" label="{{key}}">
+                <io-value value="{{value[key]}}" disabled="{{disabled}}" label="{{labeled ? key : ''}}">
                 </io-value> 
             </template>
         </template>
@@ -56,24 +56,6 @@ See `theme.css` for styling reference.
     </span>
   </template>
   <script type="text/javascript">
-
-    /**
-     * Fired when an value attribute is changed by a user action
-     * 
-     * @event io-changed
-     * @param {Object} detail
-     * @param {Object} detail.element the input element
-     * @param {Object} detail.value new value
-     */
-
-    /**
-     * Fired when label is clicked
-     *
-     * @event io-label-clicked
-     * @param {Object} detail
-     * @param {Object} detail.label label
-     * @param {Object} detail.value value
-     */
 
     Polymer({
 
@@ -88,69 +70,13 @@ See `theme.css` for styling reference.
         value: null,
 
         /**
-         * Determines if the input can be edited.
-         *
-         * @attribute editable
-         * @type boolean
-         * @default true
-         */
-        editable: true,
-
-        /**
-         * Minimum value.
-         *
-         * @attribute min
-         * @type number
-         * @default -Infinity
-         */
-        min: -Infinity,
-
-        /**
-         * Maximum value.
-         *
-         * @attribute max
-         * @type number
-         * @default Infinity
-         */
-        max: Infinity,
-
-        /**
-         * Step increment when dragging in powers of 10.
-         * 
-         * 10^-2 = 0.01; 10^-1 = 0.1; 10^0 = 1; 10^1 = 10
-         *
-         * @attribute step
-         * @type number
-         * @default -3
-         */
-        step: -1,
-
-        /**
-         * Enables conversion to degrees (for display only).
-         *
-         * @attribute toDeg
-         * @type boolean
-         * @default false
-         */
-        toDeg: false,
-
-        /**
          * Determines if the element can be collapsed.
          *
          * @attribute collapsable
          * @type boolean
          * @default true
          */
-        collapsable: true,
-
-        /**
-         * Label.
-         *
-         * @attribute label
-         * @type string
-         * @default null
-         */
-        label: null,
+        collapsable: {value: true, reflect: true},
 
         /**
          * Determines if the label is displayed.
@@ -159,7 +85,7 @@ See `theme.css` for styling reference.
          * @type boolean
          * @default true
          */
-        labeled: true,
+        labeled: {value: true, reflect: true},
 
         /**
          * Expanded state
@@ -191,14 +117,21 @@ See `theme.css` for styling reference.
          */
         naked: {value: false, reflect: true},
 
-        keys: null
-
       },
 
+      keys: null,
 
       ready: function() {
         this.shadowRoot.addEventListener('io-changed', function(event) {
           event.stopPropagation();
+          /**
+           * Fired when an value attribute is changed by a user action
+           * 
+           * @event io-changed
+           * @param {Object} detail
+           * @param {Object} detail.element the input element
+           * @param {Object} detail.value new value
+           */
           this.fire('io-changed', { element: this, value: this.value });
         }.bind(this));
       },
@@ -219,15 +152,6 @@ See `theme.css` for styling reference.
       },
       updateKeys: function() {
         this.keys = Object.keys(this.value);
-        // for (var i = this.keys.length; i--;) {
-        //     var desc = Object.getOwnPropertyDescriptor(this.value, this.keys[i]);
-        //     if (desc.set || desc.get) {
-        //         console.log(this.keys[i]);
-        //     }
-        // }
-      },
-      labelClicked: function() {
-        this.fire('io-label-clicked', {label: this.label, value: this.value});
       }
     });
 

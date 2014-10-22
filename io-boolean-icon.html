@@ -26,7 +26,7 @@ See `theme.css` for styling reference.
 __Note__: When you tab-focus this element you can use enter/spacebar to toggle the value.
 
 @element input-boolean-icon
-@extends io-boolean
+@extends io-base
 @homepage https://github.com/arodic/io-bundle
 @demo http://akirodic.com/components/io-bundle/demo.html
 @blurb I/O web component for boolean data type. Displays value as core-icon.
@@ -34,41 +34,15 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
 -->
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../core-icons/core-icons.html">
-<link rel="import" href="io-boolean.html">
+<link rel="import" href="io-base.html">
 
-<polymer-element name="io-boolean-icon" extends="io-boolean" class="io-bundle">
+<polymer-element name="io-boolean-icon" extends="io-base">
   <template>
+    <shadow></shadow>
     <link rel="stylesheet" href="io-boolean-icon.css" shim-shadowdom>
-    <template if="{{labeled && label}}">
-      <span class="io-bundle-label" on-tap="{{labelClicked}}">{{label}}</span>:
-    </template>
-    <core-icon class="io-bundle-value" icon="{{value ? trueIcon : falseIcon}}" tabindex="0"><content></content></core-icon>
+    <core-icon id="value" class="io-bundle-value" tabindex="0" icon="{{value ? trueIcon : falseIcon}}"></core-icon>
   </template>
   <script type="text/javascript">
-
-    /**
-     * Fired when value attribute is changed by user action
-     *
-     * @event io-changed
-     * @param {Object} detail
-     * @param {Object} detail.element the input element
-     * @param {Object} detail.value new value
-     */
-
-    /**
-     * Fired when label is clicked
-     *
-     * @event io-label-clicked
-     * @param {Object} detail
-     * @param {Object} detail.label label
-     * @param {Object} detail.value value
-     */
-
-    /**
-     * Toggles the value.
-     *
-     * @method toggle
-     */
 
     Polymer({
 
@@ -82,15 +56,6 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
          * @default false
          */
         value: false,
-
-        /**
-         * Determines if the input can be edited by user action.
-         *
-         * @attribute editable
-         * @type boolean
-         * @default true
-         */
-        editable: true,
 
         /**
          * String to display when value is true.
@@ -108,28 +73,48 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
          * @type string
          * @default 'check-box-outline-blank'
          */
-        falseIcon: 'check-box-outline-blank',
+        falseIcon: 'check-box-outline-blank'
 
+      },
+
+      eventDelegates: {
+        'keydown': 'keydownAction',
+        'down': 'downAction',
+      },
+
+      validKeys: [13, 32], // enter, spacebar
+
+      downAction: function(event) {
+        if (this.disabled) return;
+        event.preventDefault();
+        event.stopPropagation();
+        this.toggle();
+      },
+      keydownAction: function(event) {
+        if (this.disabled || this.validKeys.indexOf(event.which) == -1) return;
+        event.preventDefault();
+        event.stopPropagation();
+        this.toggle();
+      },
+
+      /**
+       * Toggles the value.
+       *
+       * @method toggle
+       */
+      toggle: function() {
+        this.value = !this.value;
         /**
-         * Label.
+         * Fired when value attribute is changed by user action
          *
-         * @attribute label
-         * @type string
-         * @default null
+         * @event io-changed
+         * @param {Object} detail
+         * @param {Object} detail.element the input element
+         * @param {Object} detail.value new value
          */
-        label: null,
-
-        /**
-         * Determines if the label is displayed.
-         *
-         * @attribute labeled
-         * @type boolean
-         * @default true
-         */
-        labeled: true
-
+        this.fire('io-changed', { element: this, value: this.value });
       }
- 
+
     });
 
   </script>

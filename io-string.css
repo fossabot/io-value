@@ -1,11 +1,13 @@
-:host {
-  touch-action: none;
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: top;
-}
 :host > .io-bundle-value {
   overflow-x: hidden;
   white-space: nowrap;
   cursor: text;
+}
+:host > .io-bundle-value:empty {
+  min-width: 0.5em;
+  display: inline-block;
+  vertical-align: top;
+}
+:host > .io-bundle-value:empty:after {	
+  content: "_";
 }

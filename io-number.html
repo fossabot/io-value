@@ -26,19 +26,19 @@ See `theme.css` for styling reference.
 __Note__: You can click and drag to change the value or double-click to focus and select value.
 
 @element io-number
+@extends io-base
 @homepage https://github.com/arodic/io-bundle
 @demo http://akirodic.com/components/io-bundle/demo.html
 @blurb I/O web component for number data type.
 @status alpha
 -->
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="io-base.html">
 
-<polymer-element name="io-number" class="io-bundle">
+<polymer-element name="io-number" extends="io-base">
   <template>
+    <shadow></shadow>
     <link rel="stylesheet" href="io-number.css" shim-shadowdom>
-    <template if="{{labeled && label}}">
-      <span class="io-bundle-label" on-tap="{{labelClicked}}">{{label}}</span>:
-    </template>
     <span id="value" class="io-bundle-value" tabindex="0" spellcheck="false" contenteditable></span>
   </template>
   <script type="text/javascript">
@@ -51,15 +51,6 @@ __Note__: You can click and drag to change the value or double-click to focus an
      * @param {Object} detail.element the input element
      * @param {Object} detail.value new value
      * @param {Object} detail.delta value - oldValue delta
-     */
-
-    /**
-     * Fired when label is clicked
-     *
-     * @event io-label-clicked
-     * @param {Object} detail
-     * @param {Object} detail.label label
-     * @param {Object} detail.value value
      */
 
     (function() {
@@ -92,15 +83,6 @@ __Note__: You can click and drag to change the value or double-click to focus an
            * @default 0
            */
           value: 0,
-
-          /**
-           * Determines if the input can be edited by user action.
-           *
-           * @attribute editable
-           * @type boolean
-           * @default true
-           */
-          editable: true,
 
           /**
            * Minimum value.
@@ -138,25 +120,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
            * @type boolean
            * @default false
            */
-          toDeg: false,
-
-          /**
-           * Label.
-           *
-           * @attribute label
-           * @type string
-           * @default null
-           */
-          label: null,
-
-          /**
-           * Determines if the label is displayed.
-           *
-           * @attribute labeled
-           * @type boolean
-           * @default true
-           */
-          labeled: true
+          toDeg: false
 
         },
 
@@ -165,12 +129,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
         },
 
         eventDelegates: {
-          'keydown': 'keydownAction',
-          'down': 'downAction',
-          'track': 'trackAction',
-          'up': 'upAction',
-          'focus': 'focusAction',
-          'blur': 'blurAction',
+          'keyup': 'keydownAction',
           'contextmenu': 'contextAction',
           'dblclick': 'contextAction'
         },
@@ -310,9 +269,6 @@ __Note__: You can click and drag to change the value or double-click to focus an
           } else {
             this.regEx = new RegExp("(^-?\\d+\\.\\d{" + 1 + "})(\\d)");
           }
-        },
-        labelClicked: function() {
-          this.fire('io-label-clicked', {label: this.label, value: this.value});
         }
       });
 

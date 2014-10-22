@@ -1,13 +1,11 @@
-:host {
-  touch-action: none;
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: top;
-}
 :host > .io-bundle-value {
   cursor: pointer;
   width: 1em;
   height: 1em;
+}
+:host > .io-bundle-value:focus {
+  /* TODO: temp fix */
+  background-color: rgba(0, 0, 0, 0.2); 
 }
 :host > .io-bundle-label {
   cursor: pointer;
