@@ -1,4 +1,10 @@
 :host {
+<<<<<<< HEAD
+||||||| merged common ancestors
+  touch-action: none;
+=======
+  /*touch-action: none;*/
+>>>>>>> 7abbcc67883ab03a3c80d65f9697bdc3d6bc6d37
   display: inline-block;
   overflow: hidden;
   vertical-align: top;
