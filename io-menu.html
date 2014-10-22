@@ -211,9 +211,9 @@ Example:
       getHoveredItem: function(event) {
         if (event.changedTouches) event = event.changedTouches[0];
         if (this.horizontal) {
-          tempV = Math.abs(event.pageX - x) / 2 - (event.pageY - y);
+          tempV = Math.abs((event.pageX - x) / 2 - (event.pageY - y));
         } else {
-          tempV = Math.abs(event.pageY - y) / 2 - (event.pageX - x);
+          tempV = Math.abs((event.pageY - y) / 2 - (event.pageX - x));
         }
         v = tempV;
         x = event.pageX - window.pageXOffset;
