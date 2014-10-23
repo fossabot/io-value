@@ -129,9 +129,14 @@ __Note__: You can click and drag to change the value or double-click to focus an
         },
 
         eventDelegates: {
-          'keyup': 'keydownAction',
+          'keydown': 'keydownAction',
+          'keyup': 'keyupAction',
           'contextmenu': 'contextAction',
-          'dblclick': 'contextAction'
+          'dblclick': 'contextAction',
+          'down': 'downAction',
+          'up': 'upAction',
+          'track': 'trackAction'
+          // 'tap': 'tapAction',
         },
 
         /**
@@ -146,6 +151,9 @@ __Note__: You can click and drag to change the value or double-click to focus an
           this.stepChanged();
           this.displayValueChanged();
         },
+        keyupAction: function(event) {
+          event.stopPropagation();
+        },
         keydownAction: function(event) {
           event.stopPropagation();
           // TODO: number keyboard on mobile
@@ -155,7 +163,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
             return;
           }
           oldValue = this.value;
-          if (!this.editable || validKeys.indexOf(event.which) == -1) {
+          if (this.disabled || validKeys.indexOf(event.which) == -1) {
             return;
           }
           setTimeout(function(){
@@ -221,6 +229,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
           }
         },
         focusAction: function(event) {
+          event.stopPropagation();
           selection = window.getSelection();
           selection.removeAllRanges();
           range = document.createRange();
@@ -250,16 +259,18 @@ __Note__: You can click and drag to change the value or double-click to focus an
         valueChanged: function() {
           if (this.value < this.min) this.min = this.value;
           if (this.value > this.max) this.max = this.value;
-          if (!this.focused) {
+          // if (!this.focused) {
             if (this.toDeg)
-              this.displayValue = this.value / Math.PI * 180 || '';
+              this.displayValue = this.value / Math.PI * 180 ;//|| '';
             else
-              this.displayValue = this.value || '';
-          }
+              this.displayValue = this.value;// || '';
+          // }
         },
         displayValueChanged: function() {
           this._match = this.displayValue.toString().match(this.regEx);
-          this.$.value.textContent = this._match ? parseFloat(this._match[1]) : this.displayValue;
+          if (!this.focused) {
+            this.$.value.textContent = this._match ? parseFloat(this._match[1]) : this.displayValue;
+          }
         },
         toDegChanged: function() {
           this.valueChanged();

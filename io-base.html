@@ -74,17 +74,11 @@ This an element other io-* elements extend.
         focused: false,
 
         eventDelegates: {
-          // TODO: move
-          'keydown': 'keydownAction',
-          'keyup': 'keyupAction',
-          'down': 'downAction',
           'focus': 'focusAction',
           'blur': 'blurAction',
-          'up': 'upAction',
-          'tap': 'tapAction',
-          'track': 'trackAction'
         },
         focusAction: function(event) {
+          event.stopPropagation();
           setTimeout(function() { // TODO: unhack
             if (!this.focused) {
               selection = window.getSelection();
