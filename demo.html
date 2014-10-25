@@ -67,7 +67,7 @@
   </div>
   <div class="demo">
     <show-and-tell></show-and-tell>
-    <io-menu noHide></io-menu>
+    <io-menu autoExpand noHide></io-menu>
   </div>
   <script>
     var object, menu, options, inspector;
@@ -82,7 +82,7 @@
       options.value = 1;
       inspector.value = document.body;
       menu.options = [
-        { label: "Options", autoExpand: true, icon: "close", options: [
+        { label: "Options", icon: "close", options: [
           { label: "Option1", options: [
             { label: "Suboption1", action: function(){ alert('Suboption1'); } },
             { label: "Suboption2", action: function(msg){ alert(msg); }, arguments: ['Suboption2'] },
@@ -100,7 +100,7 @@
           ] } 
         ] },
         { type: "divider" },
-        { label: "Suboptions", autoExpand: true, options: [
+        { label: "Suboptions", autoExpand: false, options: [
           { label: "Suboption1", options: [
             { label: "Suboption2", horizontal: true, options: [
               { label: "suboption3a" },

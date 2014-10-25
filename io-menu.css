@@ -3,14 +3,15 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-  /*touch-action: none;*/
+  touch-action: none;
   display: none;
   position: relative;
   z-index: 100;
 }
-:host([nohide]) {
+:host([noHide]) {
   display: inline-block;
 }
+
 :host([expanded]) {
   display: inline-block;
   z-index: 102;

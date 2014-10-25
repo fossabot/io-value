@@ -67,7 +67,7 @@ Example:
   </template>
   <script type="text/javascript">
   (function() {
-    var x = 0, y = 0, v = 0, tempV;
+    var x = 0, y = 0, v = 0, tempV, tempX, tempY;
     var previousOption;
     var previousParent;
     var timeout;
@@ -120,7 +120,7 @@ Example:
          * @type boolean
          * @default false
          */
-        noHide: false,
+        noHide: {value: false, reflect: true},
 
         /**
          * Number of milliseconds before swithcing options when cursor is moving sideways.
@@ -153,7 +153,7 @@ Example:
          * @type boolean
          * @default false
          */
-        usePrimary: false,
+        usePrimary: {value: false, reflect: true},
 
         /**
          * Should opening the menu require ctrl key to be pressed?
@@ -162,13 +162,15 @@ Example:
          * @type boolean
          * @default false
          */
-        requireCtrl: false
+        requireCtrl: {value: false, reflect: true},
       },
       isSubmenu: false,
       optionElems: null,
       eventDelegates: {
+        'touchstart': 'onDown',
         'mousedown': 'onDown',
         'mousemove': 'onHover',
+        'touchmove': 'onHover',
         'io-menu-option-clicked': 'collapse'
       },
       ready: function() {
@@ -178,8 +180,6 @@ Example:
         this._expandPrimary = this.expandPrimary.bind(this);
       },
       onHover: function(event) {
-        event.preventDefault();
-        event.stopPropagation();
         var option = this.getHoveredItem(event);
         if (option && option != previousOption && this.autoExpand) {
           this.expanded = true;
@@ -198,8 +198,6 @@ Example:
         }
       },
       onDown: function(event) {
-        event.preventDefault();
-        event.stopPropagation();
         this.expanded = true;
         var option = this.getHoveredItem(event);
         if (option) {
@@ -210,14 +208,16 @@ Example:
       },
       getHoveredItem: function(event) {
         if (event.changedTouches) event = event.changedTouches[0];
+        tempX = event.pageX - window.pageXOffset;
+        tempY = event.pageY - window.pageYOffset;
         if (this.horizontal) {
-          tempV = Math.abs((event.pageX - x) / 2 - (event.pageY - y));
+          tempV = Math.abs(tempX - x) - Math.abs(tempY - y);
         } else {
-          tempV = Math.abs((event.pageY - y) / 2 - (event.pageX - x));
+          tempV = Math.abs(tempY - y) - Math.abs(tempX - x);
         }
         v = tempV;
-        x = event.pageX - window.pageXOffset;
-        y = event.pageY - window.pageYOffset;
+        x = tempX;
+        y = tempY;
         //
         this.updateOptionElems();
         if (this.optionElems && this.optionElems.length) {
@@ -236,8 +236,6 @@ Example:
       },
 
       collapse: function(event) {
-        event.preventDefault();
-        event.stopPropagation();
         this.expanded = false;
         previousOption = null;
         previousParent = null;
@@ -254,8 +252,6 @@ Example:
       expand: function(event) {
         if (!this.enabled) return; //todo
         if (this.requireCtrl && !event.ctrlKey) return; //todo
-        event.preventDefault();
-        event.stopPropagation();
         this.expanded = true;
         if (this._parentNode) {
           var rect = this._parentNode.getBoundingClientRect();
@@ -265,8 +261,6 @@ Example:
       },
       expandPrimary: function(event) {
         if (!this.usePrimary) return;
-        event.preventDefault();
-        event.stopPropagation();
         this.expand(event);
       },
       expandOption: function(option) {

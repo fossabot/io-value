@@ -135,8 +135,6 @@ It is automatically created by io-menu.
         PolymerGestures.addEventListener(this, 'down', stopPropagation);
       },
       tapAction: function(event) {
-        event.stopPropagation();
-        event.preventDefault();
         if (this.button) {
           this.button.click();
         } 
@@ -158,8 +156,6 @@ It is automatically created by io-menu.
         }
       },
       keydownAction: function(event) {
-        event.stopPropagation();
-        event.preventDefault();
         if (event.which == 13) {
           this.tapAction(event);
         }
