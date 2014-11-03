@@ -74,7 +74,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
       Polymer({
 
         publish: {
-  
+
           /**
            * Input value.
            *
@@ -158,7 +158,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
           event.stopPropagation();
           // TODO: number keyboard on mobile
           event.stopPropagation();
-          if(event.which == 13) {
+          if (event.which == 13) {
             this.blurValue();
             return;
           }
@@ -166,7 +166,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
           if (this.disabled || validKeys.indexOf(event.which) == -1) {
             return;
           }
-          setTimeout(function(){
+          setTimeout(function() {
             this.readValue();
             this.fire('io-changed',
               { element: this,
@@ -189,14 +189,14 @@ __Note__: You can click and drag to change the value or double-click to focus an
         downAction: function(event) {
           event.stopPropagation();
           event.preventDefault();
-          document.body.classList.toggle("ew-resize", true);
+          document.body.classList.toggle('ew-resize', true);
           xOld = event.clientX;
           delta = 0;
         },
         upAction: function(event) {
           event.stopPropagation();
           event.preventDefault();
-          document.body.classList.toggle("ew-resize", false);
+          document.body.classList.toggle('ew-resize', false);
         },
         trackAction: function(event) {
           event.stopPropagation();
@@ -261,7 +261,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
           if (this.value > this.max) this.max = this.value;
           // if (!this.focused) {
             if (this.toDeg)
-              this.displayValue = this.value / Math.PI * 180 ;//|| '';
+              this.displayValue = this.value / Math.PI * 180;//|| '';
             else
               this.displayValue = this.value;// || '';
           // }

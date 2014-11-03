@@ -76,40 +76,40 @@
       options = document.querySelector('io-options');
       inspector = document.querySelector('io-inspector');
       menu = document.querySelector('io-menu');
-      
+
       object.value = ['one', true, 1];
-      options.options = [1,2,["three", 3]];
+      options.options = [1, 2, ['three', 3]];
       options.value = 1;
       inspector.value = document.body;
       menu.options = [
-        { label: "Options", icon: "close", options: [
-          { label: "Option1", options: [
-            { label: "Suboption1", action: function(){ alert('Suboption1'); } },
-            { label: "Suboption2", action: function(msg){ alert(msg); }, arguments: ['Suboption2'] },
-            { label: "Suboption3", action: function(msg1, msg2){ alert(msg1+msg2); }, arguments: ['Suboption','3'] }
+        { label: 'Options', icon: 'close', options: [
+          { label: 'Option1', options: [
+            { label: 'Suboption1', action: function() { alert('Suboption1'); } },
+            { label: 'Suboption2', action: function(msg) { alert(msg); }, arguments: ['Suboption2'] },
+            { label: 'Suboption3', action: function(msg1, msg2) { alert(msg1 + msg2); }, arguments: ['Suboption', '3'] }
           ] },
-          { label: "Option2", options: [
-            { label: "Suboption4", action: alert, arguments: ['Suboption4'] },
-            { label: "Suboption5", action: alert, arguments: ['Suboption', '5'] },
-            { label: "Suboption6", action: alert, arguments: 'Suboption 6' }
+          { label: 'Option2', options: [
+            { label: 'Suboption4', action: alert, arguments: ['Suboption4'] },
+            { label: 'Suboption5', action: alert, arguments: ['Suboption', '5'] },
+            { label: 'Suboption6', action: alert, arguments: 'Suboption 6' }
           ] },
-          { label: "Option3", options: [
-            { label: "suboption7" },
-            { label: "suboption8" },
-            { label: "suboption9" }
-          ] } 
+          { label: 'Option3', options: [
+            { label: 'suboption7' },
+            { label: 'suboption8' },
+            { label: 'suboption9' }
+          ] }
         ] },
-        { type: "divider" },
-        { label: "Suboptions", autoExpand: false, options: [
-          { label: "Suboption1", options: [
-            { label: "Suboption2", horizontal: true, options: [
-              { label: "suboption3a" },
-              { label: "suboption3b" },
-              { label: "suboption3c" },
-              { label: "Suboption3d", options: [
-                { label: "Suboption4", options: [
-                  { label: "Suboption5", options: [
-                    { label: "Suboption6" }
+        { type: 'divider' },
+        { label: 'Suboptions', autoExpand: false, options: [
+          { label: 'Suboption1', options: [
+            { label: 'Suboption2', horizontal: true, options: [
+              { label: 'suboption3a' },
+              { label: 'suboption3b' },
+              { label: 'suboption3c' },
+              { label: 'Suboption3d', options: [
+                { label: 'Suboption4', options: [
+                  { label: 'Suboption5', options: [
+                    { label: 'Suboption6' }
                   ] } 
                 ] } 
               ] } 

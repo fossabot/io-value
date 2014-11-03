@@ -50,7 +50,7 @@
           this.fire('submenu-ready');
         },
 
-        onKeyPressed: function( event ) {
+        onKeyPressed: function(event) {
           event.stopPropagation();
 
           var scope = this;
@@ -67,7 +67,7 @@
             options[(options.indexOf(option) + 1) % (options.length)].focus();
           }
           function up() {
-            if(scope.parentNode.host.localName == 'menu-option') {
+            if (scope.parentNode.host.localName == 'menu-option') {
               scope.parentNode.host.focus();
             }
           }
@@ -78,7 +78,7 @@
               options = Array.prototype.slice.call(submenu[0].shadowRoot.querySelectorAll('menu-option'));
               if (options.length) {
                 options[0].focus();
-              }            
+              }
             }
           }
           function tab() {

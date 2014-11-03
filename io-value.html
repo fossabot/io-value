@@ -57,7 +57,7 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
       createElement: function() {
 
         if (this.value === undefined || this.value === null || this.value === NaN) {
-          this.shadowRoot.innerHTML = this.label + ': ' +  this.value;
+          this.shadowRoot.innerHTML = this.label + ': ' + this.value;
           this.iotype = '' + this.value;
           return;
         }
