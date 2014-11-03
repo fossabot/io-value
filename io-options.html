@@ -105,7 +105,7 @@ See `theme.css` for styling reference.
           if (this.options[i] instanceof Array && this.options[i].length == 2) {
             if (this.value == this.options[i][1]) {
               this.displayValue = this.options[i][0];
-              // if (oldValue) this.fire('io-changed', { input: this });
+              if (oldValue) this.fire('io-changed', { input: this });
               return;
             }
           } else {
@@ -114,7 +114,7 @@ See `theme.css` for styling reference.
               if (this.displayValue === null || this.displayValue === undefined) {
                 this.displayValue = 'None';
               }
-              // if (oldValue) this.fire('io-changed', { input: this });
+              if (oldValue) this.fire('io-changed', { input: this });
               return;
             }
           }
@@ -122,7 +122,7 @@ See `theme.css` for styling reference.
 
         this.displayValue = this.value;
       },
-      setValue: function( value ) {
+      setValue: function(value) {
         this.value = value;
       },
       optionsChanged: function() {
