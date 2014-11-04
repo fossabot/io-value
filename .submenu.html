@@ -21,33 +21,13 @@
       // },
 
     (function() {
-
-      var MARGIN = 8;
       
       Polymer({
-        publish: {
-          options: null,
-          top: 0,
-          left: 0,
-          parentWidth: 0,
-          parentHeight: 0,
-          autofocus: false
-        },
-
-        observe: {
-          'parentHeight parentWidth': 'nudge'
-        },
 
         ready: function() {
           this.setAttribute('tabindex', 0);
           this._onKeyPressed = this.onKeyPressed.bind(this);
           this.addEventListener('key-pressed', this._onKeyPressed);
-        },
-
-        domReady: function() {
-          this.nudge();
-          this.focus();
-          this.fire('submenu-ready');
         },
 
         onKeyPressed: function(event) {
@@ -115,25 +95,6 @@
               break;
           }
 
-        },
-
-        nudge: function() {
-          this.rect = this.getBoundingClientRect();
-          // Todo: check scroll
-          // nudge up
-          var bottomDist = (this.rect.bottom + MARGIN) - window.innerHeight;
-          if (bottomDist > 0) this.top = - bottomDist;
-          // nudge left
-          var rightDist = (this.rect.right - this.left) - window.innerWidth;
-          if (rightDist > 0 && this.parentWidth === 0) this.left = - rightDist;
-          else if (rightDist > - this.parentWidth) this.left = - this.rect.width;
-          // else this.left = this.parentWidth;
-        },
-        topChanged: function() {
-          this.style.top = this.top + 'px';
-        },
-        leftChanged: function() {
-          this.style.left = this.left + 'px';
         }
       });
     })();
