@@ -72,6 +72,8 @@ Example:
     var previousParent;
     var timeout;
 
+    var MARGIN = 14;
+
     var veil = document.createElement('div');
     document.body.appendChild(veil);
     veil.id = 'io-menu-veil';
@@ -207,6 +209,7 @@ Example:
         }
       },
       getHoveredItem: function(event) {
+        event.stopPropagation();
         if (event.changedTouches) event = event.changedTouches[0];
         tempX = event.pageX - window.pageXOffset;
         tempY = event.pageY - window.pageYOffset;
@@ -252,9 +255,10 @@ Example:
       expand: function(event) {
         if (!this.enabled) return; //todo
         if (this.requireCtrl && !event.ctrlKey) return; //todo
+        event.preventDefault();
         this.expanded = true;
-        if (this._parentNode) {
-          var rect = this._parentNode.getBoundingClientRect();
+        if (this._contextParent) {
+          var rect = this._contextParent.getBoundingClientRect();
           this.style.top = event.clientY + 2 - rect.top + 'px';
           this.style.left = event.clientX + 2 - rect.left + 'px';
         }
@@ -272,10 +276,31 @@ Example:
       expandedChanged: function() {
         veil.classList.toggle('visible', this.expanded);
         if (this.expanded) {
+          this.style.visibility = 'hidden';
+          setTimeout(this.nudge.bind(this), 1);
           veil.addEventListener('down', this._collapse);
         } else {
           veil.removeEventListener('down', this._collapse);
         }
+      },
+      nudge: function() {
+        var rect = this.getBoundingClientRect();
+        var style = window.getComputedStyle(this);
+        // nudge up
+        var bottomDist = rect.bottom + MARGIN - window.innerHeight;
+        if (bottomDist > 0) {
+          this.style.top = parseInt(style.top) - bottomDist + 'px';
+        }
+        // nudge left
+        var rightDist = rect.right + MARGIN - window.innerWidth;
+        if (rightDist > 0) {
+          if (this.parentNode.host.localName == 'io-menu-option') {
+            this.style.left = - rect.width + 'px';
+          } else {
+            this.style.left = parseInt(style.left) - rightDist + 'px';
+          }
+        };
+        this.style.visibility = 'visible';
       },
 
       updateOptionElems: function() {
@@ -287,13 +312,13 @@ Example:
       contextChanged: function() {
         this.autoExpand = this.context;
         if (this.context) {
-          this._parentNode = this.contextParent || this.parentNode;
-          this._parentNode.addEventListener('contextmenu', this._expand);
-          this._parentNode.addEventListener('click', this._expandPrimary);
+          this._contextParent = this.contextParent || this.parentNode;
+          this._contextParent.addEventListener('contextmenu', this._expand);
+          this._contextParent.addEventListener('click', this._expandPrimary);
         } else {
-          this._parentNode.removeEventListener('contextmenu', this._expand);
-          this._parentNode.removeEventListener('click', this._expandPrimary);
-          this._parentNode = null;
+          this._contextParent.removeEventListener('contextmenu', this._expand);
+          this._contextParent.removeEventListener('click', this._expandPrimary);
+          this._contextParent = null;
         }
       }
     });
