@@ -3,6 +3,8 @@
   display: inline-block;
   overflow: hidden;
   vertical-align: top;
+  position: relative;
+  overflow: visible;
 }
 :host > .io-bundle-value {
   cursor: pointer;
