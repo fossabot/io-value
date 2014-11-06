@@ -99,7 +99,7 @@ See `theme.css` for styling reference.
            */
           if (this.value != oldValue) this.fire('io-changed', { element: this, value: this.value });
         },
-        valueChanged: function () {
+        valueChanged: function() {
           if (this.value === undefined) {
             this.$.value.textContent = '';
           } else if (!this.focused) {
