@@ -78,7 +78,7 @@ This an element other io-* elements extend.
           'blur': 'blurAction'
         },
         focusAction: function(event) {
-          event.stopPropagation();
+          if (event) event.stopPropagation();
           setTimeout(function() { // TODO: unhack
             if (!this.focused) {
               selection = window.getSelection();

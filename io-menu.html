@@ -47,12 +47,12 @@ Example:
 <polymer-element name="io-menu" tabindex="0" class="io-bundle" oncontextmenu="return false;">
   <template>
     <link href="io-menu.css" rel="stylesheet" type="text/css" shim-shadowdom>
+    <io-string style="display: {{search ? 'block' : 'none'}}" id="search" value="{{searchString}}"></io-string>
     <template if="{{expanded || noHide}}">
       <template if="{{search}}">
-        <io-string id="search" value="{{searchString}}"></io-string>
         <hr />
       </template>
-      <template repeat="{{option in (filteredOptions || options)}}">
+      <template repeat="{{option in (filteredOptions.length ? filteredOptions : options)}}">
         <template if="{{option.type == 'divider'}}"><hr /></template>
         <template if="{{option.type != 'divider'}}">
           <io-menu-option
@@ -81,20 +81,6 @@ Example:
     var veil = document.createElement('div');
     document.body.appendChild(veil);
     veil.id = 'io-menu-veil';
-
-    var findOptions = function(options, searchString) {
-      var filteredOptions = [];
-      options.forEach(function(option) {
-        // TODO: use regex
-        if (option.label && (option.action || option.button) && option.label.toLowerCase().search(searchString.toLowerCase()) != -1) {
-          filteredOptions.push(option);
-        }
-        if (option.options) {
-          filteredOptions = filteredOptions.concat(findOptions(option.options, searchString));
-        }
-      });
-      return filteredOptions;
-    }
 
     /**
      * Fired when menu action is executed.
@@ -189,7 +175,7 @@ Example:
          */
         search: {value: false, reflect: true},
         searchString: {value: "", reflect: true},
-        filteredOptions: null
+        filteredOptions: []
 
       },
       isSubmenu: false,
@@ -304,6 +290,10 @@ Example:
         if (this.expanded) {
           this.style.visibility = 'hidden';
           setTimeout(this.nudge.bind(this), 1);
+          if (this.search) {
+            this.searchString = '';
+            this.$.search.focusAction();
+          }
           veil.addEventListener('down', this._collapse);
         } else {
           veil.removeEventListener('down', this._collapse);
@@ -347,11 +337,24 @@ Example:
           this._contextParent = null;
         }
       },
-      searchStringChanged: function() {
-        this.filteredOptions = findOptions(this.options, this.searchString);
-        if (!this.filteredOptions.length || !this.searchString) {
-          this.filteredOptions = null;
+
+      filterOptions: function(options) {
+        var filteredOptions = [];
+        if (this.searchString && options.length) {
+          options.forEach(function(option) {
+            // TODO: use regex
+            if (option.label && (option.action || option.button) && option.label.toLowerCase().search(this.searchString.toLowerCase()) != -1) {
+              filteredOptions.push(option);
+            }
+            if (option.options) {
+              filteredOptions = filteredOptions.concat(this.filterOptions(option.options));
+            }
+          }.bind(this));
         }
+        return filteredOptions;
+      },
+      searchStringChanged: function() {
+        this.filteredOptions = this.filterOptions(this.options);
       }
     });
 
