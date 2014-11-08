@@ -48,7 +48,11 @@ Example:
   <template>
     <link href="io-menu.css" rel="stylesheet" type="text/css" shim-shadowdom>
     <template if="{{expanded || noHide}}">
-      <template repeat="{{option in options}}">
+      <template if="{{search}}">
+        <io-string id="search" value="{{searchString}}"></io-string>
+        <hr />
+      </template>
+      <template repeat="{{option in (filteredOptions || options)}}">
         <template if="{{option.type == 'divider'}}"><hr /></template>
         <template if="{{option.type != 'divider'}}">
           <io-menu-option
@@ -77,6 +81,20 @@ Example:
     var veil = document.createElement('div');
     document.body.appendChild(veil);
     veil.id = 'io-menu-veil';
+
+    var findOptions = function(options, searchString) {
+      var filteredOptions = [];
+      options.forEach(function(option) {
+        // TODO: use regex
+        if (option.label && (option.action || option.button) && option.label.toLowerCase().search(searchString.toLowerCase()) != -1) {
+          filteredOptions.push(option);
+        }
+        if (option.options) {
+          filteredOptions = filteredOptions.concat(findOptions(option.options, searchString));
+        }
+      });
+      return filteredOptions;
+    }
 
     /**
      * Fired when menu action is executed.
@@ -164,7 +182,15 @@ Example:
          * @type boolean
          * @default false
          */
-        requireCtrl: {value: false, reflect: true}
+        requireCtrl: {value: false, reflect: true},
+
+        /**
+         * TODO
+         */
+        search: {value: false, reflect: true},
+        searchString: {value: "", reflect: true},
+        filteredOptions: null
+
       },
       isSubmenu: false,
       optionElems: null,
@@ -319,6 +345,12 @@ Example:
           this._contextParent.removeEventListener('contextmenu', this._expand);
           this._contextParent.removeEventListener('click', this._expandPrimary);
           this._contextParent = null;
+        }
+      },
+      searchStringChanged: function() {
+        this.filteredOptions = findOptions(this.options, this.searchString);
+        if (!this.filteredOptions.length || !this.searchString) {
+          this.filteredOptions = null;
         }
       }
     });

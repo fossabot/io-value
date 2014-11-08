@@ -73,7 +73,7 @@ See `theme.css` for styling reference.
             event.preventDefault();
             return;
           }
-          this.updateValue();
+          setTimeout(this.updateValue.bind(this), 1);
         },
         keyupAction: function(event) {
           event.stopPropagation();

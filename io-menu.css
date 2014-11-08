@@ -24,10 +24,10 @@
   top: 0;
   left: 100%;
 }
-:host([issubmenu][horizontal]) {
+/*:host([issubmenu][horizontal]) {
   left: 0;
   top: 100%;
-}
+}*/
 :host([horizontal])::shadow > io-menu-option::shadow > io-menu {
   top: 100%;
   left: 0;
@@ -41,4 +41,10 @@
 :host([horizontal])::shadow > hr {
   display: none;
   /* TODO: implement horizontal divider */
+}
+:host::shadow > #search {
+  display: block;
+}
+:host > #search::shadow > .io-bundle-value:empty:after {  
+  content: "Search...";
 }
