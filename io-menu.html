@@ -223,8 +223,17 @@ Example:
       getHoveredItem: function(event) {
         event.stopPropagation();
         if (event.changedTouches) event = event.changedTouches[0];
+
+        // var rect = this.getBoundingClientRect();
+        // console.log(rect.top, tempY);
+        // if (rect.top < 0 && tempY < 100) {
+        //   var style = window.getComputedStyle(this);
+        //   this.style.top = parseInt(style.top) + 2 + 'px';
+        // }
+
         tempX = event.pageX - window.pageXOffset;
         tempY = event.pageY - window.pageYOffset;
+
         if (this.horizontal) {
           tempV = Math.abs(tempX - x) - Math.abs(tempY - y);
         } else {
@@ -271,8 +280,8 @@ Example:
         this.expanded = true;
         if (this._contextParent) {
           var rect = this._contextParent.getBoundingClientRect();
-          this.style.top = event.clientY + 2 - rect.top + 'px';
-          this.style.left = event.clientX + 2 - rect.left + 'px';
+          this.style.top = event.y + 2 - rect.top + 'px';
+          this.style.left = event.x + 2 - rect.left + 'px';
         }
       },
       expandPrimary: function(event) {
@@ -316,11 +325,12 @@ Example:
             this.style.left = parseInt(style.left) - rightDist + 'px';
           }
         };
+
         this.style.visibility = 'visible';
       },
 
       updateOptionElems: function() {
-        this.optionElems = this.shadowRoot.querySelectorAll('io-menu-option');
+        this.optionElems = this.querySelectorAll('* /deep/ io-menu-option');
         for (var i = this.optionElems.length; i--;) {
           this.optionElems[i].update();
         }
@@ -328,7 +338,7 @@ Example:
       contextChanged: function() {
         this.autoExpand = this.context;
         if (this.context) {
-          this._contextParent = this.contextParent || this.parentNode;
+          this._contextParent = this.contextParent || this.parentNode.host || this.parentNode;
           this._contextParent.addEventListener('contextmenu', this._expand);
           this._contextParent.addEventListener('click', this._expandPrimary);
         } else {
@@ -343,7 +353,7 @@ Example:
         if (this.searchString && options.length) {
           options.forEach(function(option) {
             // TODO: use regex
-            if (option.label && (option.action || option.button) && option.label.toLowerCase().search(this.searchString.toLowerCase()) != -1) {
+            if (option.label && option.label.toLowerCase().search(this.searchString.toLowerCase()) != -1) {
               filteredOptions.push(option);
             }
             if (option.options) {
