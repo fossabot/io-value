@@ -105,6 +105,15 @@ See `theme.css` for styling reference.
           } else if (!this.focused) {
             this.$.value.textContent = this.value;
           }
+        },
+        disabledChanged: function() {
+          if (this.disabled) {
+            this.$.value.removeAttribute('tabindex');
+            this.$.value.removeAttribute('contenteditable');
+          } else {
+            this.$.value.setAttribute('tabindex', 0);
+            this.$.value.setAttribute('contenteditable', true);
+          }
         }
       });
 
