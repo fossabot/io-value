@@ -76,15 +76,6 @@ __Note__: You can click and drag to change the value or double-click to focus an
         publish: {
 
           /**
-           * Input value.
-           *
-           * @attribute value
-           * @type number
-           * @default 0
-           */
-          value: 0,
-
-          /**
            * Minimum value.
            *
            * @attribute min
@@ -144,12 +135,13 @@ __Note__: You can click and drag to change the value or double-click to focus an
          * @property displayValue
          * @type number
          */
-        displayValue: 0,
+         // TODO: convert to immediateValue from io-base
+        displayValue: null,
         focused: false,
 
         ready: function() {
+          this.value = this.value || 0;
           this.stepChanged();
-          this.displayValueChanged();
         },
         keyupAction: function(event) {
           event.stopPropagation();

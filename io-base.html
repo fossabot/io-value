@@ -52,6 +52,39 @@ This an element other io-* elements extend.
         publish: {
 
           /**
+           * Input value.
+           *
+           * @attribute value
+           * @default null
+           */
+          value: null,
+
+          /**
+           * Input value to be one-way boud to value attribute.
+           *
+           * @attribute inValue
+           * @default null
+           */
+          inValue: null,
+
+          /**
+           * Immediate value to be updated on each key stroke.
+           *
+           * @attribute immediateValue
+           * @default null
+           */
+          immediateValue: null,
+
+          /**
+           * Determines value is updated from immediateValue on each key stroke
+           *
+           * @attribute updateImmediate
+           * @type boolean
+           * @default false
+           */
+          updateImmediate: {value: false, reflect: true},
+
+          /**
            * Determines if the input can be edited by user action.
            *
            * @attribute disabled
@@ -91,12 +124,23 @@ This an element other io-* elements extend.
           }.bind(this), 100);
         },
         blurAction: function() {
+          this.value = this.immediateValue;
           selection = window.getSelection();
           selection.removeAllRanges();
           this.focused = false;
         },
         labelClicked: function() {
           this.fire('io-label-clicked', {label: this.label, value: this.value});
+        },
+        inValueChanged: function() {
+          if (typeof this.inValue !== 'object') {
+            this.value = this.inValue;
+          }
+        },
+        immediateValueChanged: function() {
+          if (this.updateImmediate) {
+            this.value = this.immediateValue;
+          }
         }
       });
 

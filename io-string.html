@@ -44,36 +44,24 @@ See `theme.css` for styling reference.
     (function() {
 
       var invalidKeys = [13]; // enter
-      var oldValue;
-
+      
       Polymer({
-
-        publish: {
-
-          /**
-           * Input value.
-           *
-           * @attribute value
-           * @type string
-           * @default ''
-           */
-          value: ''
-
-        },
 
         eventDelegates: {
           'keydown': 'keydownAction',
           'keyup': 'keyupAction',
           'tap': 'tapAction'
         },
-
+        ready: function() {
+          this.value = this.value || '';
+        },
         keydownAction: function(event) {
           event.stopPropagation();
           if (this.disabled || invalidKeys.indexOf(event.which) != -1) {
             event.preventDefault();
             return;
           }
-          setTimeout(this.updateValue.bind(this), 1);
+          setTimeout(this.updateImmediateValue.bind(this), 1);
         },
         keyupAction: function(event) {
           event.stopPropagation();
@@ -86,18 +74,8 @@ See `theme.css` for styling reference.
           this.value = this.$.value.textContent;
           this.super();
         },
-        updateValue: function() {
-          oldValue = this.value;
-          this.value = this.$.value.textContent;
-          /**
-           * Fired when an value attribute is changed by a user action
-           * 
-           * @event io-changed
-           * @param {Object} detail
-           * @param {Object} detail.element the input element
-           * @param {Object} detail.value new value
-           */
-          if (this.value != oldValue) this.fire('io-changed', { element: this, value: this.value });
+        updateImmediateValue: function() {
+          this.immediateValue = this.$.value.textContent;
         },
         valueChanged: function() {
           if (this.value === undefined) {
@@ -105,6 +83,15 @@ See `theme.css` for styling reference.
           } else if (!this.focused) {
             this.$.value.textContent = this.value;
           }
+          /**
+           * Fired when an value attribute is changed by a user action
+           *
+           * @event io-changed
+           * @param {Object} detail
+           * @param {Object} detail.element the input element
+           * @param {Object} detail.value new value
+           */
+          this.fire('io-changed', { element: this, value: this.value });
         },
         disabledChanged: function() {
           if (this.disabled) {
