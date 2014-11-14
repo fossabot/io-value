@@ -128,6 +128,16 @@ This an element other io-* elements extend.
           selection = window.getSelection();
           selection.removeAllRanges();
           this.focused = false;
+          /**
+           * Fired when an value attribute is changed by a user action
+           *
+           * @event io-changed
+           * @param {Object} detail
+           * @param {Object} detail.element the input element
+           * @param {Object} detail.value new value
+           */
+           // TODO: remove from other elements
+          this.fire('io-changed', { element: this, value: this.value });
         },
         labelClicked: function() {
           this.fire('io-label-clicked', {label: this.label, value: this.value});
@@ -140,7 +150,19 @@ This an element other io-* elements extend.
         immediateValueChanged: function() {
           if (this.updateImmediate) {
             this.value = this.immediateValue;
+            this.fire('io-changed', { element: this, value: this.value });
           }
+        },
+        valueChanged: function() {
+          /**
+           * Fired when an value attribute is changed.
+           *
+           * @event value-changed
+           * @param {Object} detail
+           * @param {Object} detail.element the input element
+           * @param {Object} detail.value new value
+           */
+          this.fire('value-changed', { element: this, value: this.value });
         }
       });
 
