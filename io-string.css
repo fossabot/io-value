@@ -9,5 +9,6 @@
   vertical-align: top;
 }
 :host > .io-bundle-value:empty:after {	
-  content: "_";
+  content: "{{placeholder}}";
+  opacity: 0.25;
 }

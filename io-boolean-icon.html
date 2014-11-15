@@ -62,35 +62,39 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
          *
          * @attribute trueIcon
          * @type string
-         * @default 'check-box-outline'
+         * @default 'done'
          */
-        trueIcon: 'check-box-outline',
+        trueIcon: 'done',
         
         /**
          * String to display when value is false.
          *
          * @attribute falseIcon
          * @type string
-         * @default 'check-box-outline-blank'
+         * @default 'clear'
          */
-        falseIcon: 'check-box-outline-blank'
+        falseIcon: 'clear'
 
       },
 
       eventDelegates: {
-        'keydown': 'keydownAction',
-        'down': 'downAction'
+        'keyup': 'keyupAction',
+        'down': 'downAction',
+        'tap': 'tapAction'
       },
 
       validKeys: [13, 32], // enter, spacebar
 
       downAction: function(event) {
+        event.preventDefault(); // prevent focus
+      },
+      tapAction: function(event) {
         if (this.disabled) return;
         event.preventDefault();
         event.stopPropagation();
         this.toggle();
       },
-      keydownAction: function(event) {
+      keyupAction: function(event) {
         if (this.disabled || this.validKeys.indexOf(event.which) == -1) return;
         event.preventDefault();
         event.stopPropagation();
@@ -104,15 +108,7 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
        */
       toggle: function() {
         this.value = !this.value;
-        /**
-         * Fired when value attribute is changed by user action
-         *
-         * @event io-changed
-         * @param {Object} detail
-         * @param {Object} detail.element the input element
-         * @param {Object} detail.value new value
-         */
-        this.fire('io-changed', { element: this, value: this.value });
+        this.fireValueSet();
       }
 
     });

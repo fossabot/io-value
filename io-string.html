@@ -35,8 +35,8 @@ See `theme.css` for styling reference.
 
 <polymer-element name="io-string" extends="io-base">
   <template>
-    <shadow></shadow>
     <link rel="stylesheet" href="io-string.css" shim-shadowdom>
+    <shadow></shadow>
     <span id="value" class="io-bundle-value" tabindex="0" spellcheck="false" contenteditable></span>
   </template>
   <script type="text/javascript">
@@ -47,6 +47,20 @@ See `theme.css` for styling reference.
       
       Polymer({
 
+        publish: {
+          
+          /**
+           * Input value.
+           *
+           * @attribute value
+           * @type string
+           * @default ''
+           */
+          value: '',
+
+          placeholder: "string",
+        },
+
         eventDelegates: {
           'keydown': 'keydownAction',
           'keyup': 'keyupAction',
@@ -54,43 +68,30 @@ See `theme.css` for styling reference.
         },
         keydownAction: function(event) {
           event.stopPropagation();
+        },
+        keyupAction: function(event) {
+          event.stopPropagation();
           if (this.disabled || invalidKeys.indexOf(event.which) != -1) {
             event.preventDefault();
             return;
           }
-          setTimeout(this.updateImmediateValue.bind(this), 1);
-        },
-        keyupAction: function(event) {
-          event.stopPropagation();
+          this.immediateValue = this.$.value.textContent;
+          if (this.updateImmediate) this.fireValueSet();
         },
         tapAction: function(event) {
           event.stopPropagation();
           this.focusAction(event);
         },
-        blurAction: function(event) {
-          this.value = this.$.value.textContent;
-          this.super();
-        },
-        updateImmediateValue: function() {
-          this.immediateValue = this.$.value.textContent;
-        },
         valueChanged: function() {
           this.super();
-          if (this.value === undefined) {
-            this.$.value.textContent = '';
-          } else if (!this.focused) {
-            this.$.value.textContent = this.value;
+          if (!this.focused) {
+            if (this.value === undefined) {
+              this.$.value.textContent = '';
+            } else {
+              this.$.value.textContent = this.value;
+            }
           }
         },
-        disabledChanged: function() {
-          if (this.disabled) {
-            this.$.value.removeAttribute('tabindex');
-            this.$.value.removeAttribute('contenteditable');
-          } else {
-            this.$.value.setAttribute('tabindex', 0);
-            this.$.value.setAttribute('contenteditable', true);
-          }
-        }
       });
 
     })();
