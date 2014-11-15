@@ -76,6 +76,30 @@ __Note__: You can click and drag to change the value or double-click to focus an
         publish: {
 
           /**
+<<<<<<< Updated upstream
+||||||| merged common ancestors
+           * Input value.
+           *
+           * @attribute value
+           * @type number
+           * @default 0
+           */
+          value: 0,
+
+          /**
+=======
+           * Input value.
+           *
+           * @attribute value
+           * @type number
+           * @default 0
+           */
+          value: 0,
+
+          immediateValue: {value: 0, reflect: true},
+
+          /**
+>>>>>>> Stashed changes
            * Minimum value.
            *
            * @attribute min
@@ -132,15 +156,15 @@ __Note__: You can click and drag to change the value or double-click to focus an
 
         /**
          * Rounded display value
-         * @property displayValue
+         * @property immediateValue
          * @type number
          */
-         // TODO: convert to immediateValue from io-base
-        displayValue: null,
+        immediateValue: 0,
         focused: false,
 
         ready: function() {
           this.stepChanged();
+          this.immediateValueChanged();
         },
         keyupAction: function(event) {
           event.stopPropagation();
@@ -224,7 +248,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
           selection = window.getSelection();
           selection.removeAllRanges();
           range = document.createRange();
-          this.$.value.textContent = this.displayValue;
+          this.$.value.textContent = this.immediateValue;
           range.selectNodeContents(this.$.value);
           selection.addRange(range);
           this.focused = true;
@@ -236,8 +260,8 @@ __Note__: You can click and drag to change the value or double-click to focus an
           this.focused = false;
           this.valueChanged();
           this.readValue();
-          this._match = this.displayValue.toString().match(this.regEx);
-          this.$.value.textContent = this._match ? parseFloat(this._match[1]) : this.displayValue;
+          this._match = this.immediateValue.toString().match(this.regEx);
+          this.$.value.textContent = this._match ? parseFloat(this._match[1]) : this.immediateValue;
         },
         readValue: function() {
           if (!isNaN(this.$.value.textContent) && (this.$.value.textContent.slice(-1) != '.') && this.$.value.textContent != '') {
@@ -252,9 +276,9 @@ __Note__: You can click and drag to change the value or double-click to focus an
           if (this.value > this.max) this.max = this.value;
           // if (!this.focused) {
             if (this.toDeg)
-              this.displayValue = this.value / Math.PI * 180;//|| '';
+              this.immediateValue = this.value / Math.PI * 180;//|| '';
             else
-              this.displayValue = this.value;// || '';
+              this.immediateValue = this.value;// || '';
           // }
         },
         disabledChanged: function() {
@@ -266,10 +290,10 @@ __Note__: You can click and drag to change the value or double-click to focus an
             this.$.value.setAttribute('contenteditable', true);
           }
         },
-        displayValueChanged: function() {
-          this._match = this.displayValue.toString().match(this.regEx);
+        immediateValueChanged: function() {
+          this._match = this.immediateValue.toString().match(this.regEx);
           if (!this.focused) {
-            this.$.value.textContent = this._match ? parseFloat(this._match[1]) : this.displayValue;
+            this.$.value.textContent = this._match ? parseFloat(this._match[1]) : this.immediateValue;
           }
         },
         toDegChanged: function() {

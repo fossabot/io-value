@@ -18,9 +18,7 @@
   "license": "Apache 2.0",
   "dependencies": {
     "polymer": "Polymer/polymer#~0.5.1",
-    "core-icons": "Polymer/core-icons#~0.5.1"
-  },
-  "devDependencies": {
+    "core-icons": "Polymer/core-icons#~0.5.1",
     "show-and-tell": "arodic/show-and-tell#~0.4.4"
   }
 }

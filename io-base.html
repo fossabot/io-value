@@ -29,7 +29,7 @@ This an element other io-* elements extend.
   <template>
     <link rel="stylesheet" href="io-base.css" shim-shadowdom>
     <template if="{{label != ''}}">
-      <span class="io-bundle-label" on-tap="{{labelClicked}}">{{label}}</span>:
+      <span class="io-bundle-label" on-tap="{{labelClicked}}">{{label}}</span>
     </template>
   </template>
   <script type="text/javascript">
@@ -100,7 +100,7 @@ This an element other io-* elements extend.
            * @type string
            * @default ''
            */
-          label: ''
+          label: {value: '', reflect: true},
 
         },
 
@@ -121,7 +121,7 @@ This an element other io-* elements extend.
               selection.addRange(range);
               this.focused = true;
             }
-          }.bind(this), 100);
+          }.bind(this), 10);
         },
         blurAction: function() {
           this.value = this.immediateValue;
