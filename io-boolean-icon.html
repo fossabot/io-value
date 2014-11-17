@@ -47,51 +47,43 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
     Polymer({
 
       publish: {
-
-        /**
-         * Input value.
-         *
-         * @attribute value
-         * @type boolean
-         * @default false
-         */
-        value: false,
-
         /**
          * String to display when value is true.
          *
          * @attribute trueIcon
          * @type string
-         * @default 'check-box-outline'
+         * @default 'done'
          */
-        trueIcon: 'check-box-outline',
+        trueIcon: 'done',
         
         /**
          * String to display when value is false.
          *
          * @attribute falseIcon
          * @type string
-         * @default 'check-box-outline-blank'
+         * @default 'clear'
          */
-        falseIcon: 'check-box-outline-blank'
-
-      },
-
-      eventDelegates: {
-        'keydown': 'keydownAction',
-        'down': 'downAction'
+        falseIcon: 'clear'
       },
 
       validKeys: [13, 32], // enter, spacebar
 
+      eventDelegates: {
+        'keydown': 'keydownAction',
+        'down': 'downAction',
+        'tap': 'tapAction'
+      },
+
       downAction: function(event) {
-        if (this.disabled) return;
+        event.preventDefault(); // prevent focus
+      },
+      tapAction: function(event) {
         event.preventDefault();
         event.stopPropagation();
         this.toggle();
       },
       keydownAction: function(event) {
-        if (this.disabled || this.validKeys.indexOf(event.which) == -1) return;
+        if (this.validKeys.indexOf(event.which) == -1) return;
         event.preventDefault();
         event.stopPropagation();
         this.toggle();
@@ -104,15 +96,7 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
        */
       toggle: function() {
         this.value = !this.value;
-        /**
-         * Fired when value attribute is changed by user action
-         *
-         * @event io-changed
-         * @param {Object} detail
-         * @param {Object} detail.element the input element
-         * @param {Object} detail.value new value
-         */
-        this.fire('io-changed', { element: this, value: this.value });
+        this.fireValueSet();
       }
 
     });

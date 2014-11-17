@@ -36,15 +36,12 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
   <script type="text/javascript">
     Polymer({
 
+      // TODO: automatically bind matching attributes
+
       publish: {
         value: undefined,
-        // editable: true,
-        // min: -Infinity,
-        // max: Infinity,
-        // step: -1,
-        // toDeg: false,
+        disabled: false,
         label: '',
-        // labeled: true,
         iotype: {value: null, reflect: true}
       },
 
@@ -56,35 +53,39 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
 
       createElement: function() {
 
+        // value is invalid
         if (this.value === undefined || this.value === null || this.value === NaN) {
           this.shadowRoot.innerHTML = this.label + ': ' + this.value;
           this.iotype = '' + this.value;
           return;
         }
 
+        // value is a function
         if (typeof this.value == 'function') {
           this.iotype = 'function';
           this.shadowRoot.innerHTML = this.label + ': function';
           return;
         }
 
+        // value is one of supported types
         if (typeof this.value == 'boolean') type = 'io-boolean';
         else if (typeof this.value == 'number') type = 'io-number';
         else if (typeof this.value == 'string') type = 'io-string';
         else if (typeof this.value == 'object') type = 'io-object';
+
+        // If type is supported and not same as previous
         if (type && this.iotype != type) {
           this.shadowRoot.innerHTML = '';
           this.iotype = type;
           this.io = document.createElement(type);
           this.shadowRoot.appendChild(this.io);
           this.io.bind('value', new PathObserver(this, 'value'));
-          // TODO remove?
-          // this.io.bind('editable', new PathObserver(this, 'editable'));
+          this.io.bind('disabled', new PathObserver(this, 'disabled'));
+          this.io.bind('label', new PathObserver(this, 'label'));
           // this.io.bind('min', new PathObserver(this, 'min'));
           // this.io.bind('max', new PathObserver(this, 'max'));
           // this.io.bind('step', new PathObserver(this, 'step'));
           // this.io.bind('toDeg', new PathObserver(this, 'toDeg'));
-          this.io.bind('label', new PathObserver(this, 'label'));
           // this.io.bind('labeled', new PathObserver(this, 'labeled'));
           return;
         }

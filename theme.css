@@ -4,7 +4,8 @@ html /deep/ .io-bundle-value {
   /*color: rgb(8, 128, 12);*/
 }
 html /deep/ .io-bundle-value:focus {
-  outline: 0;
+  outline-color: invert;
+  outline-offset: -1px;
 }
 
 html /deep/ io-object::shadow > .io-bundle-value {
@@ -27,7 +28,8 @@ html /deep/ io-menu {
   box-shadow: 0.2em 0.2em 0.1em rgba(0, 0, 0, 0.25);
 }
 
-html /deep/ io-menu::shadow > #search {
+html /deep/ io-menu::shadow > #search::shadow > .io-bundle-value {
+  display: block;
   border: 1px solid rgba(0, 0, 0, 0.25);
   margin: 0.25em;
   padding: 0.3em;

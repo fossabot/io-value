@@ -47,7 +47,7 @@ Example:
 <polymer-element name="io-menu" tabindex="0" class="io-bundle" oncontextmenu="return false;">
   <template>
     <link href="io-menu.css" rel="stylesheet" type="text/css" shim-shadowdom>
-    <io-string style="display: {{search ? 'block' : 'none'}}" id="search" value="{{searchString}}"></io-string>
+    <io-string style="display: {{search ? 'block' : 'none'}}" id="search" value="{{searchString}}" updateImmediate></io-string>
     <template if="{{expanded || noHide}}">
       <template if="{{search}}">
         <hr />

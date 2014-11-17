@@ -1,25 +1,29 @@
-:host > #value {
+:host > .io-bundle-value {
   vertical-align: top;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
-:host(:not([inline])) > #value {
+:host(:not([inline])) > .io-bundle-value {
   display: inline-block;
 }
-:host(:not([inline])) > #value > io-value {
+:host(:not([inline])) > .io-bundle-value > io-value {
   display: block;
   margin-left: 0.5em;
 }
-:host(:not([naked])) > #value > io-value:not(:last-of-type)::after {
+:host(:not([naked])) > .io-bundle-value > io-value:not(:last-of-type)::after {
   content: ', ';
 }
-:host(:not([naked])) > #value::before {
+:host(:not([naked])) > .io-bundle-value::before {
   content: '{';
 }
-:host(:not([naked])) > #value::after {
+:host(:not([naked])) > .io-bundle-value::after {
   content: '}';
 }
-:host(:not([naked]).array) > #value::before {
+:host(:not([naked]).array) > .io-bundle-value::before {
   content: '[';
 }
-:host(:not([naked]).array) > #value::after {
+:host(:not([naked]).array) > .io-bundle-value::after {
   content: ']';
 }

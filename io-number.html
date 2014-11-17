@@ -43,16 +43,6 @@ __Note__: You can click and drag to change the value or double-click to focus an
   </template>
   <script type="text/javascript">
 
-    /**
-     * Fired when an value attribute is changed by a user action
-     * 
-     * @event io-changed
-     * @param {Object} detail
-     * @param {Object} detail.element the input element
-     * @param {Object} detail.value new value
-     * @param {Object} detail.delta value - oldValue delta
-     */
-
     (function() {
 
       var style = document.createElement('style');
@@ -61,20 +51,24 @@ __Note__: You can click and drag to change the value or double-click to focus an
       style.appendChild(document.createTextNode(css));
       document.getElementsByTagName('head')[0].appendChild(style);
 
-      var validKeys = [46, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 189, 190, 37, 38, 39, 40, 8, 9];
+      var isValid = function(string) {
+        if (!isNaN(string) && (string.slice(-1) != '.') && string != '') {
+          return true;
+        } else {
+          return false;
+        }
+      };
 
-      var oldValue, selection, range, rect;
+      var validKeys = [46, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 189, 190, 37, 38, 39, 40, 8, 9];
 
       var delta = 0;
       var deltaStep = 5;
-      var x = 0;
-      var y = 0;
-      var xOld = 0;
+      var prevClientX = 0;
+      var tempVal;
 
       Polymer({
 
         publish: {
-
           /**
            * Minimum value.
            *
@@ -111,8 +105,9 @@ __Note__: You can click and drag to change the value or double-click to focus an
            * @type boolean
            * @default false
            */
-          toDeg: false
+          toDeg: {value: false, reflect: true },
 
+          placeholder: "number"
         },
 
         observe: {
@@ -120,157 +115,96 @@ __Note__: You can click and drag to change the value or double-click to focus an
         },
 
         eventDelegates: {
-          'keydown': 'keydownAction',
+          // 'keydown': 'keydownAction',
           'keyup': 'keyupAction',
-          'contextmenu': 'contextAction',
-          'dblclick': 'contextAction',
+          'contextmenu': 'tapAction',
+          'dblclick': 'tapAction',
           'down': 'downAction',
           'up': 'upAction',
           'track': 'trackAction'
-          // 'tap': 'tapAction',
         },
-
-        /**
-         * Rounded display value
-         * @property displayValue
-         * @type number
-         */
-         // TODO: convert to immediateValue from io-base
-        displayValue: null,
-        focused: false,
 
         ready: function() {
           this.stepChanged();
         },
+        // keydownAction: function(event) {
+          // event.stopPropagation();
+        // },
         keyupAction: function(event) {
           event.stopPropagation();
-        },
-        keydownAction: function(event) {
-          event.stopPropagation();
-          // TODO: number keyboard on mobile
-          event.stopPropagation();
-          if (event.which == 13) {
-            this.blurValue();
+          if (validKeys.indexOf(event.which) == -1 || !isValid(this.$.value.textContent)) {
+            event.preventDefault();
             return;
           }
-          oldValue = this.value;
-          if (this.disabled || validKeys.indexOf(event.which) == -1) {
-            return;
+          if (this.toDeg) {
+            this.immediateValue = parseFloat(this.$.value.textContent) / 180 * Math.PI;
+          } else {
+            this.immediateValue = parseFloat(this.$.value.textContent);
           }
-          setTimeout(function() {
-            this.readValue();
-            this.fire('io-changed',
-              { element: this,
-                value: this.value,
-                delta: this.value - oldValue
-              }
-            );
-          }.bind(this), 1);
+          if (this.updateImmediate) this.fireValueSet();
         },
-        blurValue: function() {
-          this.$.value.blur();
+        tapAction: function(event) {
+          // event.stopPropagation();
+          this.focusAction(event);
         },
-        clampValue: function() {
-          this.value = Math.min(Math.max(this.value, this.min), this.max);
-        },
-        contextAction: function(event) {
-          event.preventDefault();
-          this.$.value.focus();
-        },
+
         downAction: function(event) {
-          event.stopPropagation();
+          // event.stopPropagation();
           event.preventDefault();
           document.body.classList.toggle('ew-resize', true);
-          xOld = event.clientX;
+          prevClientX = event.clientX;
           delta = 0;
         },
         upAction: function(event) {
-          event.stopPropagation();
-          event.preventDefault();
+          // event.stopPropagation();
+          // event.preventDefault();
+          if (this.value === null) this.focusAction(event);
           document.body.classList.toggle('ew-resize', false);
+          this.blurAction(event);
         },
         trackAction: function(event) {
-          event.stopPropagation();
-          event.preventDefault();
-          oldValue = this.value;
-          x = event.clientX;
-          y = event.clientY;
-          delta += x - xOld;
-          xOld = event.clientX;
+          // event.stopPropagation();
+          // event.preventDefault();
+          delta += event.clientX - prevClientX;
+          prevClientX = event.clientX;
           while (Math.abs(delta) > deltaStep) {
             if (delta > deltaStep) {
-              if (this.toDeg) this.value += Math.pow(10, this.step) / 180 * Math.PI;
-              else this.value += Math.pow(10, this.step);
+              this.immediateValue += this.convertToRad(Math.pow(10, this.step));
               delta -= deltaStep;
-            }
-            if (delta < -deltaStep) {
-              if (this.toDeg) this.value -= Math.pow(10, this.step) / 180 * Math.PI;
-              else this.value -= Math.pow(10, this.step);
+            } else if (delta < -deltaStep) {
+              this.immediateValue -= this.convertToRad(Math.pow(10, this.step));
               delta += deltaStep;
             }
           }
           this.clampValue();
-          if (this.value != oldValue) {
-            this.fire('io-changed',
-              { element: this,
-                value: this.value,
-                delta: this.value - oldValue
-              }
-            );
-          }
+          this.renderValue(this.immediateValue);
+          if (this.updateImmediate) this.fireValueSet();
         },
-        focusAction: function(event) {
-          event.stopPropagation();
-          selection = window.getSelection();
-          selection.removeAllRanges();
-          range = document.createRange();
-          this.$.value.textContent = this.displayValue;
-          range.selectNodeContents(this.$.value);
-          selection.addRange(range);
-          this.focused = true;
-        },
-        blurAction: function() {
-          this.readValue();
-          selection = window.getSelection();
-          selection.removeAllRanges();
-          this.focused = false;
-          this.valueChanged();
-          this.readValue();
-          this._match = this.displayValue.toString().match(this.regEx);
-          this.$.value.textContent = this._match ? parseFloat(this._match[1]) : this.displayValue;
-        },
-        readValue: function() {
-          if (!isNaN(this.$.value.textContent) && (this.$.value.textContent.slice(-1) != '.') && this.$.value.textContent != '') {
-            if (this.toDeg)
-              this.value = parseFloat(this.$.value.textContent) / 180 * Math.PI;
-            else
-              this.value = parseFloat(this.$.value.textContent);
-          }
+        clampValue: function() {
+          this.immediateValue = Math.min(Math.max(this.immediateValue, this.min), this.max);
         },
         valueChanged: function() {
-          if (this.value < this.min) this.min = this.value;
-          if (this.value > this.max) this.max = this.value;
-          // if (!this.focused) {
-            if (this.toDeg)
-              this.displayValue = this.value / Math.PI * 180;//|| '';
-            else
-              this.displayValue = this.value;// || '';
-          // }
-        },
-        disabledChanged: function() {
-          if (this.disabled) {
-            this.$.value.removeAttribute('tabindex');
-            this.$.value.removeAttribute('contenteditable');
-          } else {
-            this.$.value.setAttribute('tabindex', 0);
-            this.$.value.setAttribute('contenteditable', true);
-          }
-        },
-        displayValueChanged: function() {
-          this._match = this.displayValue.toString().match(this.regEx);
+          this.super();
           if (!this.focused) {
-            this.$.value.textContent = this._match ? parseFloat(this._match[1]) : this.displayValue;
+            if (this.value === undefined) {
+              this.$.value.textContent = '';
+            } else {
+              this.renderValue(this.value);
+            }
           }
+        },
+        renderValue: function(value) {
+          tempVal = this.convertToDeg(value);
+          this._match = tempVal.toString().match(this.regEx);
+          this.$.value.textContent = this._match ? parseFloat(this._match[1]) : tempVal;
+        },
+        convertToDeg: function(val) {
+          if (this.toDeg) return val / Math.PI * 180;
+          return val;
+        },
+        convertToRad: function(val) {
+          if (this.toDeg) return val / 180 * Math.PI;
+          return val;
         },
         toDegChanged: function() {
           this.valueChanged();

@@ -1,11 +1,14 @@
+:host([disabled]) {
+	pointer-events: none;
+}
 :host > .io-bundle-value {
   cursor: pointer;
   width: 1em;
   height: 1em;
-}
-:host > .io-bundle-value:focus {
-  /* TODO: temp fix */
-  background-color: rgba(0, 0, 0, 0.2); 
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 :host > .io-bundle-label {
   cursor: pointer;
