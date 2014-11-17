@@ -144,7 +144,8 @@ This an element other io-* elements extend.
         },
         inValueChanged: function() {
           if (typeof this.inValue !== 'object') {
-            this.value = this.inValue;
+            // TODO
+            this.value = JSON.parse(JSON.stringify(this.inValue));
           }
         },
         immediateValueChanged: function() {

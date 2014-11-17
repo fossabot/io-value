@@ -68,8 +68,8 @@ See `theme.css` for styling reference.
           this.focusAction(event);
         },
         blurAction: function(event) {
-          this.value = this.$.value.textContent;
           this.super();
+          this.value = this.$.value.textContent;
         },
         updateImmediateValue: function() {
           this.immediateValue = this.$.value.textContent;
