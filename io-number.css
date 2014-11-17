@@ -1,3 +1,6 @@
+:host([disabled]) {
+	pointer-events: none;
+}
 :host > .io-bundle-value {
   overflow-x: hidden;
   white-space: nowrap;
@@ -7,6 +10,7 @@
   min-width: 0.5em;
   display: inline-block;
   vertical-align: top;
+  cursor: text;
 }
 :host > .io-bundle-value:empty:after {	
   content: "{{placeholder}}";

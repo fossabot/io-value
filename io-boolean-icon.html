@@ -47,16 +47,6 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
     Polymer({
 
       publish: {
-
-        /**
-         * Input value.
-         *
-         * @attribute value
-         * @type boolean
-         * @default false
-         */
-        value: false,
-
         /**
          * String to display when value is true.
          *
@@ -74,28 +64,26 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
          * @default 'clear'
          */
         falseIcon: 'clear'
-
-      },
-
-      eventDelegates: {
-        'keyup': 'keyupAction',
-        'down': 'downAction',
-        'tap': 'tapAction'
       },
 
       validKeys: [13, 32], // enter, spacebar
+
+      eventDelegates: {
+        'keydown': 'keydownAction',
+        'down': 'downAction',
+        'tap': 'tapAction'
+      },
 
       downAction: function(event) {
         event.preventDefault(); // prevent focus
       },
       tapAction: function(event) {
-        if (this.disabled) return;
         event.preventDefault();
         event.stopPropagation();
         this.toggle();
       },
-      keyupAction: function(event) {
-        if (this.disabled || this.validKeys.indexOf(event.which) == -1) return;
+      keydownAction: function(event) {
+        if (this.validKeys.indexOf(event.which) == -1) return;
         event.preventDefault();
         event.stopPropagation();
         this.toggle();

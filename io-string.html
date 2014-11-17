@@ -48,16 +48,6 @@ See `theme.css` for styling reference.
       Polymer({
 
         publish: {
-          
-          /**
-           * Input value.
-           *
-           * @attribute value
-           * @type string
-           * @default ''
-           */
-          value: '',
-
           placeholder: "string",
         },
 
@@ -70,8 +60,8 @@ See `theme.css` for styling reference.
           event.stopPropagation();
         },
         keyupAction: function(event) {
-          event.stopPropagation();
-          if (this.disabled || invalidKeys.indexOf(event.which) != -1) {
+          // event.stopPropagation();
+          if (invalidKeys.indexOf(event.which) != -1) {
             event.preventDefault();
             return;
           }
@@ -79,7 +69,7 @@ See `theme.css` for styling reference.
           if (this.updateImmediate) this.fireValueSet();
         },
         tapAction: function(event) {
-          event.stopPropagation();
+          // event.stopPropagation();
           this.focusAction(event);
         },
         valueChanged: function() {

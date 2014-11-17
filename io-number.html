@@ -69,23 +69,6 @@ __Note__: You can click and drag to change the value or double-click to focus an
       Polymer({
 
         publish: {
-
-          /**
-           * Input value.
-           *
-           * @attribute number
-           * @default 0
-           */
-          value: 0,
-
-          /**
-           * Immediate value to be updated on each key stroke.
-           *
-           * @attribute immediateValue
-           * @default 0
-           */
-          immediateValue: 0,
-
           /**
            * Minimum value.
            *
@@ -125,7 +108,6 @@ __Note__: You can click and drag to change the value or double-click to focus an
           toDeg: {value: false, reflect: true },
 
           placeholder: "number"
-
         },
 
         observe: {
@@ -133,7 +115,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
         },
 
         eventDelegates: {
-          'keydown': 'keydownAction',
+          // 'keydown': 'keydownAction',
           'keyup': 'keyupAction',
           'contextmenu': 'tapAction',
           'dblclick': 'tapAction',
@@ -145,12 +127,12 @@ __Note__: You can click and drag to change the value or double-click to focus an
         ready: function() {
           this.stepChanged();
         },
-        keydownAction: function(event) {
-          event.stopPropagation();
-        },
+        // keydownAction: function(event) {
+          // event.stopPropagation();
+        // },
         keyupAction: function(event) {
           event.stopPropagation();
-          if (this.disabled || validKeys.indexOf(event.which) == -1 || !isValid(this.$.value.textContent)) {
+          if (validKeys.indexOf(event.which) == -1 || !isValid(this.$.value.textContent)) {
             event.preventDefault();
             return;
           }
@@ -162,26 +144,27 @@ __Note__: You can click and drag to change the value or double-click to focus an
           if (this.updateImmediate) this.fireValueSet();
         },
         tapAction: function(event) {
-          event.stopPropagation();
+          // event.stopPropagation();
           this.focusAction(event);
         },
 
         downAction: function(event) {
-          event.stopPropagation();
+          // event.stopPropagation();
           event.preventDefault();
           document.body.classList.toggle('ew-resize', true);
           prevClientX = event.clientX;
           delta = 0;
         },
         upAction: function(event) {
-          event.stopPropagation();
-          event.preventDefault();
+          // event.stopPropagation();
+          // event.preventDefault();
+          if (this.value === null) this.focusAction(event);
           document.body.classList.toggle('ew-resize', false);
           this.blurAction(event);
         },
         trackAction: function(event) {
-          event.stopPropagation();
-          event.preventDefault();
+          // event.stopPropagation();
+          // event.preventDefault();
           delta += event.clientX - prevClientX;
           prevClientX = event.clientX;
           while (Math.abs(delta) > deltaStep) {
