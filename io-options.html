@@ -92,14 +92,15 @@ See `theme.css` for styling reference.
 
       expand: function(event) {
         this.$.menu.expanded = true;
-        setTimeout(function(){
+        setTimeout(function() {
           var firstOption = this.$.menu.querySelector('* /deep/ io-menu-option');
           if (firstOption) firstOption.expanded = true;
-        }.bind(this),1);
+        }.bind(this), 1);
       },
 
       setValue: function(value) {
         this.value = value;
+        this.immediateValue = value;
         this.fireValueSet();
       },
 
