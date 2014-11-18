@@ -115,7 +115,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
         },
 
         eventDelegates: {
-          // 'keydown': 'keydownAction',
+          'keydown': 'keydownAction',
           'keyup': 'keyupAction',
           'contextmenu': 'tapAction',
           'dblclick': 'tapAction',
@@ -127,9 +127,9 @@ __Note__: You can click and drag to change the value or double-click to focus an
         ready: function() {
           this.stepChanged();
         },
-        // keydownAction: function(event) {
-          // event.stopPropagation();
-        // },
+        keydownAction: function(event) {
+          event.stopPropagation();
+        },
         keyupAction: function(event) {
           if (this.disabled) return;
           event.stopPropagation();
@@ -169,7 +169,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
         trackAction: function(event) {
           if (this.disabled) return;
           // event.stopPropagation();
-          // event.preventDefault();
+          event.preventDefault();
           delta += event.clientX - prevClientX;
           prevClientX = event.clientX;
           while (Math.abs(delta) > deltaStep) {

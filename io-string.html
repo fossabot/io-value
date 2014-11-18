@@ -58,7 +58,11 @@ See `theme.css` for styling reference.
         },
         keydownAction: function(event) {
           if (this.disabled) return;
-          event.stopPropagation();
+          // event.stopPropagation();
+          if (invalidKeys.indexOf(event.which) != -1) {
+            event.preventDefault();
+            return;
+          }
         },
         keyupAction: function(event) {
           if (this.disabled) return;
