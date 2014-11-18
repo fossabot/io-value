@@ -57,9 +57,11 @@ See `theme.css` for styling reference.
           'tap': 'tapAction'
         },
         keydownAction: function(event) {
+          if (this.disabled) return;
           event.stopPropagation();
         },
         keyupAction: function(event) {
+          if (this.disabled) return;
           // event.stopPropagation();
           if (invalidKeys.indexOf(event.which) != -1) {
             event.preventDefault();
@@ -69,10 +71,12 @@ See `theme.css` for styling reference.
           if (this.updateImmediate) this.fireValueSet();
         },
         tapAction: function(event) {
+          if (this.disabled) return;
           // event.stopPropagation();
           this.focusAction(event);
         },
         blurAction: function(event) {
+          if (this.disabled) return;
           this.super();
           this.value = this.$.value.textContent;
         },

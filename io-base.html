@@ -111,8 +111,9 @@ This an element other io-* elements extend.
           'blur': 'blurAction'
         },
         focusAction: function(event) {
+          if (this.disabled) return;
           if (event) event.stopPropagation();
-          if (!this.focused && !this.disabled) {
+          if (!this.focused) {
             setTimeout(function() {// TODO: unhack
                 selection = window.getSelection();
                 selection.removeAllRanges();
@@ -125,6 +126,7 @@ This an element other io-* elements extend.
           }
         },
         blurAction: function() {
+          if (this.disabled) return;
           selection = window.getSelection();
           selection.removeAllRanges();
           if (this.value !== this.immediateValue) {
@@ -134,6 +136,7 @@ This an element other io-* elements extend.
           this.focused = false;
         },
         labelClicked: function() {
+          if (this.disabled) return;
           /**
            * Fired when label is clicked
            *

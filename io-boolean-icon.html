@@ -75,14 +75,17 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
       },
 
       downAction: function(event) {
+        if (this.disabled) return;
         event.preventDefault(); // prevent focus
       },
       tapAction: function(event) {
+        if (this.disabled) return;
         event.preventDefault();
         event.stopPropagation();
         this.toggle();
       },
       keydownAction: function(event) {
+        if (this.disabled) return;
         if (this.validKeys.indexOf(event.which) == -1) return;
         event.preventDefault();
         event.stopPropagation();

@@ -92,10 +92,11 @@ Example:
       },
 
       setValue: function(event) {
-          event.stopPropagation();
-          if (typeof event.detail.value === 'object') {
-            this.bind('value', new PathObserver(event.detail, 'value'));
-          }
+        if (this.disabled) return;
+        event.stopPropagation();
+        if (typeof event.detail.value === 'object') {
+          this.bind('value', new PathObserver(event.detail, 'value'));
+        }
       },
       backAction: function(event) {
         event.preventDefault();

@@ -131,6 +131,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
           // event.stopPropagation();
         // },
         keyupAction: function(event) {
+          if (this.disabled) return;
           event.stopPropagation();
           if (validKeys.indexOf(event.which) == -1 || !isValid(this.$.value.textContent)) {
             event.preventDefault();
@@ -144,11 +145,13 @@ __Note__: You can click and drag to change the value or double-click to focus an
           if (this.updateImmediate) this.fireValueSet();
         },
         tapAction: function(event) {
+          if (this.disabled) return;
           // event.stopPropagation();
           this.focusAction(event);
         },
 
         downAction: function(event) {
+          if (this.disabled) return;
           // event.stopPropagation();
           event.preventDefault();
           document.body.classList.toggle('ew-resize', true);
@@ -156,6 +159,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
           delta = 0;
         },
         upAction: function(event) {
+          if (this.disabled) return;
           // event.stopPropagation();
           // event.preventDefault();
           if (this.value === null) this.focusAction(event);
@@ -163,6 +167,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
           this.blurAction(event);
         },
         trackAction: function(event) {
+          if (this.disabled) return;
           // event.stopPropagation();
           // event.preventDefault();
           delta += event.clientX - prevClientX;
