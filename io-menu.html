@@ -42,7 +42,19 @@ Example:
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="io-menu-option.html">
 
-<link href="io-menu-veil.css" rel="stylesheet" type="text/css" shim-shadowdom>
+<style type="text/css">
+  body > div#io-bundle-clickmask {
+    position: fixed;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 101;
+    opacity: 0;
+  }
+</style>
 
 <polymer-element name="io-menu" tabindex="0" class="io-bundle" oncontextmenu="return false;">
   <template>
@@ -78,9 +90,8 @@ Example:
 
     var MARGIN = 14;
 
-    var veil = document.createElement('div');
-    document.body.appendChild(veil);
-    veil.id = 'io-menu-veil';
+    var clickmask = document.createElement('div');
+    clickmask.id = 'io-bundle-clickmask';
 
     /**
      * Fired when menu action is executed.
@@ -296,7 +307,6 @@ Example:
         option.expanded = true;
       },
       expandedChanged: function() {
-        veil.classList.toggle('visible', this.expanded);
         if (this.expanded) {
           this.style.visibility = 'hidden';
           setTimeout(this.nudge.bind(this), 1);
@@ -304,9 +314,13 @@ Example:
             this.searchString = '';
             this.$.search.focusAction();
           }
-          veil.addEventListener('down', this._collapse);
+          document.body.appendChild(clickmask);
+          clickmask.addEventListener('down', this._collapse);
         } else {
-          veil.removeEventListener('down', this._collapse);
+          if (clickmask.parentNode == document.body) {
+            document.body.removeChild(clickmask);
+          }
+          clickmask.removeEventListener('down', this._collapse);
         }
       },
       nudge: function() {

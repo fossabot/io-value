@@ -25,6 +25,24 @@ This an element other io-* elements extend.
 -->
 <link rel="import" href="../polymer/polymer.html">
 
+<style type="text/css">
+  body > div#io-bundle-clickmask {
+    position: fixed;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 101;
+    opacity: 0;
+  }
+  html /deep/ .io-bundle-value[focused] {
+    position: relative;
+    z-index: 102;
+  }
+</style>
+
 <polymer-element name="io-base" class="io-bundle">
   <template>
     <link rel="stylesheet" href="io-base.css" shim-shadowdom>
@@ -33,189 +51,209 @@ This an element other io-* elements extend.
     </template>
   </template>
   <script type="text/javascript">
+  (function() {
 
-    (function() {
+    var selection, range;
 
-      var selection, range;
+    var clickmask = document.createElement('div');
+    clickmask.id = 'io-bundle-clickmask';
 
-      Polymer({
+    Polymer({
 
-        publish: {
+      publish: {
 
-          /**
-           * Input value.
-           *
-           * @attribute value
-           * @default null
-           */
-          value: null,
+        /**
+         * Input value.
+         *
+         * @attribute value
+         * @default null
+         */
+        value: null,
 
-          /**
-           * Input value to be one-way bound to value attribute.
-           *
-           * @attribute inValue
-           * @default null
-           */
-          inValue: null,
+        /**
+         * Input value to be one-way bound to value attribute.
+         *
+         * @attribute inValue
+         * @default null
+         */
+        inValue: null,
 
-          /**
-           * Immediate value to be updated on each key stroke.
-           *
-           * @attribute immediateValue
-           * @default null
-           */
-          immediateValue: null,
+        /**
+         * Immediate value to be updated on each key stroke.
+         *
+         * @attribute immediateValue
+         * @default null
+         */
+        immediateValue: null,
 
-          /**
-           * Determines value is updated from immediateValue on each key stroke
-           *
-           * @attribute updateImmediate
-           * @type boolean
-           * @default false
-           */
-          updateImmediate: {value: false, reflect: true},
+        /**
+         * Determines value is updated from immediateValue on each key stroke
+         *
+         * @attribute updateImmediate
+         * @type boolean
+         * @default false
+         */
+        updateImmediate: {value: false, reflect: true},
 
-          /**
-           * Determines if the input can be edited by user action.
-           *
-           * @attribute disabled
-           * @type boolean
-           * @default false
-           */
-          disabled: {value: false, reflect: true},
+        /**
+         * Determines if the input can be edited by user action.
+         *
+         * @attribute disabled
+         * @type boolean
+         * @default false
+         */
+        disabled: {value: false, reflect: true},
 
-          /**
-           * Label.
-           *
-           * @attribute label
-           * @type string
-           * @default ''
-           */
-          label: {value: '', reflect: true},
+        /**
+         * Label.
+         *
+         * @attribute label
+         * @type string
+         * @default ''
+         */
+        label: {value: '', reflect: true},
 
-          /**
-           * Specifies a short hint that describes the expected value of an input field
-           *
-           * @attribute placehoder
-           * @type string
-           * @default null
-           */
-          placehoder: null
+        /**
+         * Specifies a short hint that describes the expected value of an input field
+         *
+         * @attribute placehoder
+         * @type string
+         * @default null
+         */
+        placehoder: null
 
-        },
+      },
 
-        focused: false,
+      focused: false,
 
-        eventDelegates: {
-          'focus': 'focusAction',
-          'blur': 'blurAction'
-        },
-        focusAction: function(event) {
-          if (this.disabled) return;
-          if (event) event.stopPropagation();
-          if (!this.focused) {
-            setTimeout(function() {// TODO: unhack
-                selection = window.getSelection();
-                selection.removeAllRanges();
-                range = document.createRange();
-                if (this.$.value) range.selectNodeContents(this.$.value);
-                selection.addRange(range);
-                this.focused = true;
-            }.bind(this), 10);
-            this.immediateValue = this.value;
-          }
-        },
-        blurAction: function() {
-          if (this.disabled) return;
-          selection = window.getSelection();
-          selection.removeAllRanges();
-          if (this.value !== this.immediateValue) {
-            this.fireValueSet();
-          }
-          this.value = this.immediateValue;
-          this.focused = false;
-        },
-        labelClicked: function() {
-          if (this.disabled) return;
-          /**
-           * Fired when label is clicked
-           *
-           * @event label-clicked
-           * @param {Object} detail
-           * @param {Object} detail.label label
-           * @param {Object} detail.value value
-           */
-          this.fire('label-clicked', {label: this.label, value: this.value});
-        },
-        inValueChanged: function() {
-          this.value = JSON.parse(JSON.stringify(this.inValue));
-        },
-        immediateValueChanged: function() {
-          if (this.updateImmediate) {
-            this.value = this.immediateValue;
-          }
-        },
-        // Call this function from methods that set value by user action.
-        fireValueSet: function() {
-          setTimeout(function() {
-            /**
-             * Fired when an value attribute is set by user action.
-             *
-             * @event value-set
-             * @param {Object} detail
-             * @param {Object} detail.element the input element
-             * @param {Object} detail.value new value
-             */
-            this.fire('value-set', {element: this, value: this.value});
-            // console.log('value-set', this.value);
-          }.bind(this), 1);
-        },
-        valueChanged: function() {
+      eventDelegates: {
+        'focus': 'focusAction',
+        'blur': 'blurAction'
+      },
+      ready: function() {
+        this._blur = function() {
+          this.$.value.blur();
+        }.bind(this);
+      },
+      focusAction: function(event) {
+        if (this.disabled) return;
+        if (event) event.stopPropagation();
+        if (!this.focused) {
+          setTimeout(function() {// TODO: unhack
+              selection = window.getSelection();
+              selection.removeAllRanges();
+              range = document.createRange();
+              if (this.$.value) range.selectNodeContents(this.$.value);
+              selection.addRange(range);
+              this.focused = true;
+          }.bind(this), 10);
           this.immediateValue = this.value;
+          // clickmask
+          if (this.$.value) {
+            this.$.value.setAttribute('focused', '');
+            document.body.appendChild(clickmask);
+            clickmask.addEventListener('down', this.$.value.blur);
+          }
+        }
+      },
+      blurAction: function() {
+        if (this.disabled) return;
+        selection = window.getSelection();
+        selection.removeAllRanges();
+        if (this.value !== this.immediateValue) {
+          this.fireValueSet();
+        }
+        this.value = this.immediateValue;
+        this.focused = false;
+        // clickmask
+        if (this.$.value) {
+          this.$.value.removeAttribute('focused');
+          if (clickmask.parentNode == document.body) {
+            document.body.removeChild(clickmask);
+          }
+          clickmask.removeEventListener('down', this.$.value.blur);
+        }
+      },
+      labelClicked: function() {
+        if (this.disabled) return;
+        /**
+         * Fired when label is clicked
+         *
+         * @event label-clicked
+         * @param {Object} detail
+         * @param {Object} detail.label label
+         * @param {Object} detail.value value
+         */
+        this.fire('label-clicked', {label: this.label, value: this.value});
+      },
+      inValueChanged: function() {
+        this.value = JSON.parse(JSON.stringify(this.inValue));
+      },
+      immediateValueChanged: function() {
+        if (this.updateImmediate) {
+          this.value = this.immediateValue;
+        }
+      },
+      // Call this function from methods that set value by user action.
+      fireValueSet: function() {
+        setTimeout(function() {
           /**
-           * Fired when an value attribute is changed.
+           * Fired when an value attribute is set by user action.
            *
-           * @event value-changed
+           * @event value-set
            * @param {Object} detail
            * @param {Object} detail.element the input element
            * @param {Object} detail.value new value
            */
-          this.fire('value-changed', {element: this, value: this.value});
-        },
-        disabledChanged: function() {
-          if (this.disabled) {
-            this.setAttribute('aria-disabled', '');
-          } else {
-            this.removeAttribute('aria-disabled');
-          }
-
-          if (this.$.value) {
-            if (this.disabled) {
-              this.$.value.removeAttribute('tabindex');
-              this.$.value.removeAttribute('contenteditable');
-            } else {
-              this.$.value.setAttribute('tabindex', 0);
-              this.$.value.setAttribute('contenteditable', '');
-            }
-          }
-        },
-        labelChanged: function() {
-          if (this.label != '') {
-            this.setAttribute('aria-label', this.label);
-          } else {
-            this.removeAttribute('aria-label');
-          }
-        },
-        placeholderChanged: function() {
-          if (this.placeholder && this.label == '') {
-            this.setAttribute('aria-label', this.placeholder);
-          } else {
-            this.removeAttribute('aria-label');
-          }
+          this.fire('value-set', {element: this, value: this.value});
+          // console.log('value-set', this.value);
+        }.bind(this), 1);
+      },
+      valueChanged: function() {
+        this.immediateValue = this.value;
+        /**
+         * Fired when an value attribute is changed.
+         *
+         * @event value-changed
+         * @param {Object} detail
+         * @param {Object} detail.element the input element
+         * @param {Object} detail.value new value
+         */
+        this.fire('value-changed', {element: this, value: this.value});
+      },
+      disabledChanged: function() {
+        if (this.disabled) {
+          this.setAttribute('aria-disabled', '');
+        } else {
+          this.removeAttribute('aria-disabled');
         }
 
-      });
+        if (this.$.value) {
+          if (this.disabled) {
+            this.$.value.removeAttribute('tabindex');
+            this.$.value.removeAttribute('contenteditable');
+          } else {
+            this.$.value.setAttribute('tabindex', 0);
+            this.$.value.setAttribute('contenteditable', '');
+          }
+        }
+      },
+      labelChanged: function() {
+        if (this.label != '') {
+          this.setAttribute('aria-label', this.label);
+        } else {
+          this.removeAttribute('aria-label');
+        }
+      },
+      placeholderChanged: function() {
+        if (this.placeholder && this.label == '') {
+          this.setAttribute('aria-label', this.placeholder);
+        } else {
+          this.removeAttribute('aria-label');
+        }
+      }
 
-    })();
+    });
+  })();
   </script>
 </polymer-element>
