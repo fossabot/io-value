@@ -48,7 +48,7 @@ See `theme.css` for styling reference.
         </template>
         <template if="{{expanded || !collapsable}}">
             <template repeat="{{key, i in keys}}">
-                <io-value value="{{value[key]}}" disabled="{{disabled}}" label="{{labeled ? key : ''}}">
+                <io-value value="{{value[key]}}" disabled="{{disabled}}" label="{{labeled ? key : ''}}:">
                 </io-value> 
             </template>
         </template>

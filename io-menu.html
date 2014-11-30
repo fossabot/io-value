@@ -42,23 +42,12 @@ Example:
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="io-menu-option.html">
 
-<style type="text/css">
-  body > div#io-bundle-clickmask {
-    position: fixed;
-    top: 0 !important;
-    left: 0 !important;
-    bottom: 0 !important;
-    right: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    z-index: 101;
-    opacity: 0;
-  }
-</style>
-
 <polymer-element name="io-menu" tabindex="0" class="io-bundle" oncontextmenu="return false;">
   <template>
     <link href="io-menu.css" rel="stylesheet" type="text/css" shim-shadowdom>
+    <template if="{{clickmasked}}">
+      <div id="clickmask" on-tap="{{collapse}}"></div>
+    </template>
     <io-string style="display: {{search ? 'block' : 'none'}}" id="search" value="{{searchString}}" updateImmediate></io-string>
     <template if="{{expanded || noHide}}">
       <template if="{{search}}">
@@ -89,9 +78,6 @@ Example:
     var timeout;
 
     var MARGIN = 14;
-
-    var clickmask = document.createElement('div');
-    clickmask.id = 'io-bundle-clickmask';
 
     /**
      * Fired when menu action is executed.
@@ -190,8 +176,11 @@ Example:
         filteredOptions: []
 
       },
+
       isSubmenu: false,
       optionElems: null,
+      clickmasked: false,
+
       eventDelegates: {
         'touchstart': 'onDown',
         'mousedown': 'onDown',
@@ -314,13 +303,11 @@ Example:
             this.searchString = '';
             this.$.search.focusAction();
           }
-          document.body.appendChild(clickmask);
-          clickmask.addEventListener('down', this._collapse);
-        } else {
-          if (clickmask.parentNode == document.body) {
-            document.body.removeChild(clickmask);
+          if (this.parentNode.host.localName !== 'io-menu-option') {
+            this.clickmasked = true;
           }
-          clickmask.removeEventListener('down', this._collapse);
+        } else {
+          this.clickmasked = false;
         }
       },
       nudge: function() {

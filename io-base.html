@@ -25,27 +25,13 @@ This an element other io-* elements extend.
 -->
 <link rel="import" href="../polymer/polymer.html">
 
-<style type="text/css">
-  body > div#io-bundle-clickmask {
-    position: fixed;
-    top: 0 !important;
-    left: 0 !important;
-    bottom: 0 !important;
-    right: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    z-index: 101;
-    opacity: 0;
-  }
-  html /deep/ .io-bundle-value[focused] {
-    position: relative;
-    z-index: 102;
-  }
-</style>
 
 <polymer-element name="io-base" class="io-bundle">
   <template>
     <link rel="stylesheet" href="io-base.css" shim-shadowdom>
+    <template if="{{clickmasked}}">
+      <div id="io-bundle-clickmask"></div>
+    </template>
     <template if="{{label !== ''}}">
       <span class="io-bundle-label" on-tap="{{labelClicked}}">{{label}}</span>
     </template>
@@ -54,9 +40,6 @@ This an element other io-* elements extend.
   (function() {
 
     var selection, range;
-
-    var clickmask = document.createElement('div');
-    clickmask.id = 'io-bundle-clickmask';
 
     Polymer({
 
@@ -120,11 +103,15 @@ This an element other io-* elements extend.
          * @type string
          * @default null
          */
-        placehoder: null
+        placehoder: null,
+
+        stopgestures: {value: false, reflect: true}
 
       },
 
+      clickmasked: false,
       focused: false,
+      parent: null,
 
       eventDelegates: {
         'focus': 'focusAction',
@@ -151,8 +138,6 @@ This an element other io-* elements extend.
           // clickmask
           if (this.$.value) {
             this.$.value.setAttribute('focused', '');
-            document.body.appendChild(clickmask);
-            clickmask.addEventListener('down', this.$.value.blur);
           }
         }
       },
@@ -168,10 +153,6 @@ This an element other io-* elements extend.
         // clickmask
         if (this.$.value) {
           this.$.value.removeAttribute('focused');
-          if (clickmask.parentNode == document.body) {
-            document.body.removeChild(clickmask);
-          }
-          clickmask.removeEventListener('down', this.$.value.blur);
         }
       },
       labelClicked: function() {
@@ -251,6 +232,10 @@ This an element other io-* elements extend.
         } else {
           this.removeAttribute('aria-label');
         }
+      },
+      focusedChanged: function() {
+        if (this.focused) this.setAttribute('focused', '');
+        else this.removeAttribute('focused');
       }
 
     });

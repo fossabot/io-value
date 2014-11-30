@@ -146,6 +146,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
         },
         tapAction: function(event) {
           if (this.disabled) return;
+          this.clickmasked = true;
           // event.stopPropagation();
           this.focusAction(event);
         },
@@ -184,6 +185,11 @@ __Note__: You can click and drag to change the value or double-click to focus an
           this.clampValue();
           this.renderValue(this.immediateValue);
           if (this.updateImmediate) this.fireValueSet();
+        },
+        blurAction: function(event) {
+          if (this.disabled) return;
+          this.super();
+          this.clickmasked = false;
         },
         clampValue: function() {
           this.immediateValue = Math.min(Math.max(this.immediateValue, this.min), this.max);

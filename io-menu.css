@@ -6,7 +6,7 @@
   touch-action: none;
   display: none;
   position: relative;
-  z-index: 100;
+  z-index: 101;
 }
 :host([noHide]) {
   display: inline-block;
@@ -14,7 +14,6 @@
 
 :host([expanded]) {
   display: inline-block;
-  z-index: 102;
 }
 :host([context]) {
   position: absolute;
@@ -24,10 +23,6 @@
   top: 0;
   left: 100%;
 }
-/*:host([issubmenu][horizontal]) {
-  left: 0;
-  top: 100%;
-}*/
 :host([horizontal])::shadow > io-menu-option::shadow > io-menu {
   top: 100%;
   left: 0;
@@ -40,11 +35,23 @@
 }
 :host([horizontal])::shadow > hr {
   display: none;
-  /* TODO: implement horizontal divider */
+  /* TODO: implement vertical divider */
 }
 :host > #search {
   display: block;
 }
 :host > #search::shadow > .io-bundle-value:empty:after {  
   content: "Search...";
+}
+
+/* clickmask */
+
+:host > #clickmask {
+  position: fixed;
+  top: -10000px;
+  left: -10000px;
+  bottom: -10000px;
+  right: -10000px;
+  z-index: -1;
+  cursor: default !important;
 }

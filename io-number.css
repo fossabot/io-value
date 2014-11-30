@@ -1,6 +1,8 @@
 :host > .io-bundle-value {
   overflow-x: hidden;
   white-space: nowrap;
+}
+:host(:not([disabled])) > .io-bundle-value {
   cursor: ew-resize;
 }
 :host > .io-bundle-value:empty {
