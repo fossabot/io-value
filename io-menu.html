@@ -303,7 +303,7 @@ Example:
             this.searchString = '';
             this.$.search.focusAction();
           }
-          if (this.parentNode.host.localName !== 'io-menu-option') {
+          if (this.parentNode.localName || this.parentNode.host.localName !== 'io-menu-option') {
             this.clickmasked = true;
           }
         } else {
@@ -321,7 +321,7 @@ Example:
         // nudge left
         var rightDist = rect.right + MARGIN - window.innerWidth;
         if (rightDist > 0) {
-          if (this.parentNode.host.localName == 'io-menu-option') {
+          if (this.parentNode.localName || this.parentNode.host.localName == 'io-menu-option') {
             this.style.left = - rect.width + 'px';
           } else {
             this.style.left = parseInt(style.left) - rightDist + 'px';
