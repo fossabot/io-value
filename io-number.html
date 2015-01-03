@@ -96,7 +96,7 @@ __Note__: You can click and drag to change the value or double-click to focus an
            * @type number
            * @default -3
            */
-          step: -1,
+          step: -3,
 
           /**
            * Enables conversion to degrees (for display only).
@@ -206,8 +206,13 @@ __Note__: You can click and drag to change the value or double-click to focus an
         },
         renderValue: function(value) {
           tempVal = this.convertToDeg(value);
-          this._match = tempVal.toString().match(this.regEx);
-          this.$.value.textContent = this._match ? parseFloat(this._match[1]) : tempVal;
+          if (this.disabled) {
+            this.$.value.textContent = tempVal;
+          } else {
+            // TODO: Better strategy for enabling full value display
+            this._match = tempVal.toString().match(this.regEx);
+            this.$.value.textContent = this._match ? parseFloat(this._match[1]) : tempVal;
+          }
         },
         convertToDeg: function(val) {
           if (this.toDeg) return val / Math.PI * 180;

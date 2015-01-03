@@ -37,8 +37,6 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
 
   (function() {
 
-    var type;
-
     Polymer({
 
       publish: {
@@ -55,8 +53,7 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
         min: -Infinity,
         max: Infinity,
         step: -1,
-        toDeg: {value: false, reflect: true},
-        stopGestures: {value: false, reflect: true}
+        toDeg: {value: false, reflect: true}
       },
 
       io: null,
@@ -83,6 +80,8 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
           return;
         }
 
+        var type;
+
         // value is one of the supported types.
         if (typeof this.value == 'boolean') type = 'io-boolean';
         else if (typeof this.value == 'number') type = 'io-number';
@@ -98,7 +97,7 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
           this.shadowRoot.appendChild(this.io);
           // Bind all specified attributes to the new element.
           for (var i in this.publish) {
-            this.io.bind(i, new PathObserver(this, i));
+            this.io.bindProperty(i, new PathObserver(this, i));
           }
           return;
         }

@@ -42,13 +42,16 @@ See `theme.css` for styling reference.
     <shadow></shadow>
     <link rel="stylesheet" href="io-object.css" shim-shadowdom>
     <span class="io-bundle-value">
-        <template if="{{collapsable}}">
+        <template if="{{collapsable && keys.length}}">
             <io-boolean-icon value="{{expanded}}" trueIcon="expand-more" falseIcon="chevron-right">
             </io-boolean-icon>
         </template>
         <template if="{{expanded || !collapsable}}">
             <template repeat="{{key, i in keys}}">
-                <io-value value="{{value[key]}}" disabled="{{disabled}}" label="{{labeled ? key : ''}}:">
+                <io-value
+                    value="{{value[key]}}"
+                    disabled="{{disabled}}"
+                    label="{{labeled ? key : ''}}:">
                 </io-value> 
             </template>
         </template>
