@@ -26,6 +26,7 @@ html /deep/ io-menu {
   border-radius: 0.2em;
   background: #e9e9e9;
   box-shadow: 0.2em 0.2em 0.1em rgba(0, 0, 0, 0.25);
+  color: #333;
 }
 
 html /deep/ io-menu::shadow > #search::shadow > .io-bundle-value {
@@ -47,7 +48,6 @@ html /deep/ io-menu::shadow > hr {
 html /deep/ io-menu-option {
   padding: 0.3em;
   border-radius: 0.1em;
-  color: #333;
 }
 
 html /deep/ io-menu-option[expanded] {
@@ -56,6 +56,10 @@ html /deep/ io-menu-option[expanded] {
   color: #fff;
 }
 html /deep/ io-menu-option::shadow > core-icon {}
+
+html /deep/ io-menu::shadow > #tooltip {
+  padding: 0.3em;
+}
 
 /* io-menu-veil.css */
 body > div#io-menu-veil {

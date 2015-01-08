@@ -32,12 +32,13 @@ It is automatically created by io-menu.
 <polymer-element name="io-menu-option" tabindex="0" class="io-bundle">
   <template>
     <link href="io-menu-option.css" rel="stylesheet" type="text/css" shim-shadowdom>
-    <template if="{{expanded && options.length}}">
+    <template if="{{expanded && (options.length || tooltip)}}">
       <io-menu expanded
         options="{{options}}"
         horizontal="{{horizontal}}"
         parentHeight="{{rect.heigh}}"
         parentWidth="{{rect.width}}"
+        tooltip="{{tooltip}}"
         autoExpand
         issubmenu>
       </io-menu>
@@ -110,6 +111,15 @@ It is automatically created by io-menu.
          * @default null
          */
         arguments: null,
+
+        /**
+         * Tooltip to be displayed with the option
+         *
+         * @attribute tooltip
+         * @type string
+         * @default ''
+         */
+        tooltip: '',
 
         /**
          * Expanded state

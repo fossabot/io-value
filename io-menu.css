@@ -7,6 +7,7 @@
   display: none;
   position: relative;
   z-index: 101;
+  cursor: default;
 }
 :host([noHide]) {
   display: inline-block;
@@ -42,6 +43,11 @@
 }
 :host > #search::shadow > .io-bundle-value:empty:after {  
   content: "Search...";
+}
+
+:host > #tooltip {
+  width: 14em;
+  white-space: normal;
 }
 
 /* clickmask */
