@@ -29,9 +29,9 @@ This an element other io-* elements extend.
 <polymer-element name="io-base" class="io-bundle">
   <template>
     <link rel="stylesheet" href="io-base.css" shim-shadowdom>
-    <template if="{{clickmasked}}">
+    <!-- <template if="{{clickmasked}}">
       <div id="io-bundle-clickmask"></div>
-    </template>
+    </template> -->
     <template if="{{label !== ''}}">
       <span class="io-bundle-label" on-tap="{{labelClicked}}">{{label}}</span>
     </template>
@@ -109,7 +109,7 @@ This an element other io-* elements extend.
 
       },
 
-      clickmasked: false,
+      // clickmasked: false,
       focused: false,
       parent: null,
 
