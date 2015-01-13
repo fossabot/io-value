@@ -80,6 +80,7 @@ Example:
     var previousOption;
     var previousParent;
     var timeout;
+    var hoveredMenu;
 
     var MARGIN = 14;
 
@@ -204,9 +205,27 @@ Example:
         this._expand = this.expand.bind(this);
         this._collapse = this.collapse.bind(this);
         this._expandPrimary = this.expandPrimary.bind(this);
+        this._animate = this.animate.bind(this);
+      },
+      detached: function() {
+        this.stopAnimation();
+      },
+      startAnimation: function() {
+        this.playing = true;
+        this.animate();
+      },
+      stopAnimation: function() {
+        this.playing = false;
+      },
+      animate: function() {
+        if (!this.playing) return;
+        this.scroll();
+        requestAnimationFrame(this._animate);
       },
       onHover: function(event) {
+        event.stopPropagation();
         var option = this.getHoveredItem(event);
+        hoveredMenu = this;
         if (option && option != previousOption && this.autoExpand) {
           this.expanded = true;
           clearTimeout(timeout);
@@ -243,8 +262,8 @@ Example:
         //   this.style.top = parseInt(style.top) + 2 + 'px';
         // }
 
-        tempX = event.pageX - window.pageXOffset;
-        tempY = event.pageY - window.pageYOffset;
+        tempX = event.pageX - window.pageXOffset; // event.clientX
+        tempY = event.pageY - window.pageYOffset; // event.clientY
 
         if (this.horizontal) {
           tempV = Math.abs(tempX - x) - Math.abs(tempY - y);
@@ -328,8 +347,10 @@ Example:
           if (this.parentNode.localName || this.parentNode.host.localName !== 'io-menu-option') {
             this.clickmasked = true;
           }
+          this.startAnimation();
         } else {
           this.clickmasked = false;
+          this.stopAnimation();
         }
       },
       nudge: function() {
@@ -351,6 +372,22 @@ Example:
         };
 
         this.style.visibility = 'visible';
+      },
+
+      scroll: function() {
+        if (hoveredMenu != this) return;
+        var TOPMARGIN = MARGIN + 32;
+        var rect = this.getBoundingClientRect();
+        var style = window.getComputedStyle(this);
+        if (tempY < 100 && rect.top < TOPMARGIN) {
+          var scrollSpeed = (100 - tempY) / 2000;
+          var overflow = rect.top - TOPMARGIN;
+          this.style.top = parseInt(style.top) - Math.ceil(overflow * scrollSpeed) + 1 + 'px';
+        } else if (tempY > window.innerHeight - 100 && rect.bottom > window.innerHeight - MARGIN) {
+          var scrollSpeed = (100 - (window.innerHeight - tempY)) / 2000;
+          var overflow = (rect.bottom - window.innerHeight) + MARGIN;
+          this.style.top = parseInt(style.top) - Math.ceil(overflow * scrollSpeed) - 1 + 'px';
+        }
       },
 
       updateOptionElems: function() {

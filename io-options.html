@@ -131,7 +131,8 @@ See `theme.css` for styling reference.
             this.menuOptions.push({
               label: this.options[i][0],
               action: this._setValue,
-              arguments: [this.options[i][1]]
+              arguments: [this.options[i][1]],
+              icon: this.options[i][2]
             });
           } else {
             this.menuOptions.push({
@@ -141,6 +142,7 @@ See `theme.css` for styling reference.
             });
           }
         }
+        console.log(this.menuOptions);
       }
 
     });

@@ -5,7 +5,7 @@
 }
 :host > .io-bundle-value:empty {
   min-width: 0.5em;
-  display: inline-block;
+  /*display: inline-block;*/
   vertical-align: top;
 }
 :host > .io-bundle-value:empty:after {	
