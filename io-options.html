@@ -93,6 +93,8 @@ See `theme.css` for styling reference.
       },
 
       expand: function(event) {
+        this.$.menu.style.top = 0;
+        this.$.menu.style.left = 0;
         this.$.menu.expanded = true;
         setTimeout(function() {
           var firstOption = this.$.menu.querySelector('* /deep/ io-menu-option');
