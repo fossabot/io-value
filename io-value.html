@@ -37,6 +37,15 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
 
   (function() {
 
+    function isJson(str) {
+      try {
+        JSON.parse(str);
+      } catch (e) {
+        return false;
+      }
+      return true;
+    }
+
     Polymer({
 
       publish: {
@@ -59,17 +68,62 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
       io: null,
       iotype: {value: null, reflect: true},
 
+      eventDelegates: {
+        'tap': 'tapAction'
+      },
+
       observe: {
         'value label': 'createElement'
+      },
+
+      tapAction: function(event) {
+        if (this.io && this.io.tapAction) {
+          this.io.tapAction(event);
+        }
+        if (this.valueSetter && this.valueSetter.tapAction) {
+          this.valueSetter.tapAction(event);
+        }
+      },
+
+      ready: function() {
+        if (this.value === undefined || this.value === null || this.value === NaN) {
+          this.createValueSetter();
+          return;
+        }
+      },
+
+      createValueSetter: function() {
+        this.shadowRoot.innerHTML = '';
+        this.io = null;
+        this.valueSetter = document.createElement('io-string');
+        this.valueSetter.setAttribute('placeholder', '' + this.value);
+        this.shadowRoot.appendChild(this.valueSetter);
+        this.valueSetter.addEventListener('value-changed', function(event) {
+          var value = event.detail.value;
+          if (value === undefined || value === null || value === NaN || value === '') {
+            return;
+          }
+          if (value !== this.value) {
+            if (!isNaN(value)) {
+              this.value = parseFloat(value);
+            } else if (value == 'true') {
+              this.value = true;
+            } else if (value == 'false') {
+              this.value = false;
+            } else if (isJson(value)) {
+              this.value = JSON.parse(value);
+            } else {
+              this.value = value;
+            }
+          }
+        }.bind(this));
       },
 
       createElement: function() {
 
         // value is invalid (undefined, null or NaN).
         if (this.value === undefined || this.value === null || this.value === NaN) {
-          this.shadowRoot.innerHTML = this.label + ': ' + this.value;
-          this.iotype = '' + this.value;
-          this.shadowRoot.innerHTML = this.label + ': ' + this.value;
+          this.createValueSetter();
           return;
         }
 
@@ -92,6 +146,7 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
         // create the corresponting element.
         if (type && this.iotype != type) {
           this.shadowRoot.innerHTML = '';
+          this.valueSetter = null;
           this.iotype = type;
           this.io = document.createElement(type);
           this.shadowRoot.appendChild(this.io);

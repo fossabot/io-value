@@ -79,8 +79,8 @@ See `theme.css` for styling reference.
           if (this.disabled) return;
           // this.clickmasked = true;
           // event.stopPropagation();
-          // this.focusAction(event);
-          this.focus();
+          this.focusAction(event);
+          // this.$.value.focus();
         },
         blurAction: function(event) {
           this.super();
