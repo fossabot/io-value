@@ -42,13 +42,12 @@ See `theme.css` for styling reference.
   <script type="text/javascript">
 
     (function() {
-
-      var invalidKeys = [13]; // enter
       
       Polymer({
 
         publish: {
           placeholder: "string",
+          multiline: {value: false, reflect: true}
         },
 
         eventDelegates: {
@@ -57,9 +56,10 @@ See `theme.css` for styling reference.
           'tap': 'tapAction'
         },
         keydownAction: function(event) {
+          console.log(this.multiline);
           if (this.disabled) return;
           // event.stopPropagation();
-          if (invalidKeys.indexOf(event.which) != -1) {
+          if (event.which == 13 && !this.multiline) {
             event.preventDefault();
             return;
           }
@@ -67,7 +67,7 @@ See `theme.css` for styling reference.
         keyupAction: function(event) {
           if (this.disabled) return;
           // event.stopPropagation();
-          if (invalidKeys.indexOf(event.which) != -1) {
+          if (event.which == 13 && !this.multiline) {
             event.preventDefault();
             return;
           }
