@@ -56,7 +56,6 @@ See `theme.css` for styling reference.
           'tap': 'tapAction'
         },
         keydownAction: function(event) {
-          console.log(this.multiline);
           if (this.disabled) return;
           // event.stopPropagation();
           if (event.which == 13 && !this.multiline) {
