@@ -56,7 +56,7 @@ Example:
       <template if="{{search}}">
         <hr />
       </template>
-      <template repeat="{{option in (filteredOptions.length ? filteredOptions : options)}}">
+      <template repeat="{{option in (filteredOptions.length ? filteredOptions : sortedOptions.length ? sortedOptions : options)}}">
         <template if="{{option.type == 'divider'}}"><hr /></template>
         <template if="{{option.type != 'divider'}}">
           <io-menu-option
@@ -186,7 +186,17 @@ Example:
          * @type string
          * @default ''
          */
-        tooltip: ''
+        tooltip: '',
+
+        /**
+         * Determines if the option list is sorted.
+         *
+         * @attribute sorted
+         * @type boolean
+         * @default false
+         */
+        sorted: {value: false, reflect: true},
+        sortedOptions: []
       },
 
       isSubmenu: false,
@@ -408,6 +418,10 @@ Example:
         }
       },
 
+      optionsChanged: function() {
+        this.sortedChanged();
+      },
+
       filterOptions: function(options) {
         var filteredOptions = [];
         if (this.searchString && options.length) {
@@ -425,7 +439,20 @@ Example:
       },
       searchStringChanged: function() {
         this.filteredOptions = this.filterOptions(this.options);
+      },
+      sortOptions: function(options) {
+        return options.sort(function(a, b) {
+          if (a.label < b.label)
+             return -1;
+          if (a.label > b.label)
+            return 1;
+          return 0;
+        });
+      },
+      sortedChanged: function() {
+        this.sortedOptions = this.sorted ? this.sortOptions(this.options) : [];
       }
+
     });
 
   })();

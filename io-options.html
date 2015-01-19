@@ -39,7 +39,7 @@ See `theme.css` for styling reference.
     <shadow></shadow>
     <link rel="stylesheet" href="io-options.css" shim-shadowdom>
     <span id="value" class="io-bundle-value" tabindex="0">{{displayValue}}</span>
-    <io-menu id="menu" options="{{menuOptions}}" autoExpand></io-menu>
+    <io-menu id="menu" options="{{menuOptions}}" sorted="{{sorted}}" autoExpand></io-menu>
   </template>
   <script type="text/javascript">
     
@@ -56,7 +56,16 @@ See `theme.css` for styling reference.
          * @type Array
          * @default null
          */
-        options: null
+        options: null,
+
+        /**
+         * Determines if the option list is sorted.
+         *
+         * @attribute sorted
+         * @type boolean
+         * @default false
+         */
+        sorted: {value: false, reflect: true}
 
       },
 
