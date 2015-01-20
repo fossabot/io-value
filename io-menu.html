@@ -450,6 +450,7 @@ Example:
         });
       },
       sortedChanged: function() {
+        if (!this.options) return;
         this.sortedOptions = this.sorted ? this.sortOptions(this.options) : [];
       }
 
