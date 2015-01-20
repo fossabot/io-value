@@ -138,11 +138,12 @@ It is automatically created by io-menu.
       },
       eventDelegates: {
         'keydown': 'keydownAction',
-        'click': 'tapAction'
+        'down': 'tapAction'
       },
       ready: function() {
-        function stopPropagation(event) { event.stopPropagation(); }
+        function stopPropagation(event) { event.stopPropagation(); event.preventDefault(); }
         PolymerGestures.addEventListener(this, 'down', stopPropagation);
+        PolymerGestures.addEventListener(this, 'mousedown', stopPropagation);
       },
       tapAction: function(event) {
         if (this.disabled) return;

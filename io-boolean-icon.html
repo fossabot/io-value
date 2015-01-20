@@ -15,7 +15,7 @@ limitations under the License.
 -->
 
 <!--
-I/O web component for boolean data type. Displays value as core-icon.
+I/O element for boolean data type. Displays value as core-icon.
 
 Example:
 
@@ -23,13 +23,13 @@ Example:
 
 See `theme.css` for styling reference.
 
-__Note__: When you tab-focus this element you can use enter/spacebar to toggle the value.
+__Note__: When you focus this element you can use enter/spacebar to toggle the value.
 
 @element input-boolean-icon
 @extends io-base
 @homepage https://github.com/arodic/io-bundle
 @demo http://akirodic.com/components/io-bundle/demo.html
-@blurb I/O web component for boolean data type. Displays value as core-icon.
+@blurb I/O element for boolean data type. Displays value as core-icon.
 @status alpha
 -->
 <link rel="import" href="../polymer/polymer.html">
@@ -38,27 +38,22 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
 
 <polymer-element name="io-boolean-icon" extends="io-base">
   <template>
-    <shadow></shadow>
+    <link rel="stylesheet" href="io-base.css" shim-shadowdom>
     <link rel="stylesheet" href="io-boolean-icon.css" shim-shadowdom>
     <core-icon id="value" class="io-bundle-value" tabindex="0" icon="{{value ? trueIcon : falseIcon}}"></core-icon>
   </template>
-  <script type="text/javascript">
-
+  <script>
     Polymer({
-
       publish: {
         /**
          * String to display when value is true.
-         *
          * @attribute trueIcon
          * @type string
          * @default 'done'
          */
         trueIcon: 'done',
-        
         /**
          * String to display when value is false.
-         *
          * @attribute falseIcon
          * @type string
          * @default 'clear'
@@ -80,29 +75,26 @@ __Note__: When you tab-focus this element you can use enter/spacebar to toggle t
       },
       tapAction: function(event) {
         if (this.disabled) return;
-        event.preventDefault();
-        event.stopPropagation();
-        this.toggle();
+        if (event.path[0] == this.$.value) {
+          this.toggle();
+        }
       },
       keydownAction: function(event) {
         if (this.disabled) return;
-        if (this.validKeys.indexOf(event.which) == -1) return;
-        event.preventDefault();
-        event.stopPropagation();
-        this.toggle();
+        if (event.path[0] == this.$.value) {
+          if (this.validKeys.indexOf(event.which) == -1) return;
+          event.preventDefault(); // prevent blur
+          this.toggle();
+        }
       },
-
       /**
        * Toggles the value.
-       *
        * @method toggle
        */
       toggle: function() {
         this.value = !this.value;
         this.fireValueSet();
       }
-
     });
-
   </script>
 </polymer-element>

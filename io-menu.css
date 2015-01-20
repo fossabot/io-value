@@ -1,4 +1,5 @@
 :host {
+  font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -6,10 +7,19 @@
   touch-action: none;
   display: none;
   position: relative;
-  top:0;
-  left: 0;
-  z-index: 101;
-  cursor: default;
+  /*top:0;*/
+  /*left: 0;*/
+  /*z-index: 101;*/
+  /*cursor: default;*/
+  /* visual */
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 0.2em;
+  background: #f9f9f9;
+  box-shadow: 0.2em 0.2em 0.1em rgba(0, 0, 0, 0.25);
+  color: #333;
+}
+:host(:focus) {
+  outline: 0;
 }
 :host([noHide]) {
   display: inline-block;
@@ -26,6 +36,9 @@
   top: 0;
   left: 100%;
 }
+
+
+
 :host([horizontal])::shadow > io-menu-option::shadow > io-menu {
   top: 100%;
   left: 0;
@@ -33,33 +46,54 @@
 :host([horizontal])::shadow > io-menu-option {
   display: inline-block;
 }
-:host::shadow > io-menu-option {
+io-menu-option {
   display: block;
+  /* visual */
+  padding: 0.3em;
+  border-radius: 0.1em;
+}
+io-menu-option:focus {
+  outline: 0;
+}
+io-menu-option[expanded] {
+  /* visual */
+  background: #999;
+  color: #fff;
 }
 :host([horizontal])::shadow > hr {
-  display: none;
   /* TODO: implement vertical divider */
+  display: none;
 }
+hr {
+  /* visual */
+  border: 0;
+  margin: 0.25em 0;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.25); 
+}
+
+
 :host > #search {
   display: block;
 }
+
+:host > #search::shadow > .io-bundle-value {
+  /* visual */
+  display: block;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  margin: 0.25em;
+  padding: 0.3em;
+  background: white;
+}
+
 :host > #search::shadow > .io-bundle-value:empty:after {  
   content: "Search...";
 }
 
 :host > #tooltip {
-  width: 14em;
+  /* visual */
+  min-width: 6em;
+  max-width: 120em;
+  padding: 0.5em; 
   white-space: normal;
-}
-
-/* clickmask */
-
-:host > #clickmask {
-  position: fixed;
-  top: -10000px;
-  left: -10000px;
-  bottom: -10000px;
-  right: -10000px;
-  z-index: -1;
-  cursor: default !important;
 }

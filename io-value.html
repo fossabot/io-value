@@ -32,7 +32,13 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
 <link rel="import" href="../polymer/polymer.html">
 
 <polymer-element name="io-value">
-  <template></template>
+  <template>
+    <link rel="stylesheet" href="io-base.css" shim-shadowdom>
+    <template if="{{label && labeled}}">
+      <span class="io-value-label">{{label}}</span>
+    </template>
+    <span id="editor"></span>
+  </template>
   <script type="text/javascript">
 
   (function() {
@@ -49,6 +55,8 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
     Polymer({
 
       publish: {
+        labeled: {value: true, reflect: true},
+        label: null,
         // all attributes supported by elements that
         // io-value can create.
         naked: {value: false, reflect: true},
@@ -56,33 +64,18 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
         disabled: {value: false, reflect: true},
         collapsable: {value: true, reflect: true},
         expanded: {value: false, reflect: true},
-        labeled: {value: true, reflect: true},
-        label: null,
         inline: {value: false, reflect: true},
-        min: -Infinity,
-        max: Infinity,
-        step: -1,
+        // min: -Infinity,
+        // max: Infinity,
+        // step: -1,
         toDeg: {value: false, reflect: true}
       },
 
       io: null,
       iotype: {value: null, reflect: true},
 
-      eventDelegates: {
-        'tap': 'tapAction'
-      },
-
       observe: {
         'value label': 'createElement'
-      },
-
-      tapAction: function(event) {
-        if (this.io && this.io.tapAction) {
-          this.io.tapAction(event);
-        }
-        if (this.valueSetter && this.valueSetter.tapAction) {
-          this.valueSetter.tapAction(event);
-        }
       },
 
       ready: function() {
@@ -93,11 +86,11 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
       },
 
       createValueSetter: function() {
-        this.shadowRoot.innerHTML = '';
+        this.$.editor.innerHTML = '';
         this.io = null;
         this.valueSetter = document.createElement('io-string');
         this.valueSetter.setAttribute('placeholder', '' + this.value);
-        this.shadowRoot.appendChild(this.valueSetter);
+        this.$.editor.appendChild(this.valueSetter);
         this.valueSetter.addEventListener('value-changed', function(event) {
           var value = event.detail.value;
           if (value === undefined || value === null || value === NaN || value === '') {
@@ -128,11 +121,11 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
         }
 
         // value is a function.
-        if (typeof this.value == 'function') {
-          this.iotype = 'function';
-          this.shadowRoot.innerHTML = this.label + ': function';
-          return;
-        }
+        // if (typeof this.value == 'function') {
+        //   this.iotype = 'function';
+        //   this.$.editor.innerHTML = this.label + ': function';
+        //   return;
+        // }
 
         var type;
 
@@ -145,11 +138,11 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
         // If type is supported and not the same as previous,
         // create the corresponting element.
         if (type && this.iotype != type) {
-          this.shadowRoot.innerHTML = '';
+          this.$.editor.innerHTML = '';
           this.valueSetter = null;
           this.iotype = type;
           this.io = document.createElement(type);
-          this.shadowRoot.appendChild(this.io);
+          this.$.editor.appendChild(this.io);
           // Bind all specified attributes to the new element.
           for (var i in this.publish) {
             this.io.bindProperty(i, new PathObserver(this, i));

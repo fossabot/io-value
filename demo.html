@@ -8,14 +8,11 @@
   <link rel="import" href="../polymer/polymer.html">
   <link rel="import" href="../show-and-tell/show-and-tell.html">
   <link rel="import" href="io-bundle.html">
-  <link rel="stylesheet" href="theme.css" shim-shadowdom>
   <style type="text/css">
     html {
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     }
     body{
-      width: 100%;
-      height: 100%;
       margin: 0.5rem;
       font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 13px;
@@ -32,7 +29,7 @@
     }
   </style>
 </head>
-<body unresolved>
+<body unresolved fullbleed>
   <h2>io-bundle Demos</h2>
   <p>A collection of I/O web components for various data types.</p>
   <p>Use the interactive tag inspector to experiment with attributes.</p>
@@ -65,30 +62,24 @@
     <show-and-tell></show-and-tell>
     <io-object expanded></io-object>
   </div>
-  <div class="demo">
-    <show-and-tell></show-and-tell>
-    <io-inspector></io-inspector>
-  </div>
   <div class="demo" style="height: 200px;">
     <show-and-tell></show-and-tell>
     <io-menu autoExpand noHide search></io-menu>
   </div>
   <script>
-    var object, menu, options, inspector;
+    var object, menu, options;
     window.addEventListener('polymer-ready', function() {
       object = document.querySelector('io-object');
       options = document.querySelector('io-options');
-      inspector = document.querySelector('io-inspector');
       menu = document.querySelector('io-menu');
 
       object.value = ['one', true, 1];
       options.options = [1, 2, ['three', 3]];
       options.value = 1;
-      inspector.value = document.body;
       menu.options = [
         { label: 'Options', icon: 'close', options: [
           { label: 'Option1', options: [
-            { label: 'Suboption1', action: function() { alert('Suboption1'); } },
+            { label: 'Suboption1', action: function() { alert('Suboption1'); }, tooltip: 'This is a tooltip.' },
             { label: 'Suboption2', action: function(msg) { alert(msg); }, arguments: ['Suboption2'] },
             { label: 'Suboption3', action: function(msg1, msg2) { alert(msg1 + msg2); }, arguments: ['Suboption', '3'] }
           ] },
