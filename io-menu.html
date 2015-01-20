@@ -84,6 +84,19 @@ Example:
 
     var MARGIN = 14;
 
+    var getOverflowedParent = function(elem) {
+      var parent = elem.parentElement || elem.parentNode.host;
+      if (parent) {
+        var overflow = window.getComputedStyle(parent).overflow;
+        if (overflow != 'visible') {
+          return parent;
+        }
+        return getOverflowedParent(parent);
+      } else {
+        return elem;
+      }
+    }
+
     /**
      * Fired when menu action is executed.
      * 
@@ -222,6 +235,8 @@ Example:
       startAnimation: function() {
         this.playing = true;
         this.animate();
+        // TODO: replace with overlay technique
+        this.overflowedParent = getOverflowedParent(this);
       },
       stopAnimation: function() {
         this.playing = false;
@@ -387,16 +402,19 @@ Example:
         if (hoveredMenu != this) return;
         var TOPMARGIN = MARGIN + 32;
         var rect = this.getBoundingClientRect();
+        var overflowRect = this.overflowedParent.getBoundingClientRect();
         var style = window.getComputedStyle(this);
-        if (tempY < 100 && rect.top < TOPMARGIN) {
-          var scrollSpeed = (100 - tempY) / 2000;
-          var overflow = rect.top - TOPMARGIN;
+        if (tempY < 100 + overflowRect.top && rect.top < TOPMARGIN + overflowRect.top) {
+          var scrollSpeed = (100 + overflowRect.top - tempY) / 2000;
+          var overflow = rect.top - TOPMARGIN - overflowRect.top;
           this.style.top = parseInt(style.top) - Math.ceil(overflow * scrollSpeed) + 1 + 'px';
+        
         } else if (tempY > window.innerHeight - 100 && rect.bottom > window.innerHeight - MARGIN) {
           var scrollSpeed = (100 - (window.innerHeight - tempY)) / 2000;
           var overflow = (rect.bottom - window.innerHeight) + MARGIN;
           this.style.top = parseInt(style.top) - Math.ceil(overflow * scrollSpeed) - 1 + 'px';
         }
+
       },
 
       updateOptionElems: function() {
@@ -441,11 +459,13 @@ Example:
         this.filteredOptions = this.filterOptions(this.options);
       },
       sortOptions: function(options) {
-        return options.sort(function(a, b) {
-          if (a.label < b.label)
-             return -1;
-          if (a.label > b.label)
+        return options.concat().sort(function(a, b) {
+          if (a.label < b.label) {
+            return -1;
+          }
+          if (a.label > b.label) {
             return 1;
+          }
           return 0;
         });
       },
