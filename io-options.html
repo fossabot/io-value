@@ -85,15 +85,17 @@ See `theme.css` for styling reference.
 
       tapAction: function(event) {
         if (this.disabled) return;
-        // event.preventDefault();
-        // event.stopPropagation();
+        // TODO: check if needed
+        event.preventDefault();
+        event.stopPropagation();
         this.expand();
       },
       keydownAction: function(event) {
         if (this.disabled) return;
         if (this.validKeys.indexOf(event.which) == -1) return;
-        // event.preventDefault();
-        // event.stopPropagation();
+        // TODO: check if needed
+        event.preventDefault();
+        event.stopPropagation();
         this.expand();
       },
       blurAction: function() {

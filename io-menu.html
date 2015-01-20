@@ -40,16 +40,15 @@ Example:
 @status alpha
 -->
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-overlay/core-overlay-layer.html">
 <link rel="import" href="io-menu-option.html">
+<link href="io-menu-overlay-layer.css" rel="stylesheet" type="text/css">      
 
 <polymer-element name="io-menu" tabindex="0" class="io-bundle" oncontextmenu="return false;">
   <template>
-    <link href="io-menu.css" rel="stylesheet" type="text/css" shim-shadowdom>
+    <link href="io-menu.css" rel="stylesheet" type="text/css" shim-shadowdom>      
     <template if="{{tooltip}}">
       <div id="tooltip">{{tooltip}}</div>
-    </template>
-    <template if="{{clickmasked}}">
-      <div id="clickmask" on-tap="{{collapsefromClickMask}}"></div>
     </template>
     <io-string style="display: {{search ? 'block' : 'none'}}" id="search" value="{{searchString}}" updateImmediate></io-string>
     <template if="{{expanded || noHide}}">
@@ -84,18 +83,8 @@ Example:
 
     var MARGIN = 14;
 
-    var getOverflowedParent = function(elem) {
-      var parent = elem.parentElement || elem.parentNode.host;
-      if (parent) {
-        var overflow = window.getComputedStyle(parent).overflow;
-        if (overflow != 'visible') {
-          return parent;
-        }
-        return getOverflowedParent(parent);
-      } else {
-        return elem;
-      }
-    }
+    var overlayLayer = document.createElement('core-overlay-layer');
+    overlayLayer.className = 'io-menu-overlay-layer';
 
     /**
      * Fired when menu action is executed.
@@ -214,7 +203,6 @@ Example:
 
       isSubmenu: false,
       optionElems: null,
-      clickmasked: false,
 
       eventDelegates: {
         'touchstart': 'onDown',
@@ -226,17 +214,17 @@ Example:
       ready: function() {
         this._expand = this.expand.bind(this);
         this._collapse = this.collapse.bind(this);
+        this._collapseFromOverlay = this.collapseFromOverlay.bind(this);
         this._expandPrimary = this.expandPrimary.bind(this);
         this._animate = this.animate.bind(this);
       },
+
       detached: function() {
         this.stopAnimation();
       },
       startAnimation: function() {
         this.playing = true;
         this.animate();
-        // TODO: replace with overlay technique
-        this.overflowedParent = getOverflowedParent(this);
       },
       stopAnimation: function() {
         this.playing = false;
@@ -314,11 +302,10 @@ Example:
         }
       },
 
-      collapsefromClickMask: function(event) {
-        event.stopPropagation();
+      collapseFromOverlay: function(event) {
+        if (event.path[0] !== overlayLayer) return;
         this.collapse(event);
       },
-
       collapse: function(event) {
         this.expanded = false;
         previousOption = null;
@@ -360,20 +347,21 @@ Example:
           arguments: option.arguments
         });
       },
+
       expandedChanged: function() {
         if (this.expanded) {
           this.style.visibility = 'hidden';
           setTimeout(this.nudge.bind(this), 1);
           if (this.search) {
             this.searchString = '';
-            this.$.search.focusAction();
+            this.$.search.$.value.focus();
           }
-          if (this.parentNode.localName || this.parentNode.host.localName !== 'io-menu-option') {
-            this.clickmasked = true;
+          if (!this.isSubmenu()) {
+            this.moveToOverlay();
           }
           this.startAnimation();
         } else {
-          this.clickmasked = false;
+          this.bringBackFromOverlay();
           this.stopAnimation();
         }
       },
@@ -388,7 +376,7 @@ Example:
         // nudge left
         var rightDist = rect.right + MARGIN - window.innerWidth;
         if (rightDist > 0) {
-          if (this.parentNode.localName || this.parentNode.host.localName == 'io-menu-option') {
+          if (this.isSubmenu()) {
             this.style.left = - rect.width + 'px';
           } else {
             this.style.left = parseInt(style.left) - rightDist + 'px';
@@ -400,15 +388,12 @@ Example:
 
       scroll: function() {
         if (hoveredMenu != this) return;
-        var TOPMARGIN = MARGIN + 32;
         var rect = this.getBoundingClientRect();
-        var overflowRect = this.overflowedParent.getBoundingClientRect();
         var style = window.getComputedStyle(this);
-        if (tempY < 100 + overflowRect.top && rect.top < TOPMARGIN + overflowRect.top) {
-          var scrollSpeed = (100 + overflowRect.top - tempY) / 2000;
-          var overflow = rect.top - TOPMARGIN - overflowRect.top;
+        if (tempY < 100 && rect.top < MARGIN) {
+          var scrollSpeed = (100 - tempY) / 2000;
+          var overflow = rect.top - MARGIN;
           this.style.top = parseInt(style.top) - Math.ceil(overflow * scrollSpeed) + 1 + 'px';
-        
         } else if (tempY > window.innerHeight - 100 && rect.bottom > window.innerHeight - MARGIN) {
           var scrollSpeed = (100 - (window.innerHeight - tempY)) / 2000;
           var overflow = (rect.bottom - window.innerHeight) + MARGIN;
@@ -472,8 +457,36 @@ Example:
       sortedChanged: function() {
         if (!this.options) return;
         this.sortedOptions = this.sorted ? this.sortOptions(this.options) : [];
-      }
+      },
 
+      isSubmenu: function() {
+        return this.parentNode.host && this.parentNode.host.localName == 'io-menu-option';
+      },
+      moveToOverlay: function() {
+        if (!this.originalParent) {
+          this.originalParent = this.parentNode;
+          this.originalStyle = window.getComputedStyle(this);
+          var rect = this.getBoundingClientRect();
+          overlayLayer.addElement(this);
+          overlayLayer.addEventListener('click', this._collapseFromOverlay);
+          overlayLayer.opened = this.expanded;
+          this.style.position = 'absolute';
+          this.style.top = rect.top + 'px';
+          this.style.left = rect.left + 'px';
+        }
+      },
+      bringBackFromOverlay: function() {
+        if (this.originalParent) {
+          overlayLayer.removeEventListener('click', this._collapseFromOverlay);
+          overlayLayer.opened = this.expanded;
+          this.originalParent.appendChild(this);
+          this.style.position = this.originalStyle.position || 'inherit';
+          this.style.top = this.originalStyle.position.top || 'auto';
+          this.style.left = this.originalStyle.position.left || 'auto';
+          delete this.originalParent;
+          delete this.originalStyle;
+        }
+      },
     });
 
   })();

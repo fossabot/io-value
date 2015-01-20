@@ -15,7 +15,7 @@ limitations under the License.
 -->
 
 <!--
-I/O web component for string data type.
+I/O element for string data type.
 
 Example:
 
@@ -27,7 +27,7 @@ See `theme.css` for styling reference.
 @extends io-base
 @homepage https://github.com/arodic/io-bundle
 @demo http://akirodic.com/components/io-bundle/demo.html
-@blurb I/O web component for string data type.
+@blurb I/O element for string data type.
 @status alpha
 -->
 <link rel="import" href="../polymer/polymer.html">
@@ -35,73 +35,43 @@ See `theme.css` for styling reference.
 
 <polymer-element name="io-string" extends="io-base">
   <template>
+    <link rel="stylesheet" href="io-base.css" shim-shadowdom>
     <link rel="stylesheet" href="io-string.css" shim-shadowdom>
-    <shadow></shadow>
     <span id="value" class="io-bundle-value" tabindex="0" spellcheck="false" contenteditable></span>
   </template>
   <script type="text/javascript">
-
-    (function() {
-      
       Polymer({
-
         publish: {
-          placeholder: "string",
           multiline: {value: false, reflect: true}
         },
 
+        placeholder: "string",
+
         eventDelegates: {
           'keydown': 'keydownAction',
-          'keyup': 'keyupAction',
-          'tap': 'tapAction'
+          'keyup': 'keyupAction'
         },
         keydownAction: function(event) {
           if (this.disabled) return;
-          // event.stopPropagation();
-          if (event.which == 13 && !this.multiline) {
-            event.preventDefault();
-            return;
+          if (event.path[0] == this.$.value) {
+            if (event.which == 13 && !this.multiline) {
+              event.preventDefault();
+              return;
+            }
           }
         },
         keyupAction: function(event) {
           if (this.disabled) return;
-          // event.stopPropagation();
-          if (event.which == 13 && !this.multiline) {
-            event.preventDefault();
-            return;
+          if (event.path[0] == this.$.value) {
+            this.immediateValue = this.$.value.innerHTML;
           }
-          this.immediateValue = this.$.value.textContent;
-          if (this.updateImmediate) this.fireValueSet();
         },
-        tapAction: function(event) {
-          this.super();
-          if (this.disabled) return;
-          // this.clickmasked = true;
-          // event.stopPropagation();
-          this.focusAction(event);
-          // this.$.value.focus();
-        },
-        blurAction: function(event) {
-          this.super();
-          if (this.disabled) return;
-          // this.clickmasked = false;
-          this.value = this.$.value.textContent;
-        },
-        updateImmediateValue: function() {
-          this.immediateValue = this.$.value.textContent;
-        },
-        valueChanged: function() {
+        immediateValueChanged: function() {
           this.super();
           if (!this.focused) {
-            if (this.value === undefined) {
-              this.$.value.textContent = '';
-            } else {
-              this.$.value.textContent = this.value;
-            }
+            this.$.value.innerHTML = this.immediateValue || '';
           }
-        },
+        }
       });
-
-    })();
   </script>
 </polymer-element>

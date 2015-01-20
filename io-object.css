@@ -1,16 +1,12 @@
-:host > .io-bundle-value {
-  vertical-align: top;
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
+:host /deep/ .io-bundle-constructor {
+  font-style: italic;
 }
 :host(:not([inline])) > .io-bundle-value {
   display: inline-block;
 }
 :host(:not([inline])) > .io-bundle-value > io-value {
   display: block;
-  margin-left: 0.5em;
+  margin-left: 1em;
 }
 :host(:not([naked])) > .io-bundle-value > io-value:not(:last-of-type)::after {
   content: ', ';

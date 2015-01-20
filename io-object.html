@@ -39,23 +39,23 @@ See `theme.css` for styling reference.
 
 <polymer-element name="io-object" extends="io-base">
   <template>
-    <shadow></shadow>
+    <link rel="stylesheet" href="io-base.css" shim-shadowdom>
     <link rel="stylesheet" href="io-object.css" shim-shadowdom>
     <span class="io-bundle-value">
-        <template if="{{collapsable && keys.length}}">
-            <io-boolean-icon value="{{expanded}}" trueIcon="expand-more" falseIcon="chevron-right">
-            </io-boolean-icon>
+      <template if="{{collapsable && keys.length}}">
+        <io-boolean-icon value="{{expanded}}" trueIcon="expand-more" falseIcon="chevron-right"></io-boolean-icon>
+      </template>
+      <template if="{{expanded || !collapsable}}">
+        <template repeat="{{key, i in keys}}">
+          <io-value
+            value="{{value[key]}}"
+            disabled="{{disabled}}"
+            labeled="{{labeled}}"
+            label="{{labeled ? key : ''}}:">
+          </io-value> 
         </template>
-        <template if="{{expanded || !collapsable}}">
-            <template repeat="{{key, i in keys}}">
-                <io-value
-                    value="{{value[key]}}"
-                    disabled="{{disabled}}"
-                    label="{{labeled ? key : ''}}:">
-                </io-value> 
-            </template>
-        </template>
-        <template if="{{collapsable && !expanded}}"><span class="io-bundle-constructor">{{value.constructor.name}}</span>[{{keys.length}}]</template>
+      </template>
+      <template if="{{collapsable && !expanded}}"><span class="io-bundle-constructor">{{value.constructor.name}}</span>[{{keys.  length}}]</template>
     </span>
   </template>
   <script type="text/javascript">
