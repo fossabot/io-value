@@ -1,6 +1,6 @@
 {
   "name": "io-bundle",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "homepage": "https://arodic.github.com/components/io-bundle",
   "authors": [
     "Aleksandar Rodic <aleksandar.xyz@gmail.com>"
@@ -18,7 +18,7 @@
   "license": "Apache 2.0",
   "dependencies": {
     "polymer": "Polymer/polymer#~0.5.2",
-    "io-menu": "arodic/io-menu#~0.1.0",
+    "io-menu": "arodic/io-menu#~0.1.1",
     "core-icons": "Polymer/core-icons#~0.5.2"
   }
 }

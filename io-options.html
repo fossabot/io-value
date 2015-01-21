@@ -75,7 +75,7 @@ See `theme.css` for styling reference.
 
       eventDelegates: {
         'keydown': 'keydownAction',
-        'tap': 'tapAction'
+        'down': 'downAction'
       },
 
       ready: function() {
@@ -83,7 +83,7 @@ See `theme.css` for styling reference.
         this._setValue = this.setValue.bind(this);
       },
 
-      tapAction: function(event) {
+      downAction: function(event) {
         if (this.disabled) return;
         // TODO: check if needed
         event.preventDefault();
