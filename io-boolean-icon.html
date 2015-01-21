@@ -61,8 +61,6 @@ __Note__: When you focus this element you can use enter/spacebar to toggle the v
         falseIcon: 'clear'
       },
 
-      validKeys: [13, 32], // enter, spacebar
-
       eventDelegates: {
         'keydown': 'keydownAction',
         'down': 'downAction',
@@ -82,8 +80,8 @@ __Note__: When you focus this element you can use enter/spacebar to toggle the v
       keydownAction: function(event) {
         if (this.disabled) return;
         if (event.path[0] == this.$.value) {
-          if (this.validKeys.indexOf(event.which) == -1) return;
           event.preventDefault(); // prevent blur
+          if (event.which == 13 || event.which == 32) return; // enter, spacebar
           this.toggle();
         }
       },

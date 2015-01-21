@@ -50,66 +50,10 @@ html /deep/ io-object:not([naked]).array > .io-bundle-value::after {
   /*content: ']';*/
 }
 
-
-/****************/
-/* menu overlay */
-/****************/
-
-core-overlay-layer.io-menu-overlay-layer {
-  /*background: transparent;*/
-}
+/***********/
+/* options */
+/***********/
 
 /* io-options.css */
 html /deep/ io-options::shadow > io-menu {}
 html /deep/ io-options::shadow > io-menu[expanded] {}
-
-/* io-menu.css */
-html /deep/ io-menu {
-/*  border: 1px solid rgba(0, 0, 0, 0.25);
-  border-radius: 0.2em;
-  background: #e9e9e9;
-  box-shadow: 0.2em 0.2em 0.1em rgba(0, 0, 0, 0.25);
-  color: #333;*/
-}
-
-html /deep/ io-menu::shadow > #search::shadow > .io-bundle-value {
-/*  display: block;
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  margin: 0.25em;
-  padding: 0.3em;
-  background: white;*/
-}
-
-html /deep/ io-menu::shadow > hr {
-/*  border: 0;
-  margin: 0.25em 0;
-  height: 1px;
-  background-color: rgba(0, 0, 0, 0.25);*/
-}
-
-/* io-menu-option.css */
-html /deep/ io-menu-option {
-  /*padding: 0.3em;*/
-  /*border-radius: 0.1em;*/
-}
-
-html /deep/ io-menu-option[expanded] {
-  /*background: #69F;*/
-  /*color: #fff;*/
-}
-html /deep/ io-menu-option::shadow > core-icon {}
-
-html /deep/ io-menu::shadow > #tooltip {
-  /*min-width: 6em;*/
-  /*max-width: 120em;*/
-  /*padding: 0.5em; */
-  /*white-space: normal;*/
-}
-
-/* io-inspector.css */
-/*html /deep/ io-inspector /deep/ io-object::shadow > .io-bundle-label {*/
-  /*color: rgb(64, 96, 196);*/
-/*}*/
-/*html /deep/ io-inspector /deep/ io-object::shadow > .io-bundle-label:hover {*/
-  /*text-decoration: underline;*/
-/*}*/

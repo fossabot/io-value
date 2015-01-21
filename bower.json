@@ -1,12 +1,12 @@
 {
   "name": "io-bundle",
-  "version": "0.5.9",
+  "version": "0.6.1",
   "homepage": "https://arodic.github.com/components/io-bundle",
   "authors": [
     "Aleksandar Rodic <aleksandar.xyz@gmail.com>"
   ],
   "description": "A collection of I/O web components for various data types",
-  "main": "io-bundle.html",
+  "main": "io-value.html",
   "keywords": [
     "input",
     "output",
@@ -18,7 +18,7 @@
   "license": "Apache 2.0",
   "dependencies": {
     "polymer": "Polymer/polymer#~0.5.2",
-    "core-icons": "Polymer/core-icons#~0.5.2",
-    "core-overlay": "Polymer/core-overlay#~0.5.2"
+    "io-menu": "arodic/io-menu#~0.1.0",
+    "core-icons": "Polymer/core-icons#~0.5.2"
   }
 }
