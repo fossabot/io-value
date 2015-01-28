@@ -123,6 +123,7 @@ Base for generic io-bundle input elements
         this.focused = false;
       },
       dblclickAction: function() {
+        if (this.disabled) return;
         if (this.$.value && this.clickmasked) {         
           this.$.value.setAttribute('tabindex', 0);
           this.$.value.setAttribute('contenteditable', '');
