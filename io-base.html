@@ -59,6 +59,14 @@ Base for generic io-bundle input elements
          */
         disabled: {value: false, reflect: true},
         /**
+         * Determines if the input can be clicked.
+         * If enabled, the input requires double-click to focus.
+         * @attribute clickmasked
+         * @type boolean
+         * @default false
+         */
+        clickmasked: {value: false, reflect: true},
+        /**
          * Changes when input element changes focus.
          * @attribute focused
          * @type boolean
@@ -79,16 +87,21 @@ Base for generic io-bundle input elements
         'aria-disabled': {value: false, reflect: true}
       },
 
+      parent: null,
+
       computed: {
         'aria-label': 'placeholder',
         'aria-disabled': 'disabled'
       },
 
-      parent: null,
+      observe: {
+        'disabled clickmasked': 'updateEditable'
+      },
 
       eventDelegates: {
         'focus': 'focusAction',
-        'blur': 'blurAction'
+        'blur': 'blurAction',
+        'dblclick': 'dblclickAction'
       },
       focusAction: function(event) {
         if (this.disabled) return;
@@ -100,6 +113,7 @@ Base for generic io-bundle input elements
         var selection = window.getSelection();
         selection.removeAllRanges();
         if (this.disabled) return;
+        if (this.clickmasked) this.updateEditable();
         // TODO: verify event?
         if (this.value !== this.immediateValue) {
           this.value = this.immediateValue;
@@ -107,6 +121,14 @@ Base for generic io-bundle input elements
         }
         this.immediateValueChanged();
         this.focused = false;
+      },
+      dblclickAction: function() {
+        if (this.disabled) return;
+        if (this.$.value && this.clickmasked) {         
+          this.$.value.setAttribute('tabindex', 0);
+          this.$.value.setAttribute('contenteditable', '');
+          this.$.value.focus();
+        }
       },
       immediateValueChanged: function() {
         if (this.updateImmediate) {
@@ -141,9 +163,9 @@ Base for generic io-bundle input elements
          */
         this.fire('value-changed', {element: this, value: this.value});
       },
-      disabledChanged: function() {
+      updateEditable: function() {
         if (this.$.value) {         
-          if (this.disabled) {
+          if (this.disabled || this.clickmasked) {
             this.$.value.removeAttribute('tabindex');
             this.$.value.removeAttribute('contenteditable');
           } else {
