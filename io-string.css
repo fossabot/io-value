@@ -3,6 +3,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+:host > .io-bundle-value:focus {
+  text-overflow: inherit;
+}
 :host > .io-bundle-value:empty {
   min-width: 0.5em;
   cursor: text;
