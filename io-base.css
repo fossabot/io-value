@@ -11,3 +11,7 @@
 :host /deep/ .io-bundle-value.invalid:focus {
   /*border-bottom: 1px solid red;*/
 }
+
+:host /deep/ .io-value-label {
+  vertical-align: top;
+}
