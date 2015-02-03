@@ -119,6 +119,9 @@ Base for generic io-bundle input elements
           this.value = this.immediateValue;
           this.fireValueSet();
         }
+        if (this.$.value && event.path[0] == this.$.value) {
+          this.$.value.scrollLeft = 0
+        }
         this.immediateValueChanged();
         this.focused = false;
       },
