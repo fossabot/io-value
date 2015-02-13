@@ -125,7 +125,7 @@ See `theme.css` for styling reference.
       },
       valueChanged: function() {
         this.immediateValue = this.value; //?
-        if (typeof this.value !== 'object') return;
+        if (this.value === null || typeof this.value !== 'object') { return; }
         if (this.observer) this.observer.close();
         this.classList.toggle('array', this.value instanceof Array);
         // TODO: find better way to observe mutations. This technique beraks three-attributes in FF
