@@ -75,7 +75,23 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
         // min: -Infinity,
         // max: Infinity,
         // step: -1,
-        toDeg: {value: false, reflect: true}
+        toDeg: {value: false, reflect: true},
+
+        /**
+         * Set to true if this is the top-level io-value within a scrollable container. Allows this
+         * io-value to serve as the scrollTarget for all child items using core-list.
+         * @atribute isTopLevel
+         * @type boolean
+         */
+        isTopLevel: {value: false, reflect: true},
+
+        /**
+         * An optional element on which to listen for scroll events. See core-list's scrollTarget
+         * attribute and docs on "non-native scrollers" for more information. This
+         * @attribute scrollTarget
+         * @type Element
+         */
+        scrollTarget: null
       },
 
       io: null,
@@ -85,7 +101,20 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
         'value label': 'createElement'
       },
 
+      // Satisfies non-native scroller API for core-list
+      getScrollTop: function() {
+        return this.scrollTop;
+      },
+
+      // Satisfies non-native scroller API for core-list
+      setScrollTop: function(scrollTop) {
+        this.scrollTop = scrollTop;
+      },
+
       ready: function() {
+        if (this.isTopLevel) {
+          this.scrollTarget = this;
+        }
         if (this.value === undefined || this.value === null || this.value === NaN) {
           this.createValueSetter();
           return;
@@ -124,6 +153,7 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
         // value is invalid (undefined, null or NaN).
         if (this.value === undefined || this.value === null || this.value === NaN) {
           this.createValueSetter();
+          this.iotype = 'setter';
           return;
         }
 

@@ -18,7 +18,7 @@ limitations under the License.
 I/O web component for Object data type.
 
 Example:
-    <io-object value="[0,1,"apple",false]" inline labeled="false"></io-object>
+    <io-object value="[0,1,"apple",false]" labeled="false"></io-object>
 
 See `theme.css` for styling reference.
 
@@ -30,6 +30,9 @@ See `theme.css` for styling reference.
 @status alpha
 -->
 <link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="../core-list/core-list.html">
+
 <link rel="import" href="io-boolean.html">
 <link rel="import" href="io-boolean-icon.html">
 <link rel="import" href="io-string.html">
@@ -42,22 +45,31 @@ See `theme.css` for styling reference.
     <link rel="stylesheet" href="io-base.css" shim-shadowdom>
     <link rel="stylesheet" href="io-object.css" shim-shadowdom>
     <span class="io-bundle-value">
-      <template if="{{collapsable && keys.length}}">
+      <template if="{{collapsable}}">
         <io-boolean-icon value="{{expanded}}" trueIcon="expand-more" falseIcon="chevron-right"></io-boolean-icon>
       </template>
       <template if="{{expanded || !collapsable}}">
-        <template repeat="{{key, i in keys}}">
-          <io-value
-            value="{{value[key]}}"
-            disabled="{{disabled}}"
-            labeled="{{labeled}}"
-            label="{{labeled ? key : ''}}:">
-          </io-value>
-        </template>
+        <core-list
+            data="{{valueAsArray}}"
+            scrollTarget="{{scrollTarget}}"
+            height="15"
+            runwayFactor="4">
+          <template>
+            <io-value
+              value="{{model.value}}"
+              expanded="{{model._expanded}}"
+              disabled="{{disabled}}"
+              labeled="{{labeled}}"
+              label="{{labeled ? model.key : ''}}:"
+              scrollTarget="{{scrollTarget}}">
+            </io-value>
+          </template>
+        </core-list>
       </template>
-      <template if="{{collapsable && !expanded}}"><span class="io-bundle-constructor">{{value.constructor.name}}</span>[{{keys.  length}}]</template>
+      <template if="{{collapsable && !expanded}}"><span class="io-bundle-constructor">{{value.constructor.name}}</span>[{{valueAsArray.length}}]</template>
     </span>
   </template>
+  <script type="text/javascript" src="io-object-to-array.js"></script>
   <script type="text/javascript">
 
     Polymer({
@@ -93,16 +105,6 @@ See `theme.css` for styling reference.
         expanded: {value: false, reflect: true},
 
         /**
-         * Determines if the items are displayed inline.
-         * Uses CSS attribute selector.
-         *
-         * @attribute inline
-         * @type boolean
-         * @default false
-         */
-        inline: {value: false, reflect: true},
-
-        /**
          * Determines if brackets and commas are displayed.
          * Uses CSS attribute selector.
          *
@@ -112,9 +114,19 @@ See `theme.css` for styling reference.
          */
         naked: {value: false, reflect: true},
 
+        /**
+         * An optional element on which to listen for scroll events. See core-list's scrollTarget
+         * attribute and docs on "non-native scrollers" for more information.
+         * @attribute scrollTarget
+         * @Element
+         */
+        scrollTarget: null
+
       },
 
-      keys: null,
+      computed: {
+        'valueAsArray': 'observedObjectToArray(value)'
+      },
 
       ready: function() {
         // Agregate value-set event to top-most io-object
@@ -122,25 +134,6 @@ See `theme.css` for styling reference.
           event.stopPropagation();
           this.fire('value-set', { element: this, value: this.value });
         }.bind(this));
-      },
-      valueChanged: function() {
-        this.immediateValue = this.value; //?
-        if (this.value === null || typeof this.value !== 'object') { return; }
-        if (this.observer) this.observer.close();
-        this.classList.toggle('array', this.value instanceof Array);
-        // TODO: find better way to observe mutations. This technique beraks three-attributes in FF
-        if (this.value instanceof Array) {
-            this.observer = new ArrayObserver(this.value);
-        } else {
-            this.observer = new ObjectObserver(this.value);
-        }
-        this.observer.open(function(added, removed, changed, getOldValueFn) {
-          this.updateKeys();
-        }.bind(this));
-        this.updateKeys();
-      },
-      updateKeys: function() {
-        this.keys = Object.keys(this.value);
       }
     });
 

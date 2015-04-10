@@ -1,12 +1,15 @@
 :host /deep/ .io-bundle-constructor {
   font-style: italic;
 }
-:host(:not([inline])) > .io-bundle-value {
-  display: inline-block;
+:host > .io-bundle-value {
+  display: block !important;
 }
-:host(:not([inline])) > .io-bundle-value > io-value {
-  display: block;
+:host > .io-bundle-value > core-list {
+  height: auto;
   margin-left: 1em;
+}
+:host > .io-bundle-value > core-list > io-value {
+  display: block;
 }
 :host(:not([naked])) > .io-bundle-value > io-value:not(:last-of-type)::after {
   content: ', ';
