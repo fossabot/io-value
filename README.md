@@ -1,8 +1,8 @@
 A collection of I/O web components for various data types
 =========================================================
 
-[DOCS](http://akirodic.com/io/io-bundle)
+[DOCS](http://akirodic.com/io/io-value)
 
-[DEMO](http://akirodic.com/io/io-bundle/demo.html)
+[DEMO](http://akirodic.com/io/io-value/demo.html)
 
-![io-bundle](http://akirodic.com/io/io-bundle/preview.png "io-bundle")
+![io-value](http://akirodic.com/io/io-value/preview.png "io-value")

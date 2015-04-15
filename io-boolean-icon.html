@@ -27,24 +27,35 @@ __Note__: When you focus this element you can use enter/spacebar to toggle the v
 
 @element input-boolean-icon
 @extends io-base
-@homepage https://github.com/arodic/io-bundle
-@demo http://akirodic.com/io/io-bundle/demo.html
+@homepage https://github.com/arodic/io-value
+@demo http://akirodic.com/io/io-value/demo.html
 @blurb I/O element for boolean data type. Displays value as core-icon.
 @status alpha
 -->
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../core-icons/core-icons.html">
-<link rel="import" href="io-base.html">
+<link rel="import" href="_io-base.html">
 
 <polymer-element name="io-boolean-icon" extends="io-base">
   <template>
-    <link rel="stylesheet" href="io-base.css" shim-shadowdom>
-    <link rel="stylesheet" href="io-boolean-icon.css" shim-shadowdom>
-    <core-icon id="value" class="io-bundle-value" tabindex="0" icon="{{value ? trueIcon : falseIcon}}"></core-icon>
+    <link rel="stylesheet" href="_io-base.css" shim-shadowdom>
+    <style type="text/css" shim-shadowdom>
+      :host > .io-editor {
+        width: 1em;
+        height: 1em;
+      }
+    </style>
+    <core-icon id="value" class="io-editor" tabindex="0" icon="{{value ? trueIcon : falseIcon}}"></core-icon>
   </template>
   <script>
     Polymer({
       publish: {
+        /**
+         * Input value.
+         * @attribute value
+         * @default false
+         */
+        value: false,
         /**
          * String to display when value is true.
          * @attribute trueIcon
@@ -60,16 +71,15 @@ __Note__: When you focus this element you can use enter/spacebar to toggle the v
          */
         falseIcon: 'clear'
       },
-
       eventDelegates: {
         'keydown': 'keydownAction',
         'down': 'downAction',
         'tap': 'tapAction'
       },
-
       downAction: function(event) {
-        if (this.disabled) return;
-        event.preventDefault(); // prevent focus
+        // prevent focus but let currently focused blur
+        event.preventDefault();
+        document.activeElement.blur();
       },
       tapAction: function(event) {
         if (this.disabled) return;
@@ -80,9 +90,10 @@ __Note__: When you focus this element you can use enter/spacebar to toggle the v
       keydownAction: function(event) {
         if (this.disabled) return;
         if (event.path[0] == this.$.value) {
-          event.preventDefault(); // prevent blur
-          if (event.which == 13 || event.which == 32) return; // enter, spacebar
-          this.toggle();
+          if (event.which == 13 || event.which == 32) {
+            event.preventDefault(); // prevent blur
+            this.toggle();
+          }
         }
       },
       /**

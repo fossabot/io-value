@@ -1,3 +1,4 @@
+<script type="text/javascript">
 // Custom filter used to return an array from an object.
 // Mutations on the object are observed and propagated to array.
 // Array elements are objects containing key and value property.
@@ -6,6 +7,7 @@
 (function() {
   var i, key, index;
   PolymerExpressions.prototype.ioObjectToArray = function(object) {
+    if (!object || typeof object != 'object') return;
     var array = [];
     array.indexOfObjectKey = function(key) {
       for (i = 0; i < this.length; i++) {
@@ -39,3 +41,4 @@
     return array;
   };
 }());
+</script>

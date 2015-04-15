@@ -1,0 +1,23 @@
+:host {
+  display: inline-block;
+}
+:host([disabled]) {
+  pointer-events: none;
+  color: red;
+}
+:host > .io-editor {
+  white-space: nowrap;
+  display: inline-block;
+}
+:host(:not([disabled])) > .io-editor {
+  cursor: pointer;
+}
+:host > .io-editor:focus {
+  outline: 0;
+}
+:host > .io-editor.invalid:focus {
+  color: red;
+}
+:host > .io-value-label {
+  vertical-align: top;
+}

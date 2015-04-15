@@ -24,54 +24,57 @@ Example:
 See `theme.css` for styling reference.
 
 @element io-string
-@extends io-base
-@homepage https://github.com/arodic/io-bundle
-@demo http://akirodic.com/io/io-bundle/demo.html
+@extends io-base-editable
+@homepage https://github.com/arodic/io-value
+@demo http://akirodic.com/io/io-value/demo.html
 @blurb I/O element for string data type.
 @status alpha
 -->
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="io-base.html">
+<link rel="import" href="_io-base-editable.html">
 
-<polymer-element name="io-string" extends="io-base">
+<polymer-element name="io-string" extends="io-base-editable">
   <template>
-    <link rel="stylesheet" href="io-base.css" shim-shadowdom>
-    <link rel="stylesheet" href="io-string.css" shim-shadowdom>
-    <span id="value" class="io-bundle-value" tabindex="0" spellcheck="false" contenteditable></span>
+    <link rel="stylesheet" href="_io-base.css" shim-shadowdom>
+    <link rel="stylesheet" href="_io-base-editable.css" shim-shadowdom>
+    <span id="value" class="io-editor" tabindex="0" spellcheck="false" contenteditable></span>
   </template>
   <script type="text/javascript">
+    // TODO: optimize and prevent pasting of breaklines.
+    (function() {
       Polymer({
         publish: {
           multiline: {value: false, reflect: true}
         },
-
         placeholder: "string",
-
         eventDelegates: {
-          'keydown': 'keydownAction',
-          'keyup': 'keyupAction'
+          'keydown': 'keydownAction'
         },
         keydownAction: function(event) {
           if (this.disabled) return;
-          if (event.path[0] == this.$.value) {
-            if (event.which == 13 && !this.multiline) {
-              event.preventDefault();
-              return;
-            }
+          if (event.path[0] !== this.$.value) return;
+          if (event.which == 13 && !this.multiline) {
+            event.preventDefault();
           }
+          this.async(function() {
+            this.updateImmediateValue();
+          }.bind(this));
         },
-        keyupAction: function(event) {
-          if (this.disabled) return;
-          if (event.path[0] == this.$.value) {
-            this.immediateValue = this.$.value.innerHTML;
-          }
+        updateImmediateValue: function(event) {
+          this.immediateValue = this.$.value.innerHTML;
         },
         immediateValueChanged: function() {
-          this.super();
+          if (this.updateImmediate) {
+            this.value = this.immediateValue;
+          }
           if (!this.focused) {
             this.$.value.innerHTML = this.immediateValue || '';
           }
+        },
+        valueChanged: function() {
+          this.immediateValue = this.value;
         }
       });
+    })();
   </script>
 </polymer-element>

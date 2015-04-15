@@ -2,21 +2,22 @@
 /* value field */
 /***************/
 
-html /deep/ .io-bundle-value {
+html /deep/ .io-editor {
   /*color: rgb(8, 128, 12);*/
 }
 /* focused value field */
-html /deep/ .io-bundle-value:focus {
+html /deep/ .io-editor:focus {
+  /*background: rgba(0, 0, 0, 0.25);*/
   /*border-bottom: 1px solid gray;*/
 }
 
 /* focused value field with error */
-html /deep/ .io-bundle-value.invalid:focus {
+html /deep/ .io-editor.invalid:focus {
   /*border-bottom: 1px solid red;*/
 }
 
 /* empty value field */
-html /deep/ .io-bundle-value:empty:after {  
+html /deep/ .io-editor:empty:after {
   /*content: "";*/
   /*opacity: 0.25;*/
 }
@@ -26,27 +27,27 @@ html /deep/ .io-bundle-value:empty:after {
 /**********/
 
 /* object constructor name */
-html /deep/ .io-bundle-constructor {
+html /deep/ .io-constructor {
   /*font-style: italic;*/
 }
 /* margin for expanded opbject's properties */
-html /deep/ io-object:not([inline]) > .io-bundle-value > io-value {
+html /deep/ io-object:not([inline]) > .io-editor > io-value {
   /*margin-left: 1em;*/
 }
 /* object property separatos and brackets */
-html /deep/ io-object:not([naked]) > .io-bundle-value > io-value:not(:last-of-type)::after {
+html /deep/ io-object:not([naked]) > .io-editor > io-value:not(:last-of-type)::after {
   /*content: ', ';*/
 }
-html /deep/ io-object:not([naked]) > .io-bundle-value::before {
+html /deep/ io-object:not([naked]) > .io-editor::before {
   /*content: '{';*/
 }
-html /deep/ io-object:not([naked]) > .io-bundle-value::after {
+html /deep/ io-object:not([naked]) > .io-editor::after {
   /*content: '}';*/
 }
-html /deep/ io-object:not([naked]).array > .io-bundle-value::before {
+html /deep/ io-object:not([naked]).array > .io-editor::before {
   /*content: '[';*/
 }
-html /deep/ io-object:not([naked]).array > .io-bundle-value::after {
+html /deep/ io-object:not([naked]).array > .io-editor::after {
   /*content: ']';*/
 }
 

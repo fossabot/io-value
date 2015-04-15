@@ -24,8 +24,8 @@ See `theme.css` for styling reference.
 
 @element io-object
 @extends io-base
-@homepage https://github.com/arodic/io-bundle
-@demo http://akirodic.com/io/io-bundle/demo.html
+@homepage https://github.com/arodic/io-value
+@demo http://akirodic.com/io/io-value/demo.html
 @blurb I/O web component for Object data type.
 @status alpha
 -->
@@ -38,62 +38,80 @@ See `theme.css` for styling reference.
 <link rel="import" href="io-string.html">
 <link rel="import" href="io-number.html">
 <link rel="import" href="io-value.html">
-<link rel="import" href="io-base.html">
+<link rel="import" href="io-object-to-array.html">
 
-<polymer-element name="io-object" extends="io-base">
+<polymer-element name="io-object">
   <template>
-    <link rel="stylesheet" href="io-base.css" shim-shadowdom>
-    <link rel="stylesheet" href="io-object.css" shim-shadowdom>
-    <span class="io-bundle-value">
-      <template if="{{collapsable}}">
-        <io-boolean-icon value="{{expanded}}" trueIcon="expand-more" falseIcon="chevron-right"></io-boolean-icon>
-      </template>
-      <template if="{{expanded || !collapsable}}">
-        <core-list
-            data="{{valueAsArray}}"
-            scrollTarget="{{scrollTarget}}"
-            height="15"
-            runwayFactor="4">
-          <template>
+    <style type="text/css" shim-shadowdom>
+      :host {
+        overflow: auto;
+      }
+      :host > core-list {
+        height: auto;
+        margin-left: 0.5em;
+      }
+      :host > core-list > div {
+        display: inline-block;
+        padding-left: 0.5em;
+      }
+      :host > .io-constructor {
+        font-style: italic;
+        font-weight: bold;
+      }
+      :host > core-list > div > .io-key {
+        color: rgb(140, 13, 150);
+      }
+      :host > core-list > div > io-value::shadow > io-string::shadow > .io-editor:not(:empty)::after,
+      :host > core-list > div > io-value::shadow > io-string::shadow > .io-editor:not(:empty)::before {
+        content: '"';
+      }
+      :host > core-list > div > io-value::shadow > io-string {
+        color: rgb(198, 22, 5);
+      }
+      :host > core-list > div > io-value::shadow > io-boolean,
+      :host > core-list > div > io-value::shadow > io-number {
+        color: rgb(25, 0, 211);
+      }
+    </style>
+    <io-boolean-icon value="{{expanded}}" trueIcon="expand-more" falseIcon="chevron-right"></io-boolean-icon>
+    <span class="io-constructor">{{value.constructor.name}}</span>
+    <span>[{{valueAsArray.length}}]</span>
+    <template if="{{expanded}}">
+      <core-list
+          data="{{valueAsArray}}"
+          scrollTarget="{{scrollTarget}}"
+          height="15"
+          runwayFactor="4">
+        <template>
+          <div>
+            <span class="io-key">{{model.key}}:</span>
             <io-value
               value="{{model.value}}"
               expanded="{{model._expanded}}"
               disabled="{{disabled}}"
-              labeled="{{labeled}}"
-              label="{{labeled ? model.key : ''}}:"
               scrollTarget="{{scrollTarget}}">
             </io-value>
-          </template>
-        </core-list>
-      </template>
-      <template if="{{collapsable && !expanded}}"><span class="io-bundle-constructor">{{value.constructor.name}}</span>[{{valueAsArray.length}}]</template>
-    </span>
+          </div>
+        </template>
+      </core-list>
+    </template>
   </template>
-  <script type="text/javascript" src="io-object-to-array.js"></script>
   <script type="text/javascript">
-
     Polymer({
-
       publish: {
-
         /**
-         * Determines if the element can be collapsed.
-         *
-         * @attribute collapsable
-         * @type boolean
-         * @default true
+         * Input value.
+         * @attribute value
+         * @default null
          */
-        collapsable: {value: true, reflect: true},
-
+        value: null,
         /**
-         * Determines if the label is displayed.
-         *
-         * @attribute labeled
+         * Determines if the input can be edited by user action.
+         * @attribute disabled
          * @type boolean
-         * @default true
+         * @default false
          */
-        labeled: {value: true, reflect: true},
-
+        disabled: {value: false, reflect: true},
         /**
          * Expanded state
          * Uses CSS attribute selector.
@@ -103,17 +121,6 @@ See `theme.css` for styling reference.
          * @default false
          */
         expanded: {value: false, reflect: true},
-
-        /**
-         * Determines if brackets and commas are displayed.
-         * Uses CSS attribute selector.
-         *
-         * @attribute naked
-         * @type boolean
-         * @default false
-         */
-        naked: {value: false, reflect: true},
-
         /**
          * An optional element on which to listen for scroll events. See core-list's scrollTarget
          * attribute and docs on "non-native scrollers" for more information.
@@ -121,14 +128,22 @@ See `theme.css` for styling reference.
          * @Element
          */
         scrollTarget: null
-
       },
-
       computed: {
-        'valueAsArray': 'observedObjectToArray(value)'
+        'valueAsArray': 'ioObjectToArray(value)'
       },
-
-      ready: function() {
+      // Satisfies non-native scroller API for core-list
+      // TODO: Is this needed?
+      getScrollTop: function() {
+        return this.scrollTop;
+      },
+      // Satisfies non-native scroller API for core-list
+      // TODO: Is this needed?
+      setScrollTop: function(scrollTop) {
+        this.scrollTop = scrollTop;
+      },
+      domReady: function() {
+        if (!this.scrollTarget) this.scrollTarget = this;
         // Agregate value-set event to top-most io-object
         this.shadowRoot.addEventListener('value-set', function(event) {
           event.stopPropagation();
@@ -136,6 +151,5 @@ See `theme.css` for styling reference.
         }.bind(this));
       }
     });
-
   </script>
 </polymer-element>

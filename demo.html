@@ -3,79 +3,63 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
-  <title>io-bundle demo</title>
+  <title>io-value demo</title>
   <script src="../webcomponentsjs/webcomponents.js"></script>
-  <link rel="import" href="../polymer/polymer.html">
-  <link rel="import" href="../show-and-tell/show-and-tell.html">
-  <link rel="import" href="io-base.html">
-  <link rel="import" href="io-boolean.html">
   <link rel="import" href="io-boolean-icon.html">
+  <link rel="import" href="io-boolean.html">
   <link rel="import" href="io-number.html">
   <link rel="import" href="io-string.html">
-  <link rel="import" href="io-options.html">
   <link rel="import" href="io-object.html">
+  <link rel="import" href="io-value.html">
+  <link rel="import" href="io-options.html">
   <style type="text/css">
     html {
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     }
     body{
-      margin: 0.5rem;
       font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-size: 13px;
-      background: #f3eee8;
+      background: #ddd;
     }
     .demo {
-      padding: 0.5rem;
-      margin: 0.5rem 0;
       background: white;
-      position: relative;
     }
-    .demo > :nth-child(2){
-      margin: 2em;
+    html /deep/ .io-editor:focus {
+      background: rgba(0, 127, 255, 0.15);
     }
   </style>
 </head>
 <body unresolved fullbleed>
-  <h2>io-bundle Demos</h2>
-  <p>A collection of I/O web components for various data types.</p>
-  <p>Use the interactive tag inspector to experiment with attributes.</p>
-  <p>Documentation is available <a href="./index.html">here</a>.</p>
-  <div class="demo">
-    <show-and-tell></show-and-tell>
-    <io-base></io-base>
-  </div>
-  <div class="demo">
-    <show-and-tell></show-and-tell>
-    <io-boolean-icon></io-boolean-icon>
-  </div>
-  <div class="demo">
-    <show-and-tell></show-and-tell>
-    <io-boolean></io-boolean>
-  </div>
-  <div class="demo">
-    <show-and-tell></show-and-tell>
-    <io-number value="1337"></io-number>
-  </div>
-  <div class="demo">
-    <show-and-tell></show-and-tell>
-    <io-string value="Hello string"></io-string>
-  </div>
-  <div class="demo">
-    <show-and-tell></show-and-tell>
-    <io-options></io-options>
-  </div>
-  <div class="demo">
-    <show-and-tell></show-and-tell>
-    <io-object expanded></io-object>
-  </div>
+  <io-boolean-icon class="demo"></io-boolean-icon>
+  <io-boolean class="demo"></io-boolean>
+  <io-number class="demo" value="1337"></io-number>
+  <io-string class="demo" value="Hello string"></io-string>
+  <br />
+  <br />
+  <io-object class="demo" id="io-object" style="height: 300px"></io-object>
+  <br />
+  <io-value class="demo" id="io-value0"></io-value>
+  <io-value class="demo" id="io-value1"></io-value>
+  <io-value class="demo" id="io-value2"></io-value>
+  <io-value class="demo"></io-value>
+  <io-options class="demo" id="io-options"></io-options>
   <script>
-    var object, menu, options;
     window.addEventListener('polymer-ready', function() {
-      object = document.querySelector('io-object');
-      options = document.querySelector('io-options');
-
-      object.value = ['one', true, 1];
-      options.options = [1, 2, ['three', 3]];
+      var value0 = document.querySelector('#io-value0');
+      value0.value = false;
+      var value1 = document.querySelector('#io-value1');
+      value1.value = 1337;
+      var value2 = document.querySelector('#io-value2');
+      value2.value = "Hello string";
+      var object = document.querySelector('#io-object');
+      object.value = ['one', true, 1, {
+        a: 'a',
+        s: 's',
+        d: 'd',
+        f: [1, 2, 3, 4, 5, 6, 7, 8, 9, { 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1}],
+        g: null
+      }];
+      var options = document.querySelector('#io-options');
+      options.options = [1, 2, {label: 'three', value: 3}];
       options.value = 1;
     });
     setTimeout(function(){

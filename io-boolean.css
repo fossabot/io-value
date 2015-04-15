@@ -1,9 +1,0 @@
-:host > .io-bundle-value {
-  /*overflow-x: hidden;*/
-  white-space: nowrap;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-}

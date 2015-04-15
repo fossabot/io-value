@@ -24,8 +24,8 @@ See `theme.css` for styling reference.
 __Note__: For attributes and detailed information see `io-boolean`, `io-number`, `io-string` and `io-object`
 
 @element io-value
-@homepage https://github.com/arodic/io-bundle
-@demo http://akirodic.com/io/io-bundle/demo.html
+@homepage https://github.com/arodic/io-value
+@demo http://akirodic.com/io/io-value/demo.html
 @blurb Custom input element for any data type.
 @status alpha
 -->
@@ -36,20 +36,11 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
 <link rel="import" href="io-number.html">
 <link rel="import" href="io-string.html">
 <link rel="import" href="io-object.html">
-<link rel="import" href="io-options.html">
 
 <polymer-element name="io-value">
-  <template>
-    <link rel="stylesheet" href="io-base.css" shim-shadowdom>
-    <template if="{{label && labeled}}">
-      <span class="io-value-label">{{label}}</span>
-    </template>
-    <span id="editor"></span>
-  </template>
+  <template></template>
   <script type="text/javascript">
-
   (function() {
-
     function isJson(str) {
       try {
         JSON.parse(str);
@@ -58,33 +49,22 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
       }
       return true;
     }
-
     Polymer({
 
       publish: {
-        labeled: {value: true, reflect: true},
-        label: null,
-        // all attributes supported by elements that
-        // io-value can create.
-        naked: {value: false, reflect: true},
-        value: null,
-        disabled: {value: false, reflect: true},
-        collapsable: {value: true, reflect: true},
-        expanded: {value: false, reflect: true},
-        inline: {value: false, reflect: true},
-        // min: -Infinity,
-        // max: Infinity,
-        // step: -1,
-        toDeg: {value: false, reflect: true},
-
         /**
-         * Set to true if this is the top-level io-value within a scrollable container. Allows this
-         * io-value to serve as the scrollTarget for all child items using core-list.
-         * @atribute isTopLevel
-         * @type boolean
+         * Input value.
+         * @attribute value
+         * @default null
          */
-        isTopLevel: {value: false, reflect: true},
-
+        value: null,
+        /**
+         * Determines if the input can be edited by user action.
+         * @attribute disabled
+         * @type boolean
+         * @default false
+         */
+        disabled: {value: false, reflect: true},
         /**
          * An optional element on which to listen for scroll events. See core-list's scrollTarget
          * attribute and docs on "non-native scrollers" for more information. This
@@ -93,104 +73,60 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
          */
         scrollTarget: null
       },
-
-      io: null,
-      iotype: {value: null, reflect: true},
-
-      observe: {
-        'value label': 'createElement'
-      },
-
-      // Satisfies non-native scroller API for core-list
-      getScrollTop: function() {
-        return this.scrollTop;
-      },
-
-      // Satisfies non-native scroller API for core-list
-      setScrollTop: function(scrollTop) {
-        this.scrollTop = scrollTop;
-      },
-
+      ioElement: null,
+      ioElementName: null,
       ready: function() {
-        if (this.isTopLevel) {
-          this.scrollTarget = this;
-        }
-        if (this.value === undefined || this.value === null || this.value === NaN) {
-          this.createValueSetter();
-          return;
-        }
+        if (!this.ioElement) this.valueChanged();
       },
-
-      createValueSetter: function() {
-        this.$.editor.innerHTML = '';
-        this.io = null;
-        this.valueSetter = document.createElement('io-string');
-        this.valueSetter.setAttribute('placeholder', '' + this.value);
-        this.$.editor.appendChild(this.valueSetter);
-        this.valueSetter.addEventListener('value-changed', function(event) {
-          var value = event.detail.value;
-          if (value === undefined || value === null || value === NaN || value === '') {
+      valueChanged: function() {
+        // Insufficient data to set type.
+        if (this.value === undefined || this.value === null || this.value === NaN || this.value === '') {
+          this.setIoElement('io-string');
+          this.ioElement.placeholder = 'unset';
+          this.ioElementName = 'io-unset';
+          // TODO: Focus only when unset by user action
+          // this.async(function() {
+          //   this.ioElement.$.value.focus();
+          // }.bind(this));
+        } else if (typeof this.value == 'boolean') {
+          this.setIoElement('io-boolean');
+        } else if (typeof this.value == 'number') {
+          this.setIoElement('io-number');
+        // Check if string value can be converted to number, boolean or object type.
+        } else if (typeof this.value === 'string' && !isNaN(this.value) && this.value !== '') {
+            this.value = parseFloat(this.value);
             return;
-          }
-          if (value !== this.value) {
-            if (!isNaN(value)) {
-              this.value = parseFloat(value);
-            } else if (value == 'true') {
-              this.value = true;
-            } else if (value == 'false') {
-              this.value = false;
-            } else if (isJson(value)) {
-              this.value = JSON.parse(value);
-            } else {
-              this.value = value;
-            }
-          }
-        }.bind(this));
+          } else if (this.value === 'true') {
+            this.value = true;
+            return;
+          } else if (this.value === 'false') {
+            this.value = false;
+            return;
+          } else if (isJson(this.value)) {
+            this.value = JSON.parse(this.value);
+            return;
+        } else if (typeof this.value == 'string') {
+          this.setIoElement('io-string');
+        } else if (typeof this.value == 'object') {
+          this.setIoElement('io-object');
+        } else if (typeof this.value == 'function') {
+          this.setIoElement('io-function');
+        }
       },
-
-      createElement: function() {
-
-        // value is invalid (undefined, null or NaN).
-        if (this.value === undefined || this.value === null || this.value === NaN) {
-          this.createValueSetter();
-          this.iotype = 'setter';
-          return;
+      setIoElement: function(ioElementName) {
+        if (this.ioElementName == ioElementName) return;
+        if (this.ioElement) {
+          this.ioElement.unbindAll(); // TODO: Maybe unnecessary;
+          this.shadowRoot.removeChild(this.ioElement);
         }
-
-        // value is a function.
-        // if (typeof this.value == 'function') {
-        //   this.iotype = 'function';
-        //   this.$.editor.innerHTML = this.label + ': function';
-        //   return;
-        // }
-
-        var type;
-
-        // value is one of the supported types.
-        if (typeof this.value == 'boolean') type = 'io-boolean';
-        else if (typeof this.value == 'number') type = 'io-number';
-        else if (typeof this.value == 'string') type = 'io-string';
-        else if (typeof this.value == 'object') type = 'io-object';
-
-        // If type is supported and not the same as previous,
-        // create the corresponting element.
-        if (type && this.iotype != type) {
-          this.$.editor.innerHTML = '';
-          this.valueSetter = null;
-          this.iotype = type;
-          this.io = document.createElement(type);
-          this.$.editor.appendChild(this.io);
-          // Bind all specified attributes to the new element.
-          for (var i in this.publish) {
-            this.io.bindProperty(i, new PathObserver(this, i));
-          }
-          return;
+        this.ioElement = document.createElement(ioElementName);
+        this.shadowRoot.appendChild(this.ioElement);
+        for (var i in this.publish) {
+          this.ioElement.bindProperty(i, new PathObserver(this, i));
         }
-
+        this.ioElementName = ioElementName;
       }
-
     });
-
   }());
   </script>
 </polymer-element>

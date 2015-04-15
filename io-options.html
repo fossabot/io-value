@@ -19,34 +19,50 @@ I/O web component for string data type.
 
 Example:
 
-    <io-options value="1" options=[1,2,[3: 'trree']]></io-options>
+    <io-options value="1" options=[1,2,{value: 3, label: 'three'}]></io-options>
 
 See `theme.css` for styling reference.
 
 @element io-options
 @extends io-base
-@homepage https://github.com/arodic/io-bundle
-@demo http://akirodic.com/io/io-bundle/demo.html
+@homepage https://github.com/arodic/io-value
+@demo http://akirodic.com/io/io-value/demo.html
 @blurb I/O web component for string data type.
 @status alpha
 -->
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../io-menu/io-menu.html">
-<link rel="import" href="io-base.html">
+<link rel="import" href="_io-base.html">
 
 <polymer-element name="io-options" extends="io-base">
   <template>
-    <shadow></shadow>
-    <link rel="stylesheet" href="io-options.css" shim-shadowdom>
-    <span id="value" class="io-bundle-value" tabindex="0">{{displayValue}}</span>
+    <link rel="stylesheet" href="_io-base.css" shim-shadowdom>
+    <style type="text/css" shim-shadowdom>
+      :host {
+        position: relative;
+        overflow: visible;
+      }
+      :host > .io-editor {
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+      }
+      :host > io-menu {
+        position: absolute;
+        display: none;
+      }
+      :host > io-menu[expanded] {
+        display: inline-block;
+      }
+    </style>
+    <span id="value" class="io-editor" tabindex="0">{{displayValue}}</span>
     <io-menu id="menu" options="{{menuOptions}}" sorted="{{sorted}}" autoExpand></io-menu>
   </template>
   <script type="text/javascript">
-    
     Polymer({
-
       publish: {
-        
         /**
          * List of options to select from. It can be list of lists.
          *
@@ -57,7 +73,6 @@ See `theme.css` for styling reference.
          * @default null
          */
         options: null,
-
         /**
          * Determines if the option list is sorted.
          *
@@ -65,60 +80,43 @@ See `theme.css` for styling reference.
          * @type boolean
          * @default false
          */
-        sorted: {value: false, reflect: true}
-
+        sorted: false
       },
-
       validKeys: [13, 32], // enter, spacebar
-
       menuOptions: null,
-
       eventDelegates: {
         'keydown': 'keydownAction',
-        'down': 'downAction'
+        'mousedown': 'expand'
       },
-
       ready: function() {
         this.options = this.options || [],
         this._setValue = this.setValue.bind(this);
       },
-
-      downAction: function(event) {
-        if (this.disabled) return;
-        // TODO: check if needed
-        event.preventDefault();
-        event.stopPropagation();
-        this.expand();
-      },
       keydownAction: function(event) {
         if (this.disabled) return;
         if (this.validKeys.indexOf(event.which) == -1) return;
-        // TODO: check if needed
-        event.preventDefault();
-        event.stopPropagation();
         this.expand();
       },
       blurAction: function() {
         this.super();
         this.$.menu.expanded = false;
       },
-
-      expand: function(event) {
+      expand: function() {
         this.$.menu.style.top = 0;
         this.$.menu.style.left = 0;
         this.$.menu.expanded = true;
         setTimeout(function() {
           var firstOption = this.$.menu.querySelector('* /deep/ io-menu-option');
-          if (firstOption) firstOption.expanded = true;
-        }.bind(this), 1);
+          if (firstOption) {
+            firstOption.expanded = true;
+            firstOption.focus();
+          }
+        }.bind(this), 10);
       },
-
       setValue: function(value) {
         this.value = value;
-        this.immediateValue = value;
         this.fireValueSet();
       },
-
       valueChanged: function(oldValue) {
         this.super();
         for (var i = 0; i < this.options.length; i++) {
@@ -136,16 +134,15 @@ See `theme.css` for styling reference.
         }
         this.displayValue = this.value;
       },
-
       optionsChanged: function() {
         this.menuOptions = [];
         for (var i = 0; i < this.options.length; i++) {
-          if (this.options[i] instanceof Array) {
+          if (typeof this.options[i] === 'object') {
             this.menuOptions.push({
-              label: this.options[i][0],
+              label: this.options[i].label,
               action: this._setValue,
-              arguments: [this.options[i][1]],
-              icon: this.options[i][2]
+              arguments: [this.options[i].value],
+              icon: this.options[i].icon
             });
           } else {
             this.menuOptions.push({
@@ -157,8 +154,6 @@ See `theme.css` for styling reference.
         }
         this.valueChanged();
       }
-
     });
-
   </script>
 </polymer-element>
