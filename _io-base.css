@@ -3,14 +3,10 @@
 }
 :host([disabled]) {
   pointer-events: none;
-  color: red;
 }
 :host > .io-editor {
   white-space: nowrap;
   display: inline-block;
-}
-:host(:not([disabled])) > .io-editor {
-  cursor: pointer;
 }
 :host > .io-editor:focus {
   outline: 0;

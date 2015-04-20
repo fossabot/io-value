@@ -40,6 +40,9 @@ __Note__: When you focus this element you can use enter/spacebar to toggle the v
   <template>
     <link rel="stylesheet" href="_io-base.css" shim-shadowdom>
     <style type="text/css" shim-shadowdom>
+      :host(:not([disabled])) > .io-editor {
+        cursor: pointer;
+      }
       :host > .io-editor {
         width: 1em;
         height: 1em;

@@ -32,6 +32,7 @@ See `theme.css` for styling reference.
 <link rel="import" href="../polymer/polymer.html">
 
 <link rel="import" href="../core-list/core-list.html">
+<link rel="import" href="../io-menu/io-menu.html">
 
 <link rel="import" href="io-boolean.html">
 <link rel="import" href="io-boolean-icon.html">
@@ -40,63 +41,128 @@ See `theme.css` for styling reference.
 <link rel="import" href="io-value.html">
 <link rel="import" href="io-object-to-array.html">
 
-<polymer-element name="io-object">
+<polymer-element name="io-object" oncontextmenu="return false;" vertical layout>
   <template>
     <style type="text/css" shim-shadowdom>
       :host {
-        overflow: auto;
-      }
-      :host > core-list {
+        display: block;
         height: auto;
+      }
+      #io-properties {
+        overflow: auto;
         margin-left: 0.5em;
       }
-      :host > core-list > div {
+      core-list > div {
         display: inline-block;
         padding-left: 0.5em;
       }
-      :host > .io-constructor {
+      .io-constructor {
+        cursor: pointer;
+      }
+      .io-constructor-name {
         font-style: italic;
         font-weight: bold;
       }
-      :host > core-list > div > .io-key {
-        color: rgb(140, 13, 150);
+      .io-constructor-length {
       }
-      :host > core-list > div > io-value::shadow > io-string::shadow > .io-editor:not(:empty)::after,
-      :host > core-list > div > io-value::shadow > io-string::shadow > .io-editor:not(:empty)::before {
+      .io-key {
+        vertical-align: top;
+        margin-right: 0.25em;
+        color: rgb(140, 13, 150);
+        cursor: pointer;
+      }
+      io-value {
+        cursor: text;
+      }
+      .io-spacer {
+        max-height: 1em;
+        min-width: 1em;
+        max-width: 1em;
+        cursor: text;
+      }
+      io-value::shadow > io-string:not(.value-editor)::shadow > .io-editor:not(:empty)::after,
+      io-value::shadow > io-string:not(.value-editor)::shadow > .io-editor:not(:empty)::before {
         content: '"';
       }
-      :host > core-list > div > io-value::shadow > io-string {
+      io-value::shadow > io-string:not(.value-editor) {
         color: rgb(198, 22, 5);
       }
-      :host > core-list > div > io-value::shadow > io-boolean,
-      :host > core-list > div > io-value::shadow > io-number {
+      io-value::shadow > io-boolean,
+      io-value::shadow > io-number {
         color: rgb(25, 0, 211);
       }
+      io-value::shadow > io-object {
+        pointer-events: none;
+      }
+      io-value::shadow > io-object::shadow * {
+        pointer-events: auto;
+      }
     </style>
-    <io-boolean-icon value="{{expanded}}" trueIcon="expand-more" falseIcon="chevron-right"></io-boolean-icon>
-    <span class="io-constructor">{{value.constructor.name}}</span>
-    <span>[{{valueAsArray.length}}]</span>
-    <template if="{{expanded}}">
-      <core-list
-          data="{{valueAsArray}}"
-          scrollTarget="{{scrollTarget}}"
-          height="15"
-          runwayFactor="4">
-        <template>
-          <div>
-            <span class="io-key">{{model.key}}:</span>
+    <span class="io-constructor" on-tap="{{toggleExpanded}}" horizontal layout>
+      <io-boolean-icon value="{{expanded}}" trueIcon="expand-more" falseIcon="chevron-right" disabled></io-boolean-icon>
+      <span class="io-constructor-name">{{value.constructor.name}}</span>
+      <span class="io-constructor-length">[{{valueAsArray.length}}]</span>
+    </span>
+    <div id="io-properties" flex?="{{coreList}}">
+      <template if="{{expanded && coreList}}">
+        <core-list id="corelist"
+            data="{{valueAsArray}}"
+            scrollTarget="{{$['io-properties']}}"
+            height="15"
+            runwayFactor="4">
+          <template>
+            <div horizontal layout>
+              <span class="io-key"
+                  key="{{model.key}}"
+                  on-contextmenu="{{keyTapAction}}"
+                  on-tap="{{keyTapAction}}">
+                {{model.key}}:
+              </span>
+              <io-value
+                  value="{{model.value}}"
+                  key="{{model.key}}"
+                  expanded="{{model._expanded}}"
+                  disabled="{{disabled}}">
+              </io-value>
+              <span class="io-spacer" flex
+                  key="{{model.key}}"
+                  on-tap="{{spacerTapAction}}">
+              </span>
+            </div>
+          </template>
+        </core-list>
+      </template>
+      <template if="{{expanded && !coreList}}">
+        <template repeat="{{model in valueAsArray}}">
+          <div horizontal layout>
+            <span class="io-key"
+                key="{{model.key}}"
+                on-contextmenu="{{keyTapAction}}"
+                on-tap="{{keyTapAction}}">
+              {{model.key}}:
+            </span>
             <io-value
-              value="{{model.value}}"
-              expanded="{{model._expanded}}"
-              disabled="{{disabled}}"
-              scrollTarget="{{scrollTarget}}">
+                value="{{model.value}}"
+                key="{{model.key}}"
+                expanded="{{model._expanded}}"
+                disabled="{{disabled}}">
             </io-value>
+            <span class="io-spacer" flex
+                key="{{model.key}}"
+                on-tap="{{spacerTapAction}}">
+            </span>
           </div>
         </template>
-      </core-list>
-    </template>
+      </template>
+    </div>
   </template>
   <script type="text/javascript">
+  (function() {
+    var menu = document.createElement('io-menu');
+    menu.setAttribute('autoexpand', '');
+    menu.style.position = 'fixed';
+    document.body.appendChild(menu);
+    var key, item, rect;
     Polymer({
       publish: {
         /**
@@ -127,29 +193,98 @@ See `theme.css` for styling reference.
          * @attribute scrollTarget
          * @Element
          */
-        scrollTarget: null
+        scrollTarget: null,
+        /**
+         * If set, the element uses core-list for its items.
+         * Tu use core-list you must set element height explicitly.
+         *
+         * @attribute coreList
+         * @type boolean
+         * @default false
+         */
+        coreList: false
       },
       computed: {
         'valueAsArray': 'ioObjectToArray(value)'
       },
-      // Satisfies non-native scroller API for core-list
-      // TODO: Is this needed?
-      getScrollTop: function() {
-        return this.scrollTop;
-      },
-      // Satisfies non-native scroller API for core-list
-      // TODO: Is this needed?
-      setScrollTop: function(scrollTop) {
-        this.scrollTop = scrollTop;
-      },
-      domReady: function() {
-        if (!this.scrollTarget) this.scrollTarget = this;
+      ready: function() {
         // Agregate value-set event to top-most io-object
         this.shadowRoot.addEventListener('value-set', function(event) {
           event.stopPropagation();
           this.fire('value-set', { element: this, value: this.value });
         }.bind(this));
+      },
+      deleteProperty: function(key) {
+        // TODO: offset expanded states for arrays
+        if (this.value instanceof Array) {
+          key = parseFloat(key);
+          this.value.splice(key, 1);
+        } else {
+          delete this.value[key];
+        }
+      },
+      clearProperty: function(key) {
+        this.value[key] = undefined;
+        item = this.shadowRoot.querySelector('io-value[key="' + key + '"]');
+        this.async(function() {
+          item.ioElement.$.value.focus();
+        }.bind(this));
+      },
+      addProperty: function(key) {
+        // TODO: offset expanded states for arrays
+        if (this.value instanceof Array) {
+          key = parseFloat(key) + 1;
+          this.value.splice(key, 0, undefined);
+          this.async(function() {
+            this.async(function() {
+              item = this.shadowRoot.querySelector('io-value[key="' + key + '"]');
+              item.ioElement.$.value.focus();
+            }.bind(this));
+          }.bind(this));
+        } else {
+          // TODO: Implement better key value-editor
+          key = prompt('New property name:');
+          if (key != null) {
+            if (this.value.hasOwnProperty(key)) {
+              console.log('Property', key, 'olready exists!');
+            } else {
+              // TODO: validate property name?
+              this.value[key] = undefined;
+              this.async(function() {
+                this.async(function() {
+                  item = this.shadowRoot.querySelector('io-value[key="' + key + '"]');
+                  item.ioElement.$.value.focus();
+                }.bind(this));
+              }.bind(this));
+            }
+          }
+        }
+      },
+      // adds property tapow
+      spacerTapAction: function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        this.addProperty(event.path[0].getAttribute('key'));
+      },
+      // opens menu with edit options
+      keyTapAction: function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        key = event.path[0].getAttribute('key');
+        menu.options = [
+          { label: 'delete', action: this.deleteProperty.bind(this), arguments: [key] },
+          { label: 'clear', action: this.clearProperty.bind(this), arguments: [key] },
+          { label: 'add', action: this.addProperty.bind(this), arguments: [key] }
+        ];
+        rect = event.path[0].getBoundingClientRect();
+        menu.style.top = rect.top + 'px';
+        menu.style.left = rect.left + 'px';
+        menu.expanded = true;
+      },
+      toggleExpanded: function() {
+        this.expanded = !this.expanded;
       }
     });
+  }());
   </script>
 </polymer-element>

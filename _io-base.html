@@ -42,16 +42,14 @@ Base for io-value input elements
        * @method fireValueSet
        */
       fireValueSet: function() {
-          /**
-           * Fired when an value attribute is set by user action.
-           * @event value-set
-           * @param {Object} detail
-           * @param {Object} detail.element the input element
-           * @param {Object} detail.value new value
-           */
-        this.async(function() {
-          this.fire('value-set', {element: this, value: this.value});
-        }.bind(this));
+        /**
+         * Fired when an value attribute is set by user action.
+         * @event value-set
+         * @param {Object} detail
+         * @param {Object} detail.element the input element
+         * @param {Object} detail.value new value
+         */
+        this.fire('value-set', {element: this, value: this.value});
       },
       disabledChanged: function() {
         if (this.disabled) {

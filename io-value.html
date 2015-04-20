@@ -49,6 +49,8 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
       }
       return true;
     }
+    var range = document.createRange();
+    var sel, value;
     Polymer({
 
       publish: {
@@ -66,65 +68,118 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
          */
         disabled: {value: false, reflect: true},
         /**
-         * An optional element on which to listen for scroll events. See core-list's scrollTarget
-         * attribute and docs on "non-native scrollers" for more information. This
-         * @attribute scrollTarget
-         * @type Element
+         * Expanded state
+         * Uses CSS attribute selector.
+         *
+         * @attribute expanded
+         * @type boolean
+         * @default false
          */
-        scrollTarget: null
+        expanded: {value: false, reflect: true}
       },
       ioElement: null,
       ioElementName: null,
-      ready: function() {
-        if (!this.ioElement) this.valueChanged();
+      eventDelegates: {
+        'value-set': 'valueSet'
+      },
+      domReady: function() {
+        if (this.value === undefined || this.value === null) {
+          if (!this.ioElement) this.valueChanged();
+        }
       },
       valueChanged: function() {
-        // Insufficient data to set type.
-        if (this.value === undefined || this.value === null || this.value === NaN || this.value === '') {
+        // Set empty string editor for undefined/null/NaN
+        // with placeholder identifying the value type
+        if (this.value === undefined) {
           this.setIoElement('io-string');
-          this.ioElement.placeholder = 'unset';
-          this.ioElementName = 'io-unset';
-          // TODO: Focus only when unset by user action
-          // this.async(function() {
-          //   this.ioElement.$.value.focus();
-          // }.bind(this));
+          this.ioElement.placeholder = 'undefined';
+          this.ioElementName = 'io-undefined';
+        } else if (this.value === null) {
+          this.setIoElement('io-string');
+          this.ioElement.placeholder = 'null';
+          this.ioElementName = 'io-null';
+        } else if (this.value === NaN) {
+          this.setIoElement('io-string');
+          this.ioElement.placeholder = 'NaN';
+          this.ioElementName = 'io-NaN';
+        // Special editors for objects, functions, boolean, numbers and strings.
+        } else if (typeof this.value == 'object') {
+          this.setIoElement('io-object');
+        } else if (typeof this.value == 'function') {
+          // this.setIoElement('io-function'); // TODO: function
         } else if (typeof this.value == 'boolean') {
           this.setIoElement('io-boolean');
         } else if (typeof this.value == 'number') {
           this.setIoElement('io-number');
-        // Check if string value can be converted to number, boolean or object type.
-        } else if (typeof this.value === 'string' && !isNaN(this.value) && this.value !== '') {
-            this.value = parseFloat(this.value);
-            return;
-          } else if (this.value === 'true') {
-            this.value = true;
-            return;
-          } else if (this.value === 'false') {
-            this.value = false;
-            return;
-          } else if (isJson(this.value)) {
-            this.value = JSON.parse(this.value);
-            return;
-        } else if (typeof this.value == 'string') {
+        } else if (typeof this.value === 'string') {
           this.setIoElement('io-string');
-        } else if (typeof this.value == 'object') {
-          this.setIoElement('io-object');
-        } else if (typeof this.value == 'function') {
-          this.setIoElement('io-function');
         }
+      },
+      valueSet: function(event) {
+        // String type values have multiple special cases that convert to different types.
+        value = this.ioElement.value;
+        if (event.path[0] === this.ioElement && typeof value === 'string') {
+          if (!isNaN(value) && value !== '') {
+            this.value = parseFloat(value);
+          } else if (value === 'true') {
+            this.value = true;
+          } else if (value === 'false') {
+            this.value = false;
+          } else if (value === 'null') {
+            this.value = null;
+          } else if (value === 'undefined') {
+            this.value = undefined;
+          } else if (value === 'NaN') {
+            this.value = NaN;
+          } else if (isJson(value)) {
+            this.value = JSON.parse(value);
+          } else {
+            this.value = value;
+          }
+        }
+      },
+      /**
+       * Creates an untyped string value editor and selects its contents.
+       * Does not work with objects
+       * @method editValue
+       */
+      editValue: function() {
+        if (this.ioElement.$.value.localName === 'io-object') return;
+        this.removeIoElement();
+        this.ioElement = document.createElement('io-string');
+        this.ioElement.classList.toggle('value-editor', true);
+        this.shadowRoot.appendChild(this.ioElement);
+        this.ioElementName = 'value-editor';
+        this.ioElement.value = String(this.value);
+        this.async(function() {
+          range.selectNodeContents(this.ioElement.$.value);
+          sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }.bind(this));
+        this.ioElement.addEventListener('blur', function(event) {
+          if (this.ioElement.value !== String(this.value)) {
+            this.valueSet({path: [this.ioElement]});
+          };
+          this.valueChanged();
+        }.bind(this), false);
       },
       setIoElement: function(ioElementName) {
         if (this.ioElementName == ioElementName) return;
+        this.removeIoElement();
+        this.ioElement = document.createElement(ioElementName);
+        this.shadowRoot.appendChild(this.ioElement);
+        this.ioElement.bindProperty('value', new PathObserver(this, 'value'));
+        this.ioElement.bindProperty('desabled', new PathObserver(this, 'desabled'));
+        this.ioElement.bindProperty('expanded', new PathObserver(this, 'expanded'));
+        this.ioElement.immediateValue = this.value;
+        this.ioElementName = ioElementName;
+      },
+      removeIoElement: function() {
         if (this.ioElement) {
           this.ioElement.unbindAll(); // TODO: Maybe unnecessary;
           this.shadowRoot.removeChild(this.ioElement);
         }
-        this.ioElement = document.createElement(ioElementName);
-        this.shadowRoot.appendChild(this.ioElement);
-        for (var i in this.publish) {
-          this.ioElement.bindProperty(i, new PathObserver(this, i));
-        }
-        this.ioElementName = ioElementName;
       }
     });
   }());

@@ -33,31 +33,33 @@
   <io-boolean class="demo"></io-boolean>
   <io-number class="demo" value="1337"></io-number>
   <io-string class="demo" value="Hello string"></io-string>
-  <br />
-  <br />
-  <io-object class="demo" id="io-object" style="height: 300px"></io-object>
-  <br />
-  <io-value class="demo" id="io-value0"></io-value>
-  <io-value class="demo" id="io-value1"></io-value>
-  <io-value class="demo" id="io-value2"></io-value>
-  <io-value class="demo"></io-value>
   <io-options class="demo" id="io-options"></io-options>
+  <br />
+  <br />
+  <io-object class="demo" id="io-object" expanded style="height: 500px;" coreList></io-object>
+  <br />
+  <io-value class="demo"></io-value>
   <script>
     window.addEventListener('polymer-ready', function() {
-      var value0 = document.querySelector('#io-value0');
-      value0.value = false;
-      var value1 = document.querySelector('#io-value1');
-      value1.value = 1337;
-      var value2 = document.querySelector('#io-value2');
-      value2.value = "Hello string";
       var object = document.querySelector('#io-object');
-      object.value = ['one', true, 1, {
+      object.value = [
+      'one',
+      true,
+      3,
+      undefined,
+      null,
+      NaN,
+      {
         a: 'a',
         s: 's',
         d: 'd',
         f: [1, 2, 3, 4, 5, 6, 7, 8, 9, { 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1}],
         g: null
-      }];
+      }
+      ];
+      for (var i = 0; i < 1000; i++) {
+        object.value.push(Math.random());
+      }
       var options = document.querySelector('#io-options');
       options.options = [1, 2, {label: 'three', value: 3}];
       options.value = 1;

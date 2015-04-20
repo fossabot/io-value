@@ -38,6 +38,11 @@ __Note__: When you focus this element you can use enter/spacebar to toggle the v
 <polymer-element name="io-boolean" extends="io-base">
   <template>
     <link rel="stylesheet" href="_io-base.css" shim-shadowdom>
+    <style type="text/css" shim-shadowdom>
+      :host(:not([disabled])) > .io-editor {
+        cursor: pointer;
+      }
+    </style>
     <span id="value" class="io-editor" tabindex="0">{{value ? truestr : falsestr}}</span>
   </template>
   <script>
