@@ -17,9 +17,9 @@ limitations under the License.
 <!--
 Custom input element for any data type. Once the value is set, this element will insert appropriate input element into its shadow DOM and bind the `value` attribute to it.
 
-Supported input types are: `io-boolean`, `io-number`, `io-string` and `io-object`
+Right clicking on the value edits the value as untyped string.
 
-See `theme.css` for styling reference.
+Supported input types are: `io-boolean`, `io-number`, `io-string` and `io-object`
 
 __Note__: For attributes and detailed information see `io-boolean`, `io-number`, `io-string` and `io-object`
 
@@ -56,12 +56,15 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
       publish: {
         /**
          * Input value.
+         *
          * @attribute value
+         * @type any
          * @default null
          */
         value: null,
         /**
          * Determines if the input can be edited by user action.
+         *
          * @attribute disabled
          * @type boolean
          * @default false
@@ -147,7 +150,8 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
       },
       /**
        * Creates an untyped string value editor and selects its contents.
-       * Does not work with objects
+       * Does not work with object values.
+       *
        * @method editValue
        */
       editValue: function() {

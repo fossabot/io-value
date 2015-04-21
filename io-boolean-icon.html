@@ -17,15 +17,11 @@ limitations under the License.
 <!--
 I/O element for boolean data type. Displays value as core-icon.
 
-Example:
+    <io-boolean-icon value="true" trueicon="done" falseicon="clear"></io-boolean-icon>
 
-    <io-boolean-icon value="true"></io-boolean-icon>
+__Note__: When element is focused, pressing enter/spacebar will toggle the value.
 
-See `theme.css` for styling reference.
-
-__Note__: When you focus this element you can use enter/spacebar to toggle the value.
-
-@element input-boolean-icon
+@element io-boolean-icon
 @extends io-base
 @homepage https://github.com/arodic/io-value
 @demo http://akirodic.com/io/io-value/demo.html
@@ -48,31 +44,36 @@ __Note__: When you focus this element you can use enter/spacebar to toggle the v
         height: 1em;
       }
     </style>
-    <core-icon id="value" class="io-editor" tabindex="0" icon="{{value ? trueIcon : falseIcon}}"></core-icon>
+    <core-icon id="value" class="io-editor" tabindex="0" icon="{{value ? trueicon : falseicon}}"></core-icon>
   </template>
   <script>
     Polymer({
       publish: {
         /**
-         * Input value.
+         * Element value.
+         *
          * @attribute value
          * @default false
          */
         value: false,
         /**
-         * String to display when value is true.
-         * @attribute trueIcon
+         * Icon to display when value is true.
+         * See Polymer core-icon for more information.
+         *
+         * @attribute trueicon
          * @type string
          * @default 'done'
          */
-        trueIcon: 'done',
+        trueicon: 'done',
         /**
-         * String to display when value is false.
-         * @attribute falseIcon
+         * Icon to display when value is false.
+         * See Polymer core-icon for more information.
+         *
+         * @attribute falseicon
          * @type string
          * @default 'clear'
          */
-        falseIcon: 'clear'
+        falseicon: 'clear'
       },
       eventDelegates: {
         'keydown': 'keydownAction',
@@ -101,6 +102,7 @@ __Note__: When you focus this element you can use enter/spacebar to toggle the v
       },
       /**
        * Toggles the value.
+       *
        * @method toggle
        */
       toggle: function() {

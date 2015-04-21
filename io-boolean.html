@@ -17,13 +17,9 @@ limitations under the License.
 <!--
 I/O element for boolean data type. Displays value as string.
 
-Example:
-
     <io-boolean value="true" truestr="Yes" falsestr="No"></io-boolean>
 
-See `theme.css` for styling reference.
-
-__Note__: When you focus this element you can use enter/spacebar to toggle the value.
+__Note__: When element is focused, pressing enter/spacebar will toggle the value.
 
 @element io-boolean
 @extends io-base
@@ -49,13 +45,16 @@ __Note__: When you focus this element you can use enter/spacebar to toggle the v
     Polymer({
       publish: {
         /**
-         * Input value.
+         * Element value.
+         *
          * @attribute value
+         * @type boolean
          * @default false
          */
         value: false,
         /**
          * String to display when value is true.
+         *
          * @attribute truestr
          * @type string
          * @default 'true'
@@ -63,6 +62,7 @@ __Note__: When you focus this element you can use enter/spacebar to toggle the v
         truestr: 'true',
         /**
          * String to display when value is false.
+         *
          * @attribute falsestr
          * @type string
          * @default 'false'
@@ -96,6 +96,7 @@ __Note__: When you focus this element you can use enter/spacebar to toggle the v
       },
       /**
        * Toggles the value.
+       *
        * @method toggle
        */
       toggle: function() {

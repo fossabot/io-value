@@ -17,13 +17,9 @@ limitations under the License.
 <!--
 I/O web component for Object data type.
 
-Example:
-    <io-object value="[0,1,"apple",false]" labeled="false"></io-object>
-
-See `theme.css` for styling reference.
+    <io-object value="[0,1,"apple",false]" expanded disabled corelist></io-object>
 
 @element io-object
-@extends io-base
 @homepage https://github.com/arodic/io-value
 @demo http://akirodic.com/io/io-value/demo.html
 @blurb I/O web component for Object data type.
@@ -103,7 +99,7 @@ See `theme.css` for styling reference.
       }
     </style>
     <span class="io-constructor" on-tap="{{toggleExpanded}}">
-      <io-boolean-icon value="{{expanded}}" trueIcon="expand-more" falseIcon="chevron-right" disabled></io-boolean-icon>
+      <io-boolean-icon value="{{expanded}}" trueicon="expand-more" falseicon="chevron-right" disabled></io-boolean-icon>
       <span class="io-constructor-name">{{value.constructor.name}}</span>
       <span class="io-constructor-length">[{{valueAsArray.length}}]</span>
     </span>
@@ -171,20 +167,22 @@ See `theme.css` for styling reference.
       publish: {
         /**
          * Input value.
+         *
          * @attribute value
+         * @type object | array
          * @default null
          */
         value: null,
         /**
          * Determines if the input can be edited by user action.
+         *
          * @attribute disabled
          * @type boolean
          * @default false
          */
         disabled: {value: false, reflect: true},
         /**
-         * Expanded state
-         * Uses CSS attribute selector.
+         * Expanded state.
          *
          * @attribute expanded
          * @type boolean
@@ -192,15 +190,8 @@ See `theme.css` for styling reference.
          */
         expanded: {value: false, reflect: true},
         /**
-         * An optional element on which to listen for scroll events. See core-list's scrollTarget
-         * attribute and docs on "non-native scrollers" for more information.
-         * @attribute scrollTarget
-         * @Element
-         */
-        scrollTarget: null,
-        /**
          * If set, the element uses core-list for its items.
-         * Tu use core-list you must set element height explicitly.
+         * To use core-list you must set element height explicitly.
          *
          * @attribute corelist
          * @type boolean
@@ -212,12 +203,32 @@ See `theme.css` for styling reference.
         'valueAsArray': 'ioObjectToArray(value)'
       },
       ready: function() {
-        // Agregate value-set event to top-most io-object
+        /**
+         * Bubbled up value-set event with top-most io-object value appended.
+         *
+         * @event value-set
+         * @param {Object} detail
+         * @param {Object} detail.element original input element where value was set.
+         * @param {Object} detail.value new value.
+         * @param {Object} detail.objectElement top-most io-object element.
+         * @param {Object} detail.objectValue top-most io-object value.
+         */
         this.shadowRoot.addEventListener('value-set', function(event) {
           event.stopPropagation();
-          this.fire('value-set', { element: this, value: this.value });
+          this.fire('value-set', {
+            element: event.detail.value,
+            value: event.detail.value,
+            objectElement: this,
+            objectValue: this.value
+          });
         }.bind(this));
       },
+      /**
+       * Deletes object property or array element with specified key/index.
+       *
+       * @method deleteProperty
+       * @param {string} key key/index to delete.
+       */
       deleteProperty: function(key) {
         // TODO: offset expanded states for arrays
         if (this.value instanceof Array) {
@@ -227,14 +238,30 @@ See `theme.css` for styling reference.
           delete this.value[key];
         }
       },
-      clearProperty: function(key) {
+      /**
+       * Sets object property or array element with specified key/index.
+       *
+       * @method setProperty
+       * @param {string} key key/index to set.
+       * @param {any} value value to set.
+       * @param {boolean} focus if set, intput field gets focused after it has been cleared.
+       */
+      setProperty: function(key, value, focus) {
         this.value[key] = undefined;
         item = this.shadowRoot.querySelector('io-value[key="' + key + '"]');
         this.async(function() {
           item.ioElement.$.value.focus();
         }.bind(this));
       },
-      addProperty: function(key) {
+      /**
+       * Adds object property or array element at specified key/index.
+       *
+       * @method addProperty
+       * @param {string} key key/index to add.
+       * @param {any} value value to after property or element has been added.
+       * @param {boolean} focus if set, intput field gets focused after it has been cleared.
+       */
+      addProperty: function(key, value, focus) {
         // TODO: offset expanded states for arrays
         if (this.value instanceof Array) {
           key = parseFloat(key) + 1;
@@ -279,8 +306,8 @@ See `theme.css` for styling reference.
         key = event.path[0].getAttribute('key');
         menu.options = [
           { label: 'delete', action: this.deleteProperty.bind(this), arguments: [key] },
-          { label: 'clear', action: this.clearProperty.bind(this), arguments: [key] },
-          { label: 'add', action: this.addProperty.bind(this), arguments: [key] }
+          { label: 'clear', action: this.setProperty.bind(this), arguments: [key, undefined, true] },
+          { label: 'add', action: this.addProperty.bind(this), arguments: [key, undefined, true] }
         ];
         rect = event.path[0].getBoundingClientRect();
         menu.style.top = rect.top + 'px';

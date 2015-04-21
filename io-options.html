@@ -15,13 +15,9 @@ limitations under the License.
 -->
 
 <!--
-I/O web component for string data type.
-
-Example:
+I/O web component for option selection.
 
     <io-options value="1" options=[1,2,{value: 3, label: 'three'}]></io-options>
-
-See `theme.css` for styling reference.
 
 @element io-options
 @extends io-base
@@ -65,14 +61,15 @@ See `theme.css` for styling reference.
       publish: {
         /**
          * Input value.
+         *
          * @attribute value
+         * @type any
          * @default null
          */
         value: null,
         /**
-         * List of options to select from. It can be list of lists.
-         *
-         * If option is a list, the first element is a display value, and the second one the actual value.
+         * List of options to select from.
+         * Options can be specified as objects with 'value', 'label' and 'icon' properties.
          *
          * @attribute options
          * @type Array

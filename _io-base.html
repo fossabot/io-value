@@ -17,6 +17,8 @@ limitations under the License.
 <!--
 Base for io-value input elements
 
+See [**theme.css**](theme.css) for styling reference.
+
 @element io-base
 @homepage https://github.com/arodic/io-value
 @demo http://akirodic.com/io/io-value/demo.html
@@ -30,7 +32,16 @@ Base for io-value input elements
     Polymer({
       publish: {
         /**
-         * Determines if the input can be edited by user action.
+         * Element value.
+         *
+         * @attribute value
+         * @type any
+         * @default null
+         */
+        value: null,
+        /**
+         * Determines if the input can be focused and edited by user action.
+         *
          * @attribute disabled
          * @type boolean
          * @default false
@@ -39,15 +50,18 @@ Base for io-value input elements
       },
       /**
        * Helper method used used to fire 'value-set' event.
+       *
        * @method fireValueSet
        */
       fireValueSet: function() {
         /**
          * Fired when an value attribute is set by user action.
+         * This method should only be invoked from functions triggered by user action.
+         *
          * @event value-set
          * @param {Object} detail
-         * @param {Object} detail.element the input element
-         * @param {Object} detail.value new value
+         * @param {Object} detail.element the input element where value was set.
+         * @param {Object} detail.value new value.
          */
         this.fire('value-set', {element: this, value: this.value});
       },
