@@ -49,8 +49,9 @@ See `theme.css` for styling reference.
         height: auto;
       }
       #io-properties {
-        overflow: auto;
-        margin-left: 0.5em;
+        overflow-x: hidden;
+        overflow-y: auto;
+        margin-left: 0.25em;
       }
       core-list > div {
         display: inline-block;
@@ -80,6 +81,9 @@ See `theme.css` for styling reference.
         max-width: 1em;
         cursor: text;
       }
+      :host([disabled]) .io-spacer {
+        display: none;
+      }
       io-value::shadow > io-string:not(.value-editor)::shadow > .io-editor:not(:empty)::after,
       io-value::shadow > io-string:not(.value-editor)::shadow > .io-editor:not(:empty)::before {
         content: '"';
@@ -98,18 +102,18 @@ See `theme.css` for styling reference.
         pointer-events: auto;
       }
     </style>
-    <span class="io-constructor" on-tap="{{toggleExpanded}}" horizontal layout>
+    <span class="io-constructor" on-tap="{{toggleExpanded}}">
       <io-boolean-icon value="{{expanded}}" trueIcon="expand-more" falseIcon="chevron-right" disabled></io-boolean-icon>
       <span class="io-constructor-name">{{value.constructor.name}}</span>
       <span class="io-constructor-length">[{{valueAsArray.length}}]</span>
     </span>
-    <div id="io-properties" flex?="{{coreList}}">
-      <template if="{{expanded && coreList}}">
+    <div id="io-properties" flex?="{{corelist}}">
+      <template if="{{expanded && corelist}}">
         <core-list id="corelist"
             data="{{valueAsArray}}"
             scrollTarget="{{$['io-properties']}}"
-            height="15"
-            runwayFactor="4">
+            height="18"
+            runwayFactor="2">
           <template>
             <div horizontal layout>
               <span class="io-key"
@@ -132,7 +136,7 @@ See `theme.css` for styling reference.
           </template>
         </core-list>
       </template>
-      <template if="{{expanded && !coreList}}">
+      <template if="{{expanded && !corelist}}">
         <template repeat="{{model in valueAsArray}}">
           <div horizontal layout>
             <span class="io-key"
@@ -198,11 +202,11 @@ See `theme.css` for styling reference.
          * If set, the element uses core-list for its items.
          * Tu use core-list you must set element height explicitly.
          *
-         * @attribute coreList
+         * @attribute corelist
          * @type boolean
          * @default false
          */
-        coreList: false
+        corelist: false
       },
       computed: {
         'valueAsArray': 'ioObjectToArray(value)'
@@ -262,12 +266,14 @@ See `theme.css` for styling reference.
       },
       // adds property tapow
       spacerTapAction: function(event) {
+        if (this.disabled) return;
         event.stopPropagation();
         event.preventDefault();
         this.addProperty(event.path[0].getAttribute('key'));
       },
       // opens menu with edit options
       keyTapAction: function(event) {
+        if (this.disabled) return;
         event.stopPropagation();
         event.preventDefault();
         key = event.path[0].getAttribute('key');

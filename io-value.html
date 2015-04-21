@@ -80,7 +80,8 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
       ioElement: null,
       ioElementName: null,
       eventDelegates: {
-        'value-set': 'valueSet'
+        'value-set': 'valueSet',
+        'contextmenu': 'contextmenuAction'
       },
       domReady: function() {
         if (this.value === undefined || this.value === null) {
@@ -138,6 +139,12 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
           }
         }
       },
+      contextmenuAction: function(event) {
+        if (this.disabled) return;
+        event.preventDefault();
+        event.stopPropagation();
+        this.editValue();
+      },
       /**
        * Creates an untyped string value editor and selects its contents.
        * Does not work with objects
@@ -170,7 +177,7 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
         this.ioElement = document.createElement(ioElementName);
         this.shadowRoot.appendChild(this.ioElement);
         this.ioElement.bindProperty('value', new PathObserver(this, 'value'));
-        this.ioElement.bindProperty('desabled', new PathObserver(this, 'desabled'));
+        this.ioElement.bindProperty('disabled', new PathObserver(this, 'disabled'));
         this.ioElement.bindProperty('expanded', new PathObserver(this, 'expanded'));
         this.ioElement.immediateValue = this.value;
         this.ioElementName = ioElementName;

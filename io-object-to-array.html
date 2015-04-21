@@ -5,7 +5,7 @@
 // Once Polymer adds support for object iteration, this should be removed.
 // GitHub issue: https://github.com/Polymer/polymer-expressions/issues/11
 (function() {
-  var i, key, index;
+  var i, keys, key, index;
   PolymerExpressions.prototype.ioObjectToArray = function(object) {
     if (!object || typeof object != 'object') return;
     var array = [];
@@ -16,8 +16,9 @@
       return -1;
     };
     if (typeof object == 'object') {
-      for (key in object) {
-        array.push({value: object[key], key: key});
+      keys = Object.keys(object);
+      for (key in keys) {
+        array.push({value: object[keys[key]], key: keys[key]});
       }
       array.observer = new ObjectObserver(object);
       array.observer.open(function(added, removed, changed, getOldValueFn) {

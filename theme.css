@@ -30,26 +30,6 @@ html /deep/ .io-editor:empty:after {
 html /deep/ .io-constructor {
   /*font-style: italic;*/
 }
-/* margin for expanded opbject's properties */
-html /deep/ io-object:not([inline]) > .io-editor > io-value {
-  /*margin-left: 1em;*/
-}
-/* object property separatos and brackets */
-html /deep/ io-object:not([naked]) > .io-editor > io-value:not(:last-of-type)::after {
-  /*content: ', ';*/
-}
-html /deep/ io-object:not([naked]) > .io-editor::before {
-  /*content: '{';*/
-}
-html /deep/ io-object:not([naked]) > .io-editor::after {
-  /*content: '}';*/
-}
-html /deep/ io-object:not([naked]).array > .io-editor::before {
-  /*content: '[';*/
-}
-html /deep/ io-object:not([naked]).array > .io-editor::after {
-  /*content: ']';*/
-}
 
 /***********/
 /* options */
