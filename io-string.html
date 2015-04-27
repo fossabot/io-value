@@ -68,7 +68,7 @@ I/O element for string data type.
           }
         },
         valueChanged: function() {
-          this.immediateValue = this.value;
+          this.immediateValue = String(this.value);
         }
       });
     })();

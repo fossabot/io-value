@@ -100,8 +100,7 @@ __Note__: When element is focused, pressing enter/spacebar will toggle the value
        * @method toggle
        */
       toggle: function() {
-        this.value = !this.value;
-        this.fireValueSet();
+        this.setValue(!this.value);
       }
     });
   </script>

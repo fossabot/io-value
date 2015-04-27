@@ -53,7 +53,10 @@ See [**theme.css**](theme.css) for styling reference.
        *
        * @method fireValueSet
        */
-      fireValueSet: function() {
+      setValue: function(value) {
+        if (value === this.value) return;
+        var oldValue = this.value;
+        this.value = value;
         /**
          * Fired when an value attribute is set by user action.
          * This method should only be invoked from functions triggered by user action.
@@ -62,8 +65,9 @@ See [**theme.css**](theme.css) for styling reference.
          * @param {Object} detail
          * @param {Object} detail.element the input element where value was set.
          * @param {Object} detail.value new value.
+         * @param {Object} detail.oldValue old value.
          */
-        this.fire('value-set', {element: this, value: this.value});
+        this.fire('value-set', {element: this, value: this.value, oldValue: oldValue});
       },
       disabledChanged: function() {
         if (this.disabled) {

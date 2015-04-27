@@ -1,6 +1,6 @@
 {
   "name": "io-value",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "homepage": "http://akirodic.com/io/io-value",
   "authors": [
     "Aleksandar Rodic <aleksandar.xyz@gmail.com>"
@@ -19,7 +19,7 @@
   "license": "Apache 2.0",
   "dependencies": {
     "polymer": "Polymer/polymer#~0.5.5",
-    "io-menu": "arodic/io-menu#~0.2.0",
+    "io-menu": "arodic/io-menu#~0.2.2",
     "core-icons": "Polymer/core-icons#~0.5.5",
     "core-list": "Polymer/core-list#~0.5.5"
   }

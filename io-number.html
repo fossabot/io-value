@@ -75,6 +75,10 @@ I/O element for number data type.
           this._numericEditor.className = 'io-editor';
           this._numericEditor.setAttribute('tabindex', 0);
           this._numericEditor.setAttribute('type', 'number');
+          this._numericEditor.addEventListener('change', function(event) {
+            this.immediateValue = Number(this._numericEditor.value);
+            this.value = this.immediateValue;
+          }.bind(this));
           this._displayOnlySpan = this.$.value;
         },
         enableNumericEditor: function() {
@@ -84,7 +88,7 @@ I/O element for number data type.
           this.shadowRoot.appendChild(this._numericEditor);
         },
         disableNumericEditor: function() {
-          this._displayOnlySpan.setAttribute('tabindex', '');
+          this._displayOnlySpan.setAttribute('tabindex', 0);
           this._displayOnlySpan.classList.toggle('hidden', false);
           this._displayOnlySpan.textContent = this.immediateValue;
           this.shadowRoot.removeChild(this._numericEditor);

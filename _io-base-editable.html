@@ -92,8 +92,7 @@ Base for io-value input elements
         if (this.clickmasked) this.disabledChanged();
         if (event.path[0] == this.$.value) {
           if (this.value !== this.immediateValue) {
-            this.value = this.immediateValue;
-            this.fireValueSet();
+            this.setValue(this.immediateValue);
           }
           // If content of the value is overflowing the container,
           // make sure the scroll resets at blur.

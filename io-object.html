@@ -28,6 +28,7 @@ I/O web component for Object data type.
 <link rel="import" href="../polymer/polymer.html">
 
 <link rel="import" href="../core-list/core-list.html">
+<link rel="import" href="../core-icons/core-icons.html">
 <link rel="import" href="../io-menu/io-menu.html">
 
 <link rel="import" href="io-boolean.html">
@@ -35,7 +36,6 @@ I/O web component for Object data type.
 <link rel="import" href="io-string.html">
 <link rel="import" href="io-number.html">
 <link rel="import" href="io-value.html">
-<link rel="import" href="io-object-to-array.html">
 
 <polymer-element name="io-object" oncontextmenu="return false;" vertical layout>
   <template>
@@ -55,6 +55,7 @@ I/O web component for Object data type.
       }
       .io-constructor {
         cursor: pointer;
+        white-space: nowrap;
       }
       .io-constructor-name {
         font-style: italic;
@@ -72,10 +73,12 @@ I/O web component for Object data type.
         cursor: text;
       }
       .io-spacer {
-        max-height: 1em;
-        min-width: 1em;
-        max-width: 1em;
-        cursor: text;
+        width: 1.2em;
+        height: 1.2em;
+        cursor: pointer;
+      }
+      .io-spacer:not(:hover) {
+        opacity: 0;
       }
       :host([disabled]) .io-spacer {
         display: none;
@@ -98,59 +101,68 @@ I/O web component for Object data type.
         pointer-events: auto;
       }
     </style>
-    <span class="io-constructor" on-tap="{{toggleExpanded}}">
-      <io-boolean-icon value="{{expanded}}" trueicon="expand-more" falseicon="chevron-right" disabled></io-boolean-icon>
-      <span class="io-constructor-name">{{value.constructor.name}}</span>
-      <span class="io-constructor-length">[{{valueAsArray.length}}]</span>
+    <span class="io-constructor">
+      <io-boolean-icon value="{{expanded}}" trueicon="expand-more" falseicon="chevron-right"></io-boolean-icon>
+      <span on-tap="{{toggleExpanded}}">
+        <span class="io-constructor-name">{{value.constructor.name}}</span>
+        <span class="io-constructor-length">[{{observedKeys.length}}]</span>
+      </span>
     </span>
     <div id="io-properties" flex?="{{corelist}}">
       <template if="{{expanded && corelist}}">
         <core-list id="corelist"
-            data="{{valueAsArray}}"
+            data="{{observedKeys}}"
             scrollTarget="{{$['io-properties']}}"
             height="18"
             runwayFactor="2">
           <template>
             <div horizontal layout>
-              <span class="io-key"
+              <io-string class="io-key"
+                  value="{{model.key}}"
                   key="{{model.key}}"
-                  on-contextmenu="{{keyTapAction}}"
-                  on-tap="{{keyTapAction}}">
-                {{model.key}}:
-              </span>
+                  on-blur="{{keyBlurAction}}"
+                  on-value-set="{{keyChangedAction}}"
+                  placeholder=""
+                  disabled="{{disabled}}"
+                  on-contextmenu="{{keyContextAction}}">
+              </io-string>:
               <io-value
-                  value="{{model.value}}"
+                  value="{{value[model.key]}}"
                   key="{{model.key}}"
                   expanded="{{model._expanded}}"
                   disabled="{{disabled}}">
               </io-value>
-              <span class="io-spacer" flex
+              <core-icon icon="add" class="io-spacer"
                   key="{{model.key}}"
                   on-tap="{{spacerTapAction}}">
-              </span>
+              </core-icon>
             </div>
           </template>
         </core-list>
       </template>
+
       <template if="{{expanded && !corelist}}">
-        <template repeat="{{model in valueAsArray}}">
+        <template repeat="{{model in observedKeys}}">
           <div horizontal layout>
-            <span class="io-key"
+            <io-string class="io-key"
+                value="{{model.key}}"
                 key="{{model.key}}"
-                on-contextmenu="{{keyTapAction}}"
-                on-tap="{{keyTapAction}}">
-              {{model.key}}:
-            </span>
+                on-blur="{{keyBlurAction}}"
+                on-value-set="{{keyChangedAction}}"
+                placeholder=""
+                disabled="{{disabled}}"
+                on-contextmenu="{{keyContextAction}}">
+            </io-string>:
             <io-value
-                value="{{model.value}}"
+                value="{{value[model.key]}}"
                 key="{{model.key}}"
                 expanded="{{model._expanded}}"
                 disabled="{{disabled}}">
             </io-value>
-            <span class="io-spacer" flex
+            <core-icon icon="add" class="io-spacer"
                 key="{{model.key}}"
                 on-tap="{{spacerTapAction}}">
-            </span>
+            </core-icon>
           </div>
         </template>
       </template>
@@ -162,7 +174,13 @@ I/O web component for Object data type.
     menu.setAttribute('autoexpand', '');
     menu.style.position = 'fixed';
     document.body.appendChild(menu);
-    var key, item, rect;
+    var i, index, keys, key, item, rect, oldKey, newKey, value;
+    var indexInObservedKeys = function(observedKeys, key) {
+      for (i = 0; i < observedKeys.length; i++) {
+        if (observedKeys[i].key === key) return i;
+      }
+      return -1;
+    };
     Polymer({
       publish: {
         /**
@@ -199,9 +217,6 @@ I/O web component for Object data type.
          */
         corelist: false
       },
-      computed: {
-        'valueAsArray': 'ioObjectToArray(value)'
-      },
       ready: function() {
         /**
          * Bubbled up value-set event with top-most io-object value appended.
@@ -222,6 +237,7 @@ I/O web component for Object data type.
             objectValue: this.value
           });
         }.bind(this));
+
       },
       /**
        * Deletes object property or array element with specified key/index.
@@ -232,11 +248,11 @@ I/O web component for Object data type.
       deleteProperty: function(key) {
         // TODO: offset expanded states for arrays
         if (this.value instanceof Array) {
-          key = parseFloat(key);
-          this.value.splice(key, 1);
+          this.value.splice(Number(key), 1);
         } else {
           delete this.value[key];
         }
+        this.fire('core-resize');
       },
       /**
        * Sets object property or array element with specified key/index.
@@ -247,11 +263,14 @@ I/O web component for Object data type.
        * @param {boolean} focus if set, intput field gets focused after it has been cleared.
        */
       setProperty: function(key, value, focus) {
-        this.value[key] = undefined;
+        if (this.value instanceof Array) key = Number(key);
+        this.value[key] = value;
         item = this.shadowRoot.querySelector('io-value[key="' + key + '"]');
-        this.async(function() {
-          item.ioElement.$.value.focus();
-        }.bind(this));
+        if (item && focus) {
+          this.async(function() {
+            item.ioElement.$.value.focus();
+          }.bind(this));
+        }
       },
       /**
        * Adds object property or array element at specified key/index.
@@ -273,37 +292,65 @@ I/O web component for Object data type.
             }.bind(this));
           }.bind(this));
         } else {
-          // TODO: Implement better key value-editor
-          key = prompt('New property name:');
-          if (key != null) {
-            if (this.value.hasOwnProperty(key)) {
-              console.log('Property', key, 'olready exists!');
-            } else {
-              // TODO: validate property name?
-              this.value[key] = undefined;
+          key = '';
+          this.value[key] = undefined;
+          if (focus) {
+            this.async(function() {
+              item = this.shadowRoot.querySelector('io-string[key="' + key + '"]');
               this.async(function() {
-                this.async(function() {
-                  item = this.shadowRoot.querySelector('io-value[key="' + key + '"]');
-                  item.ioElement.$.value.focus();
-                }.bind(this));
+                item.$.value.innerHTML = '';
+                item.$.value.focus();
               }.bind(this));
-            }
+            }.bind(this));
           }
         }
+        this.fire('core-resize');
       },
-      // adds property tapow
+
+      keyBlurAction: function(event) {
+        if (event.path[0].innerHTML == '') {
+          this.deleteProperty('');
+        }
+      },
+
+      keyChangedAction: function(event) {
+        oldKey = event.detail.oldValue;
+        newKey = event.detail.value;
+        event.stopPropagation();
+        if (this.value instanceof Array) {
+          if (isNaN(Number(newKey))) {
+            // TODO: Remove if using Number editor?
+            event.path[0].value = oldKey;
+            event.path[0].immediateValue = oldKey;
+            return;
+          }
+          var value = this.value[Number(oldKey)];
+          this.value.splice(Number(oldKey), 1);
+          this.value.length = Math.max(this.value.length, Number(newKey));
+          this.async(function() {
+            this.value.splice(Number(newKey), 0, value);
+          }.bind(this));
+        } else {
+          value = this.value[oldKey];
+          delete this.value[oldKey];
+          this.value[newKey] = value;
+        }
+        this.fire('core-resize');
+      },
+
+      // adds property
       spacerTapAction: function(event) {
         if (this.disabled) return;
         event.stopPropagation();
         event.preventDefault();
-        this.addProperty(event.path[0].getAttribute('key'));
+        this.addProperty(event.path[0].getAttribute('key'), undefined, true);
       },
       // opens menu with edit options
-      keyTapAction: function(event) {
+      keyContextAction: function(event) {
         if (this.disabled) return;
         event.stopPropagation();
         event.preventDefault();
-        key = event.path[0].getAttribute('key');
+        key = event.path[0].innerHTML;
         menu.options = [
           { label: 'delete', action: this.deleteProperty.bind(this), arguments: [key] },
           { label: 'clear', action: this.setProperty.bind(this), arguments: [key, undefined, true] },
@@ -316,6 +363,50 @@ I/O web component for Object data type.
       },
       toggleExpanded: function() {
         this.expanded = !this.expanded;
+      },
+      expandedChanged: function() {
+        if (this.expanded && this.observedKeys && this.observedKeys.length === 0) {
+          this.addProperty(-1, undefined, true);
+        }
+      },
+      valueChanged: function() {
+        if (!this.value || typeof this.value !== 'object') return;
+        if (this.keyObserver) {
+          this.keyObserver.close();
+          delete this.keyObserver;
+        }
+        if (this.value instanceof Array) {
+          // Array change is handled manually by syncing keys.
+          this.observedKeys = this.observedKeys || [];
+          this.observedKeys.length = this.value.length;
+          for (i = 0; i < this.value.length; i++) {
+            this.observedKeys[i] = this.observedKeys[i] || {};
+            this.observedKeys[i].key = i;
+            // TODO:  handle _expanded state when array item shifts to a different index.
+          }
+        } else {
+          // Object change is handled by object observer
+          this.observedKeys = [];
+          keys = Object.keys(this.value);
+          for (i in keys) {
+            this.observedKeys.push({key: keys[i]});
+          }
+          this.keyObserver = new ObjectObserver(this.value);
+          this.keyObserver.open(function(added, removed, changed, getOldValueFn) {
+            for (key in added) {
+              index = indexInObservedKeys(this.observedKeys, key);
+              if (index === -1) {
+                this.observedKeys.push({key: key});
+              }
+            }
+            for (key in removed) {
+              index = indexInObservedKeys(this.observedKeys, key);
+              if (index !== -1) {
+                this.observedKeys.splice(index, 1);
+              }
+            }
+          }, this);
+        }
       }
     });
   }());

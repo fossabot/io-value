@@ -116,10 +116,6 @@ I/O web component for option selection.
           }
         }.bind(this), 10);
       },
-      setValue: function(value) {
-        this.value = value;
-        this.fireValueSet();
-      },
       valueChanged: function(oldValue) {
         this.super();
         for (var i = 0; i < this.options.length; i++) {
@@ -140,7 +136,7 @@ I/O web component for option selection.
       optionsChanged: function() {
         this.menuOptions = [];
         for (var i = 0; i < this.options.length; i++) {
-          if (typeof this.options[i] === 'object') {
+          if (this.options[i] && typeof this.options[i] === 'object') {
             this.menuOptions.push({
               label: this.options[i].label,
               action: this._setValue,
