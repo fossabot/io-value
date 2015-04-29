@@ -29,7 +29,6 @@ I/O web component for Object data type.
 
 <link rel="import" href="../core-list/core-list.html">
 <link rel="import" href="../core-icons/core-icons.html">
-<link rel="import" href="../io-menu/io-menu.html">
 
 <link rel="import" href="io-boolean.html">
 <link rel="import" href="io-boolean-icon.html">
@@ -120,16 +119,16 @@ I/O web component for Object data type.
               <io-string class="io-key"
                   value="{{model.key}}"
                   key="{{model.key}}"
-                  on-blur="{{keyBlurAction}}"
                   on-value-set="{{keyChangedAction}}"
+                  on-keydown="{{keyKeydownAction}}"
                   placeholder=""
-                  disabled="{{disabled}}"
-                  on-contextmenu="{{keyContextAction}}">
+                  disabled="{{disabled}}">
               </io-string>:
               <io-value
                   value="{{value[model.key]}}"
                   key="{{model.key}}"
                   expanded="{{model._expanded}}"
+                  on-keydown="{{valueKeydownAction}}"
                   disabled="{{disabled}}">
               </io-value>
               <core-icon icon="add" class="io-spacer"
@@ -147,16 +146,16 @@ I/O web component for Object data type.
             <io-string class="io-key"
                 value="{{model.key}}"
                 key="{{model.key}}"
-                on-blur="{{keyBlurAction}}"
                 on-value-set="{{keyChangedAction}}"
+                on-keydown="{{keyKeydownAction}}"
                 placeholder=""
-                disabled="{{disabled}}"
-                on-contextmenu="{{keyContextAction}}">
+                disabled="{{disabled}}">
             </io-string>:
             <io-value
                 value="{{value[model.key]}}"
                 key="{{model.key}}"
                 expanded="{{model._expanded}}"
+                on-keydown="{{valueKeydownAction}}"
                 disabled="{{disabled}}">
             </io-value>
             <core-icon icon="add" class="io-spacer"
@@ -170,11 +169,8 @@ I/O web component for Object data type.
   </template>
   <script type="text/javascript">
   (function() {
-    var menu = document.createElement('io-menu');
-    menu.setAttribute('autoexpand', '');
-    menu.style.position = 'fixed';
-    document.body.appendChild(menu);
     var i, index, keys, key, item, rect, oldKey, newKey, value;
+    var parent, sibling, editor, range, selection;
     var indexInObservedKeys = function(observedKeys, key) {
       for (i = 0; i < observedKeys.length; i++) {
         if (observedKeys[i].key === key) return i;
@@ -248,7 +244,9 @@ I/O web component for Object data type.
       deleteProperty: function(key) {
         // TODO: offset expanded states for arrays
         if (this.value instanceof Array) {
-          this.value.splice(Number(key), 1);
+          if (Number(key) > 0 && Number(key) < this.value.length) {
+            this.value.splice(Number(key), 1);
+          }
         } else {
           delete this.value[key];
         }
@@ -292,12 +290,13 @@ I/O web component for Object data type.
             }.bind(this));
           }.bind(this));
         } else {
-          key = '';
+          key = '_';
           this.value[key] = undefined;
           if (focus) {
             this.async(function() {
               item = this.shadowRoot.querySelector('io-string[key="' + key + '"]');
               this.async(function() {
+                item.immediateValue = '';
                 item.$.value.innerHTML = '';
                 item.$.value.focus();
               }.bind(this));
@@ -306,60 +305,78 @@ I/O web component for Object data type.
         }
         this.fire('core-resize');
       },
-
-      keyBlurAction: function(event) {
-        if (event.path[0].innerHTML == '') {
-          this.deleteProperty('');
-        }
-      },
-
       keyChangedAction: function(event) {
         oldKey = event.detail.oldValue;
         newKey = event.detail.value;
         event.stopPropagation();
-        if (this.value instanceof Array) {
-          if (isNaN(Number(newKey))) {
-            // TODO: Remove if using Number editor?
-            event.path[0].value = oldKey;
-            event.path[0].immediateValue = oldKey;
+        this.async(function() {
+          event.path[0].value = oldKey;        
+          if (newKey === '') {
+            this.deleteProperty(oldKey);
             return;
           }
-          var value = this.value[Number(oldKey)];
-          this.value.splice(Number(oldKey), 1);
-          this.value.length = Math.max(this.value.length, Number(newKey));
-          this.async(function() {
-            this.value.splice(Number(newKey), 0, value);
-          }.bind(this));
-        } else {
-          value = this.value[oldKey];
-          delete this.value[oldKey];
-          this.value[newKey] = value;
-        }
-        this.fire('core-resize');
-      },
+          if (this.value instanceof Array) {
+            if (isNaN(Number(newKey))) {
+                 return;
+            }
+            var value = this.value[Number(oldKey)];
+            this.value.splice(Number(oldKey), 1);
+            this.value.length = Math.max(this.value.length, Number(newKey));
+            this.async(function() {
+              this.value.splice(Number(newKey), 0, value);
+            }.bind(this));
+          } else {
+            value = this.value[oldKey];
+            this.deleteProperty(oldKey);
+            this.value[newKey] = value;
+          }
+          this.fire('core-resize');
+        }.bind(this));
 
+      },
+      // TODO: implement better API for object editing/navigation commands.
+      keyKeydownAction: function(event) {
+        // delete empty property on backpace
+        if (event.which === 8 && event.path[2].immediateValue == '') {
+          event.stopPropagation();
+          parent = this.corelist ? event.path[2].parentElement : event.path[3];
+          sibling = parent.previousElementSibling.children[1];
+          event.path[0].blur();
+          // Select previous value editor
+          if (sibling) {
+            editor = sibling.ioElement.$.value;
+            // TODO: implement cursor navigation and enter key
+            range = document.createRange();
+            range.selectNodeContents(editor);
+            selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+          }
+        }
+      },
+      valueKeydownAction: function(event) {
+        if (event.which === 8 && event.path[2].immediateValue == '') {
+          event.stopPropagation();
+          parent = event.path[4];
+          sibling = parent.previousElementSibling;
+          event.path[0].blur();
+          if (sibling) {
+            editor = sibling.$.value;
+            // TODO: implement cursor navigation and enter key
+            range = document.createRange();
+            range.selectNodeContents(editor);
+            selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+          }
+        }
+      },
       // adds property
       spacerTapAction: function(event) {
         if (this.disabled) return;
         event.stopPropagation();
         event.preventDefault();
         this.addProperty(event.path[0].getAttribute('key'), undefined, true);
-      },
-      // opens menu with edit options
-      keyContextAction: function(event) {
-        if (this.disabled) return;
-        event.stopPropagation();
-        event.preventDefault();
-        key = event.path[0].innerHTML;
-        menu.options = [
-          { label: 'delete', action: this.deleteProperty.bind(this), arguments: [key] },
-          { label: 'clear', action: this.setProperty.bind(this), arguments: [key, undefined, true] },
-          { label: 'add', action: this.addProperty.bind(this), arguments: [key, undefined, true] }
-        ];
-        rect = event.path[0].getBoundingClientRect();
-        menu.style.top = rect.top + 'px';
-        menu.style.left = rect.left + 'px';
-        menu.expanded = true;
       },
       toggleExpanded: function() {
         this.expanded = !this.expanded;

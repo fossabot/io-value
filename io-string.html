@@ -64,11 +64,11 @@ I/O element for string data type.
             this.value = this.immediateValue;
           }
           if (!this.focused) {
-            this.$.value.innerHTML = this.immediateValue || '';
+            this.$.value.innerHTML = this.immediateValue;
           }
         },
         valueChanged: function() {
-          this.immediateValue = String(this.value);
+          this.immediateValue = this.value;
         }
       });
     })();

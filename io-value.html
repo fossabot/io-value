@@ -107,13 +107,13 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
           this.ioElement.placeholder = 'NaN';
           this.ioElementName = 'io-NaN';
         // Special editors for objects, functions, boolean, numbers and strings.
-        } else if (typeof this.value == 'object') {
+        } else if (typeof this.value === 'object') {
           this.setIoElement('io-object');
-        } else if (typeof this.value == 'function') {
+        } else if (typeof this.value === 'function') {
           // this.setIoElement('io-function'); // TODO: function
-        } else if (typeof this.value == 'boolean') {
+        } else if (typeof this.value === 'boolean') {
           this.setIoElement('io-boolean');
-        } else if (typeof this.value == 'number') {
+        } else if (typeof this.value === 'number') {
           this.setIoElement('io-number');
         } else if (typeof this.value === 'string') {
           this.setIoElement('io-string');
@@ -177,7 +177,7 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
         }.bind(this), false);
       },
       setIoElement: function(ioElementName) {
-        if (this.ioElementName == ioElementName) return;
+        if (this.ioElementName === ioElementName) return;
         this.removeIoElement();
         this.ioElement = document.createElement(ioElementName);
         this.shadowRoot.appendChild(this.ioElement);
