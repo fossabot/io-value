@@ -119,9 +119,9 @@ I/O web component for option selection.
       valueChanged: function(oldValue) {
         this.super();
         for (var i = 0; i < this.options.length; i++) {
-          if (this.options[i] instanceof Array && this.options[i].length == 2) {
-            if (this.value == this.options[i][1]) {
-              this.displayValue = this.options[i][0];
+          if (this.options[i] && this.options[i].label) {
+            if (this.value == this.options[i].value) {
+              this.displayValue = this.options[i].label;
               return;
             }
           } else {
