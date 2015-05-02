@@ -137,21 +137,21 @@ I/O element for number data type.
         },
         updateImmediateValue: function() {
           if (isValid(this._numericEditor.value)) {
-            this.immediateValue = parseFloat(this._numericEditor.value);
+            this.immediateValue = Number(this._numericEditor.value);
             this._numericEditor.classList.toggle('invalid', false);
           } else if (this._numericEditor.value == '') {
-            this.immediateValue = null;
-            this.value = null;
+            this.immediateValue = NaN;
+            this.value = NaN;
           } else {
             this._numericEditor.classList.toggle('invalid', true);
           }
         },
         valueChanged: function() {
-          this.immediateValue = parseFloat(this.value);
+          this.immediateValue = Number(this.value);
         },
         immediateValueChanged: function() {
           if (this.updateImmediate) {
-              this.value = parseFloat(this.immediateValue);
+              this.value = Number(this.immediateValue);
           }
           if (this._numericEditor) {
             this.resizeNumericEditor();

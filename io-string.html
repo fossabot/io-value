@@ -57,14 +57,14 @@ I/O element for string data type.
           }.bind(this));
         },
         updateImmediateValue: function(event) {
-          this.immediateValue = this.$.value.innerHTML;
+          this.immediateValue = this.$.value.innerHTML || this.value;
         },
         immediateValueChanged: function() {
           if (this.updateImmediate) {
             this.value = this.immediateValue;
           }
           if (!this.focused) {
-            this.$.value.innerHTML = this.immediateValue;
+            this.$.value.innerHTML = this.immediateValue != undefined ? this.immediateValue : '';
           }
         },
         valueChanged: function() {

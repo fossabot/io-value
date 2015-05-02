@@ -170,10 +170,10 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
           sel.addRange(range);
         }.bind(this));
         this.ioElement.addEventListener('blur', function(event) {
-          if (this.ioElement.value !== String(this.value)) {
+          if (String(this.ioElement.value) !== String(this.value)) {
             this.valueSet({path: [this.ioElement]});
+            this.valueChanged();
           };
-          this.valueChanged();
         }.bind(this), false);
       },
       setIoElement: function(ioElementName) {
