@@ -111,6 +111,7 @@ I/O element for number data type.
           }
         },
         blurAction: function(event) {
+          this.updateImmediateValue();
           this.super(arguments);
           if (event.path[0] == this._numericEditor) {
             this.disableNumericEditor();

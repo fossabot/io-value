@@ -56,6 +56,10 @@ I/O element for string data type.
             this.updateImmediateValue();
           }.bind(this));
         },
+        blurAction: function(event) {
+          this.updateImmediateValue();
+          this.super(arguments);
+        },
         updateImmediateValue: function(event) {
           this.immediateValue = this.$.value.innerHTML || this.value;
         },
