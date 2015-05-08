@@ -46,7 +46,7 @@ I/O web component for Object data type.
       #io-properties {
         overflow-x: hidden;
         overflow-y: auto;
-        margin-left: 0.25em;
+        margin-left: 1em;
       }
       core-list > div {
         display: inline-block;
@@ -101,6 +101,7 @@ I/O web component for Object data type.
       }
     </style>
     <span class="io-constructor">
+      <content></content>
       <io-boolean-icon value="{{expanded}}" trueicon="expand-more" falseicon="chevron-right"></io-boolean-icon>
       <span on-tap="{{toggleExpanded}}">
         <span class="io-constructor-name">{{value.constructor.name}}</span>
@@ -116,20 +117,20 @@ I/O web component for Object data type.
             runwayFactor="2">
           <template>
             <div horizontal layout>
-              <io-string class="io-key"
-                  value="{{model.key}}"
-                  key="{{model.key}}"
-                  on-value-set="{{keyChangedAction}}"
-                  on-keydown="{{keyKeydownAction}}"
-                  placeholder=""
-                  disabled="{{disabled}}">
-              </io-string>:
               <io-value
                   value="{{value[model.key]}}"
                   key="{{model.key}}"
                   expanded="{{model._expanded}}"
                   on-keydown="{{valueKeydownAction}}"
                   disabled="{{disabled}}">
+                <io-string class="io-key"
+                    value="{{model.key}}"
+                    key="{{model.key}}"
+                    on-value-set="{{keyChangedAction}}"
+                    on-keydown="{{keyKeydownAction}}"
+                    placeholder=""
+                    disabled="{{disabled}}">
+                </io-string>:
               </io-value>
               <core-icon icon="add" class="io-spacer"
                   key="{{model.key}}"
@@ -143,20 +144,20 @@ I/O web component for Object data type.
       <template if="{{expanded && !corelist}}">
         <template repeat="{{model in observedKeys}}">
           <div horizontal layout>
-            <io-string class="io-key"
-                value="{{model.key}}"
-                key="{{model.key}}"
-                on-value-set="{{keyChangedAction}}"
-                on-keydown="{{keyKeydownAction}}"
-                placeholder=""
-                disabled="{{disabled}}">
-            </io-string>:
             <io-value
                 value="{{value[model.key]}}"
                 key="{{model.key}}"
                 expanded="{{model._expanded}}"
                 on-keydown="{{valueKeydownAction}}"
                 disabled="{{disabled}}">
+              <io-string class="io-key"
+                  value="{{model.key}}"
+                  key="{{model.key}}"
+                  on-value-set="{{keyChangedAction}}"
+                  on-keydown="{{keyKeydownAction}}"
+                  placeholder=""
+                  disabled="{{disabled}}">
+              </io-string>:
             </io-value>
             <core-icon icon="add" class="io-spacer"
                 key="{{model.key}}"

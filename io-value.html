@@ -37,8 +37,10 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
 <link rel="import" href="io-string.html">
 <link rel="import" href="io-object.html">
 
-<polymer-element name="io-value">
-  <template></template>
+<polymer-element name="io-value" horizontal layout>
+  <template>
+    <content id="content"></content><span id="editor" flex></span>
+  </template>
   <script type="text/javascript">
   (function() {
     function isJson(str) {
@@ -78,7 +80,16 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
          * @type boolean
          * @default false
          */
-        expanded: {value: false, reflect: true}
+        expanded: {value: false, reflect: true},
+        /**
+         * If set, the element uses core-list for its items.
+         * To use core-list you must set element height explicitly.
+         *
+         * @attribute corelist
+         * @type boolean
+         * @default false
+         */
+        corelist: false
       },
       ioElement: null,
       ioElementName: null,
@@ -180,17 +191,29 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
         if (this.ioElementName === ioElementName) return;
         this.removeIoElement();
         this.ioElement = document.createElement(ioElementName);
-        this.shadowRoot.appendChild(this.ioElement);
+        this.$.editor.appendChild(this.ioElement);
+        this.ioElement.appendChild(this.$.content);
         this.ioElement.bindProperty('value', new PathObserver(this, 'value'));
         this.ioElement.bindProperty('disabled', new PathObserver(this, 'disabled'));
         this.ioElement.bindProperty('expanded', new PathObserver(this, 'expanded'));
+        this.ioElement.bindProperty('corelist', new PathObserver(this, 'corelist'));
+        this.corelistChanged();
         this.ioElement.immediateValue = this.value;
         this.ioElementName = ioElementName;
+      },
+      corelistChanged: function() {
+        if (!this.ioElement) return;
+        if (this.corelist) {
+          this.ioElement.setAttribute('fit', '');
+        } else {
+          this.ioElement.removeAttribute('fit');
+        }
       },
       removeIoElement: function() {
         if (this.ioElement) {
           this.ioElement.unbindAll(); // TODO: Maybe unnecessary;
-          this.shadowRoot.removeChild(this.ioElement);
+          this.ioElement.removeChild(this.$.content);
+          this.$.editor.removeChild(this.ioElement);
         }
       }
     });
