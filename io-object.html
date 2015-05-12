@@ -82,21 +82,21 @@ I/O web component for Object data type.
       :host([disabled]) .io-spacer {
         display: none;
       }
-      io-value::shadow > io-string:not(.value-editor)::shadow > .io-editor:not(:empty)::after,
-      io-value::shadow > io-string:not(.value-editor)::shadow > .io-editor:not(:empty)::before {
+      io-value::shadow io-string:not(.value-editor)::shadow .io-editor:not(:empty)::after,
+      io-value::shadow io-string:not(.value-editor)::shadow .io-editor:not(:empty)::before {
         content: '"';
       }
-      io-value::shadow > io-string:not(.value-editor) {
+      io-value::shadow io-string:not(.value-editor) {
         color: rgb(198, 22, 5);
       }
-      io-value::shadow > io-boolean,
-      io-value::shadow > io-number {
+      io-value::shadow io-boolean,
+      io-value::shadow io-number {
         color: rgb(25, 0, 211);
       }
-      io-value::shadow > io-object {
+      io-value::shadow io-object {
         pointer-events: none;
       }
-      io-value::shadow > io-object::shadow * {
+      io-value::shadow io-object::shadow * {
         pointer-events: auto;
       }
     </style>
@@ -307,18 +307,19 @@ I/O web component for Object data type.
         this.fire('core-resize');
       },
       keyChangedAction: function(event) {
-        oldKey = event.detail.oldValue;
-        newKey = event.detail.value;
+        oldKey = String(event.detail.oldValue);
+        newKey = String(event.detail.value);
+        if (oldKey === newKey) return;
         event.stopPropagation();
         this.async(function() {
-          event.path[0].value = oldKey;        
+          event.path[0].value = oldKey;
           if (newKey === '') {
             this.deleteProperty(oldKey);
             return;
           }
           if (this.value instanceof Array) {
             if (isNaN(Number(newKey))) {
-                 return;
+              return;
             }
             var value = this.value[Number(oldKey)];
             this.value.splice(Number(oldKey), 1);
@@ -335,42 +336,10 @@ I/O web component for Object data type.
         }.bind(this));
 
       },
-      // TODO: implement better API for object editing/navigation commands.
+      // TODO: implement API for object editing/navigation commands.
       keyKeydownAction: function(event) {
-        // delete empty property on backpace
-        if (event.which === 8 && event.path[2].immediateValue === '') {
-          event.stopPropagation();
-          parent = this.corelist ? event.path[2].parentElement : event.path[3];
-          sibling = parent.previousElementSibling.children[1];
-          event.path[0].blur();
-          // Select previous value editor
-          if (sibling) {
-            editor = sibling.ioElement.$.value;
-            // TODO: implement cursor navigation and enter key
-            range = document.createRange();
-            range.selectNodeContents(editor);
-            selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-          }
-        }
       },
       valueKeydownAction: function(event) {
-        if (event.which === 8 && event.path[2].immediateValue === '') {
-          event.stopPropagation();
-          parent = event.path[4];
-          sibling = parent.previousElementSibling;
-          event.path[0].blur();
-          if (sibling) {
-            editor = sibling.$.value;
-            // TODO: implement cursor navigation and enter key
-            range = document.createRange();
-            range.selectNodeContents(editor);
-            selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-          }
-        }
       },
       // adds property
       spacerTapAction: function(event) {

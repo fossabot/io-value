@@ -81,11 +81,13 @@ Base for io-value input elements
         }
       },
       focusAction: function(event) {
+        event.stopPropagation();
         if (event.path[0] == this.$.value) {
           this.focused = true;
         }
       },
       blurAction: function(event) {
+        event.stopPropagation();
         var selection = window.getSelection();
         selection.removeAllRanges();
         this.focused = false;

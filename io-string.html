@@ -62,7 +62,7 @@ I/O element for string data type.
           this.super(arguments);
         },
         updateImmediateValue: function(event) {
-          this.immediateValue = this.$.value.innerHTML || this.value;
+          this.immediateValue = this.$.value.innerHTML;
         },
         immediateValueChanged: function() {
           if (this.updateImmediate) {
