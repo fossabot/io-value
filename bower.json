@@ -13,7 +13,6 @@
   "license": "MIT",
   "dependencies": {
     "polymer": "Polymer/polymer#~0.5.5",
-    "io-menu": "arodic/io-menu#~0.2.3",
     "core-icons": "Polymer/core-icons#~0.5.5",
     "core-list": "Polymer/core-list#~0.5.5"
   }

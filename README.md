@@ -1,5 +1,5 @@
-A collection of I/O web components for various data types
-=========================================================
+io-value
+========
 
 This bundle of [Polymer](https://www.polymer-project.org/) elements is designed to provide simple and powerful editors for various data types.
 

@@ -11,7 +11,6 @@
   <link rel="import" href="io-string.html">
   <link rel="import" href="io-object.html">
   <link rel="import" href="io-value.html">
-  <link rel="import" href="io-options.html">
   <style type="text/css">
     html {
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -32,12 +31,6 @@
   <demo-app></demo-app>
   <polymer-element name="demo-app">
     <template>
-      <!-- <io-boolean-icon value="{{value[0]}}"></io-boolean-icon>
-      <io-boolean value="{{value[0]}}"></io-boolean>
-      <io-number value="{{value[1]}}"></io-number>
-      <io-string value="{{value[2]}}"></io-string>
-      <io-options value="{{options[0]}}" options="{{options}}"></io-options>
-      <br /> -->
       <io-object expanded value="{{value}}" corelist style="height: 400px;"></io-object>
     </template>
     <script>
@@ -51,7 +44,6 @@
           null,
           NaN
         ],
-        options: [1, 2, {value: 3, label: 'three'}],
         ready: function() {
           window.value = this.value;
         }
