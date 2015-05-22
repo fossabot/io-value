@@ -1,6 +1,6 @@
 {
   "name": "io-value",
-  "version": "0.8.5",
+  "version": "0.8.6",
   "homepage": "https://github.com/arodic/io-value",
   "authors": [
     "Aleksandar Rodic <aleksandar.xyz@gmail.com>"
@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "polymer": "Polymer/polymer#~0.5.5",
-    "io-menu": "arodic/io-menu#~0.2.2",
+    "io-menu": "arodic/io-menu#~0.2.3",
     "core-icons": "Polymer/core-icons#~0.5.5",
     "core-list": "Polymer/core-list#~0.5.5"
   }
