@@ -1,8 +1,12 @@
 A collection of I/O web components for various data types
 =========================================================
 
-[DOCS](http://akirodic.com/io/io-value)
+This bundle of [Polymer](https://www.polymer-project.org/) elements is designed to provide simple and powerful editors for various data types.
 
-[DEMO](http://akirodic.com/io/io-value/demo.html)
+See documentation and examples below for more information.
 
-![io-value](http://akirodic.com/io/io-value/preview.png "io-value")
+[DOCS](http://akirodic.com/components/io-value)
+
+[DEMO](http://akirodic.com/components/io-value/demo.html)
+
+![io-value](http://akirodic.com/components/io-value/preview.png "io-value")

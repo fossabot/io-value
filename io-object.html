@@ -228,10 +228,8 @@ I/O web component for Object data type.
         this.shadowRoot.addEventListener('value-set', function(event) {
           event.stopPropagation();
           this.fire('value-set', {
-            element: event.detail.value,
-            value: event.detail.value,
-            objectElement: this,
-            objectValue: this.value
+            element: this,
+            value: this.value
           });
         }.bind(this));
 
