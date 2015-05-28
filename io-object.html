@@ -236,24 +236,6 @@ I/O web component for Object data type.
         this.fire('core-resize');
       },
       /**
-       * Sets object property or array element with specified key/index.
-       *
-       * @method setProperty
-       * @param {string} key key/index to set.
-       * @param {any} value value to set.
-       * @param {boolean} focus if set, intput field gets focused after it has been cleared.
-       */
-      setProperty: function(key, value, focus) {
-        if (this.value instanceof Array) key = Number(key);
-        this.value[key] = value;
-        item = this.shadowRoot.querySelector('io-value[key="' + key + '"]');
-        if (item && focus) {
-          this.async(function() {
-            item.ioElement.$.value.focus();
-          }.bind(this));
-        }
-      },
-      /**
        * Adds object property or array element at specified key/index.
        *
        * @method addProperty
@@ -265,7 +247,7 @@ I/O web component for Object data type.
         // TODO: offset expanded states for arrays
         if (this.value instanceof Array) {
           key = parseFloat(key) + 1;
-          this.value.splice(key, 0, undefined);
+          this.value.splice(key, 0, null);
           this.async(function() {
             this.async(function() {
               item = this.shadowRoot.querySelector('io-value[key="' + key + '"]');
@@ -274,7 +256,7 @@ I/O web component for Object data type.
           }.bind(this));
         } else {
           key = '_';
-          this.value[key] = undefined;
+          this.value[key] = null;
           if (focus) {
             this.async(function() {
               item = this.shadowRoot.querySelector('io-string[key="' + key + '"]');
@@ -297,6 +279,10 @@ I/O web component for Object data type.
           event.path[0].value = oldKey;
           if (newKey === '') {
             this.deleteProperty(oldKey);
+            this.fire('value-set', {
+              element: this,
+              value: this.value
+            });
             return;
           }
           if (this.value instanceof Array) {
@@ -306,6 +292,10 @@ I/O web component for Object data type.
             var value = this.value[Number(oldKey)];
             this.value.splice(Number(oldKey), 1);
             this.value.length = Math.max(this.value.length, Number(newKey));
+            this.fire('value-set', {
+              element: this,
+              value: this.value
+            });
             this.async(function() {
               this.value.splice(Number(newKey), 0, value);
             }.bind(this));
@@ -313,6 +303,10 @@ I/O web component for Object data type.
             value = this.value[oldKey];
             this.deleteProperty(oldKey);
             this.value[newKey] = value;
+            this.fire('value-set', {
+              element: this,
+              value: this.value
+            });
           }
           this.fire('core-resize');
         }.bind(this));
