@@ -57,11 +57,11 @@ I/O element for number data type.
           this._numericEditor.className = 'io-editor';
           this._numericEditor.setAttribute('tabindex', 0);
           this._numericEditor.setAttribute('type', 'number');
+          this._displayOnlySpan = this.$.value;
           this._numericEditor.addEventListener('change', function(event) {
             this.immediateValue = Number(this._numericEditor.value);
             this.value = this.immediateValue;
           }.bind(this));
-          this._displayOnlySpan = this.$.value;
         },
         enableNumericEditor: function() {
           this._displayOnlySpan.removeAttribute('tabindex');
