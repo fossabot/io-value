@@ -6,87 +6,56 @@ I/O element for boolean data type. Displays value as string.
 __Note__: When element is focused, pressing enter/spacebar will toggle the value.
 
 @element io-boolean
-@extends io-base
 @homepage https://github.com/arodic/io-value
 @demo http://akirodic.com/components/io-value/demo.html
 @blurb I/O element for boolean data type. Displays value as string.
 @status alpha
 -->
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="_io-base.html">
+<link rel="import" href="_io-base-behavior.html">
+<link rel="import" href="_io-boolean-behavior.html">
 
-<polymer-element name="io-boolean" extends="io-base">
-  <template>
-    <link rel="stylesheet" href="_io-base.css" shim-shadowdom>
-    <style type="text/css" shim-shadowdom>
-      :host(:not([disabled])) > .io-editor {
-        cursor: pointer;
-      }
-    </style>
-    <content></content>
-    <span id="value" class="io-editor" tabindex="0">{{value ? truestr : falsestr}}</span>
-  </template>
-  <script>
-    Polymer({
-      publish: {
-        /**
-         * Element value.
-         *
-         * @attribute value
-         * @type boolean
-         * @default false
-         */
-        value: false,
-        /**
-         * String to display when value is true.
-         *
-         * @attribute truestr
-         * @type string
-         * @default 'true'
-         */
-        truestr: 'true',
-        /**
-         * String to display when value is false.
-         *
-         * @attribute falsestr
-         * @type string
-         * @default 'false'
-         */
-        falsestr: 'false'
-      },
-      eventDelegates: {
-        'keydown': 'keydownAction',
-        'down': 'downAction',
-        'tap': 'tapAction'
-      },
-      downAction: function(event) {
-        // prevent focus but let currently focused blur
-        event.preventDefault();
-        document.activeElement.blur();
-      },
-      tapAction: function(event) {
-        if (this.disabled) return;
-        if (event.path[0] == this.$.value) {
-          this.toggle();
-        }
-      },
-      keydownAction: function(event) {
-        if (this.disabled) return;
-        if (event.path[0] == this.$.value) {
-          if (event.which == 13 || event.which == 32) {
-            event.preventDefault(); // prevent blur
-            this.toggle();
-          }
-        }
+<dom-module id="io-boolean">
+  <link rel="import" type="css" href="_io-base.css">
+  <link rel="import" type="css" href="_io-boolean.css">
+  <template></template>
+</dom-module>
+<script>
+  Polymer({
+    is: 'io-boolean',
+    properties: {
+      /**
+       * String to display when value is true.
+       *
+       * @attribute truestr
+       * @type string
+       * @default 'true'
+       */
+      truestr: {
+        value: 'true',
+        type: String,
+        observer: '_valueChanged'
       },
       /**
-       * Toggles the value.
+       * String to display when value is false.
        *
-       * @method toggle
+       * @attribute falsestr
+       * @type string
+       * @default 'false'
        */
-      toggle: function() {
-        this.setValue(!this.value);
+      falsestr: {
+        value: 'false',
+        type: String,
+        observer: '_valueChanged'
       }
-    });
-  </script>
-</polymer-element>
+    },
+    behaviors: [
+      Polymer.IoBaseBehavior,
+      Polymer.IoBooleanBehavior
+    ],
+    _valueChanged: function() {
+      this.invalid = typeof this.value !== 'boolean';
+      this.innerHTML = this.value ? this.truestr : this.falsestr
+    }
+  });
+</script>

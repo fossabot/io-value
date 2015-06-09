@@ -1,0 +1,180 @@
+<link rel="import" href="../polymer/polymer.html">
+<script>
+  /**
+   * `Polymer.IoEditableBehavior` Base behavior for io-value editable input elements
+   *
+   * @demo demo/index.html
+   * @polymerBehavior Polymer.IoEditableBehavior
+   */
+  Polymer.IoEditableBehavior = {
+    properties: {
+      /**
+       * Element's value.
+       *
+       * @attribute value
+       * @type string
+       * @default ''
+       */
+      value: {
+        value: '',
+        notify: true,
+        type: String,
+        observer: '_valueChanged',
+        reflectToAttribute: true
+      },
+      /**
+       * Immediate value to be updated on each key stroke.
+       *
+       * @attribute immediatevalue
+       * @type string
+       * @default ''
+       */
+      immediatevalue: {
+        value: '',
+        notify: true,
+        type: String,
+        observer: '_immediatevalueChanged',
+        reflectToAttribute: true
+      },
+      /**
+       * Determines if the input can be clicked.
+       * If enabled, the input requires double-click to focus.
+       *
+       * @attribute clickmasked
+       * @type boolean
+       * @default false
+       */
+      clickmasked: {
+        value: false,
+        type: Boolean
+      },
+      /**
+       * Determines if the element can show multiline value.
+       *
+       * @attribute multiline
+       * @type boolean
+       * @default false
+       */
+      multiline: {
+        value: false,
+        type: Boolean
+      },
+      /**
+       * Value type
+       *
+       * @attribute type
+       * @type string
+       * @default 'false'
+       */
+      type: {
+        value: '',
+        type: String,
+        reflectToAttribute: true
+      }
+    },
+    hostAttributes: {
+      contenteditable: true
+    },
+    listeners: {
+      'dblclick': '_onDblclick',
+      'contextmenu': '_onDblclick',
+      'mousedown': '_onMousedown',
+      'keydown': '_onKeydown'
+    },
+    _onMousedown: function(event) {
+      // prevent focus but let currently focused blur
+      if (this.clickmasked && document.activeElement !== this) {
+        event.preventDefault();
+        document.activeElement.blur();
+      }
+    },
+    _onFocus: function(event) {
+      this._selectContent();
+    },
+    _onBlur: function(event) {
+      event.stopPropagation();
+      this._deselectContent();
+      if (this.clickmasked) this._disabledChanged();
+      this._getEditorValue();
+      if (this.immediatevalue !== this.value) {
+        this._setValue(this.immediatevalue);
+      }
+    },
+    _onDblclick: function(event) {
+      if (this.clickmasked && !this.disabled && document.activeElement !== this) {
+        event.preventDefault();
+        this.setAttribute('tabindex', 0);
+        this.setAttribute('contenteditable', '');
+        this.focus();
+        this._selectContent(true);
+      }
+    },
+    _selectContent: function(selectAll) {
+      var range = document.createRange();
+      range.selectNodeContents(this);
+      if (!selectAll) {
+        range.collapse(false);
+      }
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    },
+    _deselectContent: function() {
+      var selection = window.getSelection();
+      selection.removeAllRanges();
+      this.scrollLeft = 0;
+    },
+    _validateKey: function(event) {
+      if (event.which === 13 && !this.multiline) {
+        return false;
+      }
+      return true;
+    },
+    _onKeydown: function(event) {
+      if (!this._validateKey(event)) {
+        event.preventDefault();
+      }
+      if (event.which === 13 && !this.multiline) {
+        this.blur();
+      }
+      requestAnimationFrame(function() {
+        this._getEditorValue();
+      }.bind(this));
+    },
+    _getEditorValue: function(event) {
+      if (!this.invalid) {
+        this.immediatevalue = this.innerHTML;
+      }
+    },
+    _valueChanged: function() {
+      this.immediatevalue = this.value;
+    },
+    _immediatevalueChanged: function() {
+      if (document.activeElement !== this) {
+        if (this.immediatevalue === null) {
+          this.type = 'null';
+          this.innerHTML = '';
+        } else if (this.immediatevalue === undefined) {
+          this.type = 'undefined';
+          this.innerHTML = '';
+        } else if (this.immediatevalue === NaN) {
+          this.type = 'NaN';
+          this.innerHTML = '';
+        } else {
+          this.innerHTML = String(this.immediatevalue);
+        }
+      }
+    },
+    _disabledChanged: function() {
+      if (this.disabled) {
+        this.removeAttribute('tabindex');
+        this.removeAttribute('contenteditable');
+        this.setAttribute('aria-disabled', '');
+      } else {
+        this.setAttribute('tabindex', 0);
+        this.setAttribute('contenteditable', '');
+        this.removeAttribute('aria-disabled');
+      }
+    }
+  };
+</script>

@@ -1,0 +1,53 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="io-boolean-icon.html">
+<link rel="import" href="io-boolean.html">
+<link rel="import" href="io-number.html">
+<!-- <link rel="import" href="io-object.html"> -->
+<link rel="import" href="io-string.html">
+<link rel="import" href="io-value.html">
+
+<dom-module id="demo-app">
+  <template>
+    <content></content>
+    <io-boolean-icon value="{{boolvalue}}" disabled></io-boolean-icon>
+    <io-boolean-icon value="{{boolvalue}}"></io-boolean-icon>
+    <io-boolean value="{{boolvalue}}"></io-boolean>
+    <br />
+    <br />
+    <io-string id="str0" immediatevalue="{{strvalue}}" clickmasked immediate></io-string>
+    <io-string id="str1"></io-string>
+    <io-string id="str2" value="{{strvalue}}" multiline></io-string>
+    <br />
+    <br />
+    <io-number id="num0" immediatevalue="{{numvalue}}" clickmasked immediate></io-number>
+    <io-number id="num1"></io-number>
+    <io-number id="num2" value="{{numvalue}}"></io-number>
+    <br />
+    <br />
+    <io-value id="val0" immediatevalue="{{strvalue}}"></io-value>
+    <io-value id="val0" immediatevalue="{{numvalue}}"></io-value>
+  </template>
+</dom-module>
+<script>
+(function() {
+  Polymer({
+    is: 'demo-app',
+    properties: {
+      boolvalue: {
+        value: true,
+        notify: true
+      },
+      strvalue: {
+        value: "Hello String",
+        notify: true
+      },
+      numvalue: {
+        // value: NaN, //TODO: NaN break everything
+        value: 1337,
+        notify: true
+      },
+      value: [true, 1337, 'hello string', {answer: 42}, undefined, null, NaN]
+    }
+  });
+}());
+</script>

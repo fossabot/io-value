@@ -19,12 +19,13 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
 <link rel="import" href="io-boolean-icon.html">
 <link rel="import" href="io-number.html">
 <link rel="import" href="io-string.html">
-<link rel="import" href="io-object.html">
+<!-- <link rel="import" href="io-object.html"> -->
 
-<polymer-element name="io-value" horizontal layout>
-  <template>
-    <content id="content"></content><span id="editor" style="position: relative'" flex></span>
-  </template>
+<!-- <link rel="import" href="_io-base-behavior.html"> -->
+<!-- <link rel="import" href="_io-editable-behavior.html"> -->
+
+<dom-module id="io-value">
+  <template></template>
   <script type="text/javascript">
   (function() {
     function isJson(str) {
@@ -35,19 +36,45 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
       }
       return true;
     }
+    var isValidNumberString = function(string) {
+      if (typeof string !== 'string') return false;
+      if (string === '') return false;
+      if (string.slice(0, 1) === '0' && (string.length > 1 && string.slice(1, 2) !== '.')) {
+        return false;
+      }
+      if (!isNaN(string)) {
+        return true;
+      } else {
+        return false;
+      }
+    };
     var range = document.createRange();
     var sel, value;
-    Polymer({
 
-      publish: {
+    Polymer({
+      is: 'io-value',
+      properties: {
         /**
-         * Input value.
+         * Element's value.
          *
          * @attribute value
          * @type any
-         * @default null
+         * @default ''
          */
-        value: null,
+        value: {
+          value: null,
+          notify: true,
+          observer: '_valueChanged',
+          // reflectToAttribute: true //TODO
+        },
+        immediatevalue: {
+          value: null,
+          notify: true,
+          observer: '_immediatevalueChanged',
+          // reflectToAttribute: true //TODO
+        },
+        // TODO: multiline?
+        // TODO: clickmasked?
         /**
          * Determines if the input can be edited by user action.
          *
@@ -55,7 +82,12 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
          * @type boolean
          * @default false
          */
-        disabled: {value: false, reflect: true},
+        disabled: {
+          value: false,
+          notify: true,
+          type: Boolean,
+          observer: '_disabledChanged'
+        },
         /**
          * Expanded state
          * Uses CSS attribute selector.
@@ -64,7 +96,12 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
          * @type boolean
          * @default false
          */
-        expanded: {value: false, reflect: true},
+        expanded: {
+          value: false,
+          notify: true,
+          type: Boolean,
+          observer: '_expandedChanged'
+        },
         /**
          * If set, the element uses core-list for its items.
          * To use core-list you must set element height explicitly.
@@ -73,132 +110,136 @@ __Note__: For attributes and detailed information see `io-boolean`, `io-number`,
          * @type boolean
          * @default false
          */
-        corelist: false
-      },
-      ioElement: null,
-      ioElementName: null,
-      eventDelegates: {
-        'value-set': 'valueSet',
-        'contextmenu': 'contextmenuAction'
-      },
-      domReady: function() {
-        if (this.value === undefined || this.value === null) {
-          if (!this.ioElement) this.valueChanged();
+        corelist: {
+          value: false,
+          notify: true,
+          type: Boolean,
+          observer: '_corelistChanged'
+        },
+        editor: {
+          value: null,
+          type: HTMLElement
         }
       },
-      valueChanged: function() {
+      hostAttributes: {
+        horizontal: true,
+        layout: true
+      },
+      ready: function() {
+        if (this.value === undefined || this.value === null) {
+          if (!this.editor) this.valueChanged();
+        }
+      },
+      _valueChanged: function() {
+        this.immediatevalue = this.value;
+        this.editor.value = this.value;
+      },
+      _immediatevalueChanged: function() {
         // Set empty string editor for undefined/null/NaN
         // with placeholder identifying the value type
-        if (this.value === undefined) {
-          this.setIoElement('io-string');
-          this.ioElement.placeholder = 'undefined';
-          this.ioElementName = 'io-undefined';
-        } else if (this.value === null) {
-          this.setIoElement('io-string');
-          this.ioElement.placeholder = 'null';
-          this.ioElementName = 'io-null';
-        } else if (this.value === NaN) {
-          this.setIoElement('io-string');
-          this.ioElement.placeholder = 'NaN';
-          this.ioElementName = 'io-NaN';
-        // Special editors for objects, functions, boolean, numbers and strings.
-        } else if (typeof this.value === 'object') {
-          this.setIoElement('io-object');
-        } else if (typeof this.value === 'function') {
-          // this.setIoElement('io-function'); // TODO: function
-        } else if (typeof this.value === 'boolean') {
-          this.setIoElement('io-boolean');
-        } else if (typeof this.value === 'number') {
-          this.setIoElement('io-number');
-        } else if (typeof this.value === 'string') {
-          this.setIoElement('io-string');
+        if (typeof this.immediatevalue === 'string') {
+          this._setEditor('io-string');
+        } else if (this.immediatevalue === undefined) {
+          this._setEditor('io-string');
+        } else if (this.immediatevalue === null) {
+          this._setEditor('io-string');
+        } else if (this.immediatevalue === NaN) {
+          this._setEditor('io-string');
+        } else if (typeof this.immediatevalue === 'object') {
+          this._setEditor('io-object'); // TODO: object
+        } else if (typeof this.immediatevalue === 'function') {
+          this._setEditor('io-function'); // TODO: function
+        } else if (typeof this.immediatevalue === 'boolean') {
+          this._setEditor('io-boolean');
+        } else if (typeof this.immediatevalue === 'number') {
+          this._setEditor('io-number');
+        }
+        this.editor.immediatevalue = this.immediatevalue;
+      },
+      _disabledChanged: function() {
+        this.editor.disabled = this.disabled;
+      },
+      _expandedChanged: function() {
+        this.editor.expanded = this.expanded;
+      },
+      _corelistChanged: function() {
+        this.editor.corelist = this.corelist;
+        if (this.corelist) {
+          this.editor.setAttribute('fit', '');
+        } else {
+          this.editor.removeAttribute('fit');
         }
       },
-      valueSet: function(event) {
+      _valueSet: function(event) {
         // String type values have multiple special cases that convert to different types.
-        value = this.ioElement.value;
-        if (event.path[0] === this.ioElement && typeof value === 'string') {
-          if (!isNaN(value) && value !== '') {
-            this.value = parseFloat(value);
-          } else if (value === 'true') {
+        value = event.detail.value;
+        if (typeof value === 'string') {        
+          if (value === 'true') {
+            event.stopPropagation();
             this.value = true;
           } else if (value === 'false') {
+            event.stopPropagation();
             this.value = false;
           } else if (value === 'null') {
+            event.stopPropagation();
             this.value = null;
           } else if (value === 'undefined') {
+            event.stopPropagation();
             this.value = undefined;
           } else if (value === 'NaN') {
+            event.stopPropagation();
             this.value = NaN;
+          } else if (isValidNumberString(value)) {
+            this.value = parseFloat(value);
           } else if (isJson(value)) {
+            event.stopPropagation();
             this.value = JSON.parse(value);
-          } else {
-            this.value = value;
           }
-          this.valueChanged();
         }
       },
-      contextmenuAction: function(event) {
-        if (this.disabled) return;
+      _contextmenuAction: function(event) {
         event.preventDefault();
         event.stopPropagation();
-        this.editValue();
-      },
-      /**
-       * Creates an untyped string value editor and selects its contents.
-       * Does not work with object values.
-       *
-       * @method editValue
-       */
-      editValue: function() {
-        if (this.ioElement.$.value.localName === 'io-object') return;
-        this.removeIoElement();
-        this.ioElement = document.createElement('io-string');
-        this.ioElement.classList.toggle('value-editor', true);
-        this.shadowRoot.appendChild(this.ioElement);
-        this.ioElementName = 'value-editor';
-        this.ioElement.value = String(this.value);
-        this.async(function() {
-          range.selectNodeContents(this.ioElement.$.value);
-          sel = window.getSelection();
-          sel.removeAllRanges();
-          sel.addRange(range);
+        if (typeof this.value === 'string') return;
+        this._setEditor('io-string');
+        requestAnimationFrame(function() {
+          this.editor.innerHTML = String(this.value);
+          this.editor.invalid = false;
+          this.editor._selectContent(true);
         }.bind(this));
-        this.ioElement.addEventListener('blur', function(event) {
-          if (String(this.ioElement.value) !== String(this.value)) {
-            this.valueSet({path: [this.ioElement]});
-            this.valueChanged();
-          };
-        }.bind(this), false);
       },
-      setIoElement: function(ioElementName) {
-        if (this.ioElementName === ioElementName) return;
-        this.removeIoElement();
-        this.ioElement = document.createElement(ioElementName);
-        this.$.editor.appendChild(this.ioElement);
-        this.ioElement.appendChild(this.$.content);
-        this.ioElement.bindProperty('value', new PathObserver(this, 'value'));
-        this.ioElement.bindProperty('disabled', new PathObserver(this, 'disabled'));
-        this.ioElement.bindProperty('expanded', new PathObserver(this, 'expanded'));
-        this.ioElement.bindProperty('corelist', new PathObserver(this, 'corelist'));
-        this.corelistChanged();
-        this.ioElement.immediateValue = this.value;
-        this.ioElementName = ioElementName;
-      },
-      corelistChanged: function() {
-        if (!this.ioElement) return;
-        if (this.corelist) {
-          this.ioElement.setAttribute('fit', '');
-        } else {
-          this.ioElement.removeAttribute('fit');
-        }
-      },
-      removeIoElement: function() {
-        if (this.ioElement) {
-          this.ioElement.unbindAll(); // TODO: Maybe unnecessary;
-          this.ioElement.removeChild(this.$.content);
-          this.$.editor.removeChild(this.ioElement);
-        }
+      _setEditor: function(editorName) {
+        if (this.editor && this.editor.localName === editorName) return;
+        this.innerHTML = '';
+        this.editor = document.createElement(editorName);
+        this.appendChild(this.editor);
+
+        this.editor.value = this.value;
+        this.editor.immediatevalue = this.immediatevalue;
+        this.editor.disabled = this.disabled;
+        this.editor.expanded = this.expanded;
+        this.editor.corelist = this.corelist;
+
+        this.editor.addEventListener('value-changed', function(event) {
+          this.value = event.detail.value;
+        }.bind(this));
+        this.editor.addEventListener('immediatevalue-changed', function(event) {
+          this.immediatevalue = event.detail.value;
+        }.bind(this));
+        this.editor.addEventListener('disabled-changed', function(event) {
+          this.disabled = event.detail.value;
+        }.bind(this));
+        this.editor.addEventListener('expanded-changed', function(event) {
+          this.expanded = event.detail.value;
+        }.bind(this));
+        this.editor.addEventListener('corelist-changed', function(event) {
+          this.corelist = event.detail.value;
+        }.bind(this));
+
+        this.editor.addEventListener('io-value-set', this._valueSet.bind(this));
+        this.editor.addEventListener('contextmenu', this._contextmenuAction.bind(this));
+        // TODO: profile memory
+        this._corelistChanged();
       }
     });
   }());

@@ -11,155 +11,99 @@ I/O element for number data type.
 @status alpha
 -->
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="_io-base-editable.html">
+<link rel="import" href="_io-base-behavior.html">
+<link rel="import" href="_io-editable-behavior.html">
 
-<polymer-element name="io-number" extends="io-base-editable">
-  <template>
-    <link rel="stylesheet" href="_io-base.css" shim-shadowdom>
-    <link rel="stylesheet" href="_io-base-editable.css" shim-shadowdom>
-    <style type="text/css" shim-shadowdom>
-      :host .io-editor.hidden {
-        visibility: hidden;
-        position: absolute;
-        pointer-events: none;
+<dom-module id="io-number">
+  <link rel="import" type="css" href="_io-base.css">
+  <link rel="import" type="css" href="_io-editable.css">
+  <template></template>
+</dom-module>
+<script type="text/javascript">
+  (function() {
+
+    var isValidNumberString = function(string) {
+      if (typeof string !== 'string') return false;
+      if (string === '') return true;
+      if (string.slice(0, 1) === '0' && (string.length > 1 && string.slice(1, 2) !== '.')) {
+        return false;
       }
-      :host input.io-editor {
-        font: inherit;
-        padding: 0;
-        margin: 0;
-        border: none;
+      if (!isNaN(string)) {
+        return true;
+      } else {
+        return false;
       }
-    </style>
-    <content></content>
-    <span id="value" class="io-editor" tabindex="0" spellcheck="false" contenteditable></span>
-  </template>
-  <script type="text/javascript">
-    (function() {
-      var isValid = function(string) {
-        if (string == undefined) return false;
-        if (!isNaN(string) && (string.slice(-1) != '.') && string != '') {
+    };
+    var validMetaKeys = [65, 82, 88, 67, 86];
+    var validKeys = [46, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 189, 190, 37, 38, 39, 40, 8, 9];
+
+    Polymer({
+      is: 'io-number',
+      properties: {
+        value: {
+          value: null,
+          type: Number
+        },
+        immediatevalue: {
+          value: 0,
+          type: Number
+        },
+        type: {
+          value: 'number'
+        }
+      },
+      behaviors: [
+        Polymer.IoBaseBehavior,
+        Polymer.IoEditableBehavior
+      ],
+      created: function() {
+        this.addEventListener('immediatevalue-changed', function(event) {
+          this.invalid = (typeof this.immediatevalue !== 'number' && this.immediatevalue !== null && this.immediatevalue !== undefined);
+        }.bind(this));
+      },
+      _onBlur: function(event) {
+        event.stopPropagation();
+        this._deselectContent();
+        if (!isValidNumberString(this.innerHTML)) {
+          this.innerHTML = String(this.immediatevalue);
+        }
+        if (this.clickmasked) this._disabledChanged();
+        this._getEditorValue();
+        if (this.immediatevalue !== this.value) {
+          this._setValue(this.immediatevalue);
+        }
+      },
+      _validateKey: function(event) {
+        if (event.metaKey && validMetaKeys.indexOf(event.which) !== -1) {
           return true;
-        } else {
+        }
+        if (validKeys.indexOf(event.which) === -1) {
           return false;
         }
-      };
-      var validKeys = [46, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 189, 190, 37, 38, 39, 40, 8, 9];
-      var enterKey = 13;
-      var selection;
-      Polymer({
-        placeholder: "number",
-        eventDelegates: {
-          'keydown': 'keydownAction',
-          'click': 'updateImmediateValue'
-        },
-        createNumericEditor: function() {
-          this._numericEditor = document.createElement('input');
-          this._numericEditor.className = 'io-editor';
-          this._numericEditor.setAttribute('tabindex', 0);
-          this._numericEditor.setAttribute('type', 'number');
-          this._displayOnlySpan = this.$.value;
-          this._numericEditor.addEventListener('change', function(event) {
-            this.immediateValue = Number(this._numericEditor.value);
-            this.value = this.immediateValue;
-          }.bind(this));
-        },
-        enableNumericEditor: function() {
-          this._displayOnlySpan.removeAttribute('tabindex');
-          this._displayOnlySpan.classList.toggle('hidden', true);
-          this._numericEditor.value = this.immediateValue;
-          this.shadowRoot.appendChild(this._numericEditor);
-        },
-        disableNumericEditor: function() {
-          this._displayOnlySpan.setAttribute('tabindex', 0);
-          this._displayOnlySpan.classList.toggle('hidden', false);
-          this._displayOnlySpan.textContent = this.immediateValue;
-          this.shadowRoot.removeChild(this._numericEditor);
-        },
-        resizeNumericEditor: function() {
-          this._displayOnlySpan.textContent = this.immediateValue;
-          computedTextStyle = window.getComputedStyle(this._displayOnlySpan);
-          computedTextWidth = computedTextStyle.width;
-          this._numericEditor.style.width = parseFloat(computedTextWidth) + 16 + 'px';
-        },
-        focusAction: function(event) {
-          this.super(arguments);
-          if (this.focused) {
-            if (!this._numericEditor) {
-              this.createNumericEditor();
-            }
-            this.enableNumericEditor();
-            this.resizeNumericEditor();
-            this._numericEditor.focus();
-          }
-        },
-        blurAction: function(event) {
-          this.updateImmediateValue();
-          this.super(arguments);
-          if (event.path[0] == this._numericEditor) {
-            this.disableNumericEditor();
-          }
-        },
-        keydownAction: function(event) {
-          if (this.disabled) return;
-          if (event.path[0] != this._numericEditor) return;
-          // TODO: dont prevent refresh
-          if (validKeys.indexOf(event.which) === -1) {
-            event.preventDefault();
-            return;
-          }
-          if (event.which == enterKey) {
-            this._numericEditor.blur();
-            event.preventDefault();
-            selection = window.getSelection();
-            selection.removeAllRanges();
-            return;
-          }
-          this.async(function() {
-            this.updateImmediateValue();
-          }.bind(this));
-        },
-        updateImmediateValue: function() {
-          if (isValid(this._numericEditor.value)) {
-            this.immediateValue = Number(this._numericEditor.value);
-            this._numericEditor.classList.toggle('invalid', false);
-          } else if (this._numericEditor.value == '') {
-            this.immediateValue = NaN;
-            this.value = NaN;
+        return true;
+      },
+      _getEditorValue: function(event) {
+        if (isValidNumberString(this.innerHTML)) {
+          if (this.innerHTML === '') {
+            this.immediatevalue = null;
           } else {
-            this._numericEditor.classList.toggle('invalid', true);
+            this.immediatevalue = Number(this.innerHTML);
           }
-        },
-        valueChanged: function() {
-          this.immediateValue = Number(this.value);
-        },
-        immediateValueChanged: function() {
-          if (this.updateImmediate) {
-              this.value = Number(this.immediateValue);
-          }
-          if (this._numericEditor) {
-            this.resizeNumericEditor();
-          }
-          if (!this.focused) {
-            if (this.immediateValue === null) {
-              this.value = null;
-              if (this._numericEditor) {
-                this._numericEditor.value = '';
-                this._displayOnlySpan.textContent = '';
-              } else {
-                this.$.value.textContent = '';
-              }
-            } else {
-              if (this._numericEditor) {
-                this._numericEditor.value = this.immediateValue;
-                this._displayOnlySpan.textContent = this.immediateValue;
-              } else {
-                this.$.value.textContent = this.immediateValue;
-              }
-            }
-            this.$.value.classList.toggle('invalid', false);
+          this.invalid = false;
+        } else {
+          this.invalid = true;
+          console.warn('io-number: not valid number value!');
+        }
+      },
+      _immediatevalueChanged: function() {
+        if (document.activeElement !== this) {
+          if (this.immediatevalue === undefined || this.immediatevalue === null || this.immediatevalue === '' || this.immediatevalue === '') {
+            this.innerHTML = '';
+          } else {
+            this.innerHTML = String(this.immediatevalue);
           }
         }
-      });
-    })();
-  </script>
-</polymer-element>
+      }
+    });
+  })();
+</script>

@@ -1,0 +1,57 @@
+<link rel="import" href="../polymer/polymer.html">
+<script>
+  /**
+   * `Polymer.IoBooleanBehavior` Base behavior for io-value input elements
+   *
+   * @demo demo/index.html
+   * @polymerBehavior Polymer.IoBooleanBehavior
+   */
+  Polymer.IoBooleanBehavior = {
+    properties: {
+      /**
+       * Element value.
+       *
+       * @attribute value
+       * @type boolean
+       * @default false
+       */
+      value: {
+        value: false,
+        notify: true,
+        type: Boolean,
+        observer: '_valueChanged'
+      }
+    },
+    listeners: {
+      'keydown': '_onKeydown',
+      'mousedown': '_onMousedown',
+      'tap': '_onTap',
+    },
+    _onMousedown: function(event) {
+      // prevent focus but let currently focused blur
+      event.preventDefault();
+      document.activeElement.blur();
+    },
+    _onTap: function(event) {
+      this.toggle();
+    },
+    _onKeydown: function(event) {
+      if (event.which == 13 || event.which == 32) {
+        event.preventDefault(); // prevent blur
+        this.toggle();
+      }
+    },
+    /**
+     * Toggles the value.
+     *
+     * @method toggle
+     */
+    toggle: function() {
+      if (typeof this.value !== 'boolean') {
+        console.warn('io-boolean: cannot toggle non-boolean value!');
+        return;
+      }
+      this._setValue(!this.value);
+    }
+  };
+</script>

@@ -1,0 +1,38 @@
+:host {
+  cursor: text;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+}
+:host(:focus[contenteditable]) {
+  text-overflow: inherit;
+  cursor: text;
+}
+:host(:empty::after) {
+  min-width: 0.5em;
+  content: 'undefined';
+  opacity: 0.5;
+}
+:host([type=string]:empty::after) {
+  content: 'string';
+}
+:host([type=number]:empty::after) {
+  content: 'number';
+}
+:host([type=undefined]:empty::after) {
+  content: 'undefined';
+}
+:host([type=null]:empty::after) {
+  content: 'null';
+}
+:host([type=NaN]:empty::after) {
+  content: 'NaN';
+}
+/*:host > input#value {
+  font: inherit;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  display: inline-block;
+}*/
