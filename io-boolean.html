@@ -1,19 +1,5 @@
-<!--
-I/O element for boolean data type. Displays value as string.
-
-    <io-boolean value="true" truestr="Yes" falsestr="No"></io-boolean>
-
-__Note__: When element is focused, pressing enter/spacebar will toggle the value.
-
-@element io-boolean
-@homepage https://github.com/arodic/io-value
-@demo http://akirodic.com/components/io-value/demo.html
-@blurb I/O element for boolean data type. Displays value as string.
-@status alpha
--->
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="_io-base-behavior.html">
-<link rel="import" href="_io-boolean-behavior.html">
+<link rel="import" href="_io-boolean.html">
 
 <dom-module id="io-boolean">
   <link rel="import" type="css" href="_io-base.css">
@@ -26,36 +12,27 @@ __Note__: When element is focused, pressing enter/spacebar will toggle the value
     properties: {
       /**
        * String to display when value is true.
-       *
-       * @attribute truestr
-       * @type string
-       * @default 'true'
        */
       truestr: {
         value: 'true',
         type: String,
-        observer: '_valueChanged'
+        observer: '_update'
       },
       /**
        * String to display when value is false.
-       *
-       * @attribute falsestr
-       * @type string
-       * @default 'false'
        */
       falsestr: {
         value: 'false',
         type: String,
-        observer: '_valueChanged'
+        observer: '_update'
       }
     },
     behaviors: [
-      Polymer.IoBaseBehavior,
-      Polymer.IoBooleanBehavior
+      Polymer.IoBoolean
     ],
-    _valueChanged: function() {
+    _update: function() {
       this.invalid = typeof this.value !== 'boolean';
-      this.innerHTML = this.value ? this.truestr : this.falsestr
+      this.textContent = this.value ? this.truestr : this.falsestr
     }
   });
 </script>

@@ -1,0 +1,90 @@
+<link rel="import" href="../polymer/polymer.html">
+<script>
+  /* @polymerBehavior Polymer.IoBase */
+  Polymer.IoBase = {
+    properties: {
+      /**
+       * Determines if the input can be focused and edited by user action.
+       */
+      disabled: {
+        value: false,
+        type: Boolean,
+        observer: '_disabledChanged',
+        reflectToAttribute: true
+      },
+      /**
+       * Becomes true if value does not match the specified type.
+       */
+      invalid: {
+        value: false,
+        type: Boolean,
+        observer: '_invalidChanged',
+        reflectToAttribute: true
+      },
+      /**
+       * If true, element cannot be focused with a single click.
+       */
+      clickmasked: {
+        value: false,
+        type: Boolean
+      }
+    },
+    hostAttributes: {
+      tabindex: 0,
+      role: 'input'
+    },
+    listeners: {
+      'mousedown': '_onMousedown',
+      'dblclick': '_onDblclick',
+      'contextmenu': '_onDblclick'
+    },
+    /**
+     * Used to set value by user action.
+     * Fires non-bubbling event io-value-set
+     * @param {*} value new value to be set.
+     */
+    setValue: function(value) {
+      if (value === this.value) return;
+      var oldValue = this.value;
+      this.value = value;
+      /**
+       * This event is fired when value is set by user action.
+       * @event io-value-set
+       */
+      this.fire('io-value-set', null, {bubbles: true});
+    },
+    _onMousedown: function(event) {
+      // Blur currently focused
+      if (document.activeElement !== this) {
+        document.activeElement.blur();
+      }
+      // prevent focus
+      if (this.clickmasked || this.invalid) {
+        event.preventDefault();
+      }
+    },
+    _onDblclick: function(event) {
+      if (this.clickmasked) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.focus();
+      }
+    },
+    _disabledChanged: function() {
+      if (this.disabled) {
+        this.removeAttribute('tabindex');
+        this.setAttribute('aria-disabled', '');
+      } else {
+        this.setAttribute('tabindex', 0);
+        this.removeAttribute('aria-disabled');
+      }
+    },
+    _invalidChanged: function() {
+      if (this.invalid) {
+        this.setAttribute('aria-invalid', '');
+      } else {
+        this.removeAttribute('aria-invalid');
+      }
+    }
+  };
+</script>

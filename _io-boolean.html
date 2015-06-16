@@ -1,0 +1,58 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="_io-base.html">
+<script>
+  /* @polymerBehavior Polymer.IoBoolean */
+  Polymer.IoBoolean = [Polymer.IoBase, {
+    properties: {
+      /**
+       * Element's value
+       */
+      value: {
+        value: false,
+        notify: true,
+        type: Boolean,
+        observer: '_valueChanged'
+      }
+    },
+    listeners: {
+      'keydown': '_onKeydown',
+      'tap': '_onTap'
+    },
+    hostAttributes: {
+      clickmasked: true,
+      role: 'checkbox'
+    },
+    _onTap: function(event) {
+      this.toggle();
+    },
+    _onKeydown: function(event) {
+      // Toggle is space or enter is pressed.
+      if (event.which == 13 || event.which == 32) {
+        event.preventDefault(); // prevent blur
+        this.toggle();
+      }
+    },
+    /**
+     * Used to toggle boolean value.
+     * uses setValue method from Polymer.IoBase
+     */
+    toggle: function() {
+      if (typeof this.value !== 'boolean') {
+        var type = typeof this.value;
+        if (this.value === null) type = 'null';
+        if (this.value instanceof Array) type = 'array';
+        console.warn('io-boolean: cannot toggle value of type', type);
+        return;
+      }
+      this.setValue(!this.value);
+    },
+    _valueChanged: function() {
+      if (this.value) {
+        this.setAttribute('aria-checked', '');
+      } else {
+        this.removeAttribute('aria-checked');
+      }
+      this._update();
+    }
+  }];
+</script>

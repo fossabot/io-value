@@ -1,18 +1,5 @@
-<!--
-I/O element for number data type.
-
-    <io-number value="3.141592653589793"></io-number>
-
-@element io-number
-@extends io-base-editable
-@homepage https://github.com/arodic/io-value
-@demo http://akirodic.com/components/io-value/demo.html
-@blurb I/O element for number data type.
-@status alpha
--->
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="_io-base-behavior.html">
-<link rel="import" href="_io-editable-behavior.html">
+<link rel="import" href="_io-editable.html">
 
 <dom-module id="io-number">
   <link rel="import" type="css" href="_io-base.css">
@@ -20,90 +7,61 @@ I/O element for number data type.
   <template></template>
 </dom-module>
 <script type="text/javascript">
-  (function() {
-
-    var isValidNumberString = function(string) {
-      if (typeof string !== 'string') return false;
-      if (string === '') return true;
-      if (string.slice(0, 1) === '0' && (string.length > 1 && string.slice(1, 2) !== '.')) {
-        return false;
+  Polymer({
+    is: 'io-number',
+    properties: {
+      value: {
+        value: null,
+        type: Number
+      },
+      immediatevalue: {
+        value: null,
+        type: Number
+      },
+      type: {
+        type: String,
+        value: 'number',
+        reflectToAttribute: true
+      },
+      integer: {
+        value: false,
+        type: Boolean
+      },
+    },
+    behaviors: [
+      Polymer.IoEditable
+    ],
+    _onBlur: function(event) {
+      event.stopPropagation();
+      this._deselectContent();
+      if (!this.isNumberString(this.textContent)) {
+        if (this.isNumberString(String(this.immediatevalue))) {
+          this.textContent = String(this.immediatevalue);
+        }
       }
-      if (!isNaN(string)) {
-        return true;
-      } else {
-        return false;
+      this._getEditorValue();
+      if (this.immediatevalue !== this.value) {
+        this.setValue(this.immediatevalue);
       }
-    };
-    var validMetaKeys = [65, 82, 88, 67, 86];
-    var validKeys = [46, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 189, 190, 37, 38, 39, 40, 8, 9];
-
-    Polymer({
-      is: 'io-number',
-      properties: {
-        value: {
-          value: null,
-          type: Number
-        },
-        immediatevalue: {
-          value: 0,
-          type: Number
-        },
-        type: {
-          value: 'number'
-        }
-      },
-      behaviors: [
-        Polymer.IoBaseBehavior,
-        Polymer.IoEditableBehavior
-      ],
-      created: function() {
-        this.addEventListener('immediatevalue-changed', function(event) {
-          this.invalid = (typeof this.immediatevalue !== 'number' && this.immediatevalue !== null && this.immediatevalue !== undefined);
-        }.bind(this));
-      },
-      _onBlur: function(event) {
-        event.stopPropagation();
-        this._deselectContent();
-        if (!isValidNumberString(this.innerHTML)) {
-          this.innerHTML = String(this.immediatevalue);
-        }
-        if (this.clickmasked) this._disabledChanged();
-        this._getEditorValue();
-        if (this.immediatevalue !== this.value) {
-          this._setValue(this.immediatevalue);
-        }
-      },
-      _validateKey: function(event) {
-        if (event.metaKey && validMetaKeys.indexOf(event.which) !== -1) {
-          return true;
-        }
-        if (validKeys.indexOf(event.which) === -1) {
-          return false;
-        }
-        return true;
-      },
-      _getEditorValue: function(event) {
-        if (isValidNumberString(this.innerHTML)) {
-          if (this.innerHTML === '') {
-            this.immediatevalue = null;
+    },
+    _getEditorValue: function(event) {
+      if (!this.invalid) {
+        if (this.isNumberString(this.textContent)) {
+          if (this.textContent === '') {
+            if (typeof this.immediatevalue === 'number') {
+              this.immediatevalue = null;
+            }
           } else {
-            this.immediatevalue = Number(this.innerHTML);
+            if (this.integer) {
+              this.immediatevalue = Math.round(Number(this.textContent));
+            } else {
+              this.immediatevalue = Number(this.textContent);
+            }
           }
-          this.invalid = false;
         } else {
-          this.invalid = true;
           console.warn('io-number: not valid number value!');
         }
-      },
-      _immediatevalueChanged: function() {
-        if (document.activeElement !== this) {
-          if (this.immediatevalue === undefined || this.immediatevalue === null || this.immediatevalue === '' || this.immediatevalue === '') {
-            this.innerHTML = '';
-          } else {
-            this.innerHTML = String(this.immediatevalue);
-          }
-        }
       }
-    });
-  })();
+    }
+  });
 </script>

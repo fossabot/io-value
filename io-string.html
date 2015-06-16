@@ -1,17 +1,5 @@
-<!--
-I/O element for string data type.
-
-    <io-string value="Hi"></io-string>
-
-@element io-string
-@homepage https://github.com/arodic/io-value
-@demo http://akirodic.com/components/io-value/demo.html
-@blurb I/O element for string data type.
-@status alpha
--->
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="_io-base-behavior.html">
-<link rel="import" href="_io-editable-behavior.html">
+<link rel="import" href="_io-editable.html">
 
 <dom-module id="io-string">
   <link rel="import" type="css" href="_io-base.css">
@@ -23,20 +11,14 @@ I/O element for string data type.
     is: 'io-string',
     properties: {
       type: {
-        value: 'string'
+        type: String,
+        value: 'string',
+        reflectToAttribute: true
       }
     },
+    // TODO: turn of spellcheck
     behaviors: [
-      Polymer.IoBaseBehavior,
-      Polymer.IoEditableBehavior
-    ],
-    created: function() {
-      this.addEventListener('immediatevalue-changed', function(event) {
-        this.invalid = typeof this.immediatevalue !== 'string';
-      }.bind(this));
-      this.addEventListener('keydown', function(event) {
-        if (this.invalid) event.preventDefault();
-      }.bind(this));
-    }
+      Polymer.IoEditable
+    ]
   });
 </script>
