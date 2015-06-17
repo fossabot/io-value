@@ -17,8 +17,14 @@ I/O element for string data type.
   <template>
     <link rel="stylesheet" href="_io-base.css" shim-shadowdom>
     <link rel="stylesheet" href="_io-base-editable.css" shim-shadowdom>
+    <style>
+      input {
+        border: none;
+        background-color: transparent;
+      }
+    </style>
     <content></content>
-    <span id="value" class="io-editor" tabindex="0" spellcheck="false" contenteditable></span>
+    <input id="value" class="io-editor" tabindex="0" spellcheck="false" contenteditable value="{{immediateValue}}" placeholder="{{placeholder}}" flex></input>
   </template>
   <script type="text/javascript">
     // TODO: optimize and prevent pasting of breaklines.
@@ -36,24 +42,21 @@ I/O element for string data type.
           if (event.path[0] !== this.$.value) return;
           if (event.which == 13 && !this.multiline) {
             event.preventDefault();
+            this.async(function() {
+              this.updateImmediateValue();
+            }.bind(this));
           }
-          this.async(function() {
-            this.updateImmediateValue();
-          }.bind(this));
         },
         blurAction: function(event) {
           this.updateImmediateValue();
           this.super(arguments);
         },
         updateImmediateValue: function(event) {
-          this.immediateValue = this.$.value.innerHTML;
+          this.value = this.immediateValue;
         },
         immediateValueChanged: function() {
           if (this.updateImmediate) {
-            this.value = this.immediateValue;
-          }
-          if (!this.focused) {
-            this.$.value.innerHTML = this.immediateValue != undefined ? this.immediateValue : '';
+            this.updateImmediateValue();
           }
         },
         valueChanged: function() {
