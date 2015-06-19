@@ -5,8 +5,6 @@ This bundle of [Polymer](https://www.polymer-project.org/) elements is designed 
 
 See documentation and examples below for more information.
 
-[DOCS](http://akirodic.com/components/io-value)
-
-[DEMO](http://akirodic.com/components/io-value/demo.html)
+[DOCS & DEMO](http://akirodic.com/components/io-value)
 
 ![io-value](http://akirodic.com/components/io-value/preview.png "io-value")
