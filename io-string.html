@@ -27,8 +27,6 @@ I/O element for string data type.
     <input id="value" class="io-editor" tabindex="0" spellcheck="false" contenteditable value="{{immediateValue}}" placeholder="{{placeholder}}" flex></input>
   </template>
   <script type="text/javascript">
-    // TODO: optimize and prevent pasting of breaklines.
-    (function() {
       Polymer({
         publish: {
           multiline: {value: false, reflect: true}
@@ -42,6 +40,7 @@ I/O element for string data type.
           if (event.path[0] !== this.$.value) return;
           if (event.which == 13 && !this.multiline) {
             event.preventDefault();
+            this.blur();
             this.async(function() {
               this.updateImmediateValue();
             }.bind(this));
@@ -63,6 +62,5 @@ I/O element for string data type.
           this.immediateValue = this.value;
         }
       });
-    })();
   </script>
 </polymer-element>
