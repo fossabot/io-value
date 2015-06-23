@@ -24,14 +24,29 @@ I/O element for string data type.
       }
     </style>
     <content></content>
-    <input id="value" class="io-editor" tabindex="0" spellcheck="false" contenteditable value="{{immediateValue}}" placeholder="{{placeholder}}" flex></input>
+    <template if="{{disabled}}">
+      <span class="io-editor">{{value}}</span>
+    </template>
+    <template if="{{!disabled}}">
+      <input id="value"
+        class="io-editor"
+        tabindex="0"
+        spellcheck="false"
+        autocomplete="{{autocomplete}}"
+        value="{{immediateValue}}"
+        placeholder="{{placeholder}}"
+        flex>
+      </input>
+    </template>
   </template>
   <script type="text/javascript">
     // TODO: optimize and prevent pasting of breaklines.
     (function() {
       Polymer({
         publish: {
-          multiline: {value: false, reflect: true}
+          // TODO: allow multiline input
+          // multiline: {value: false, reflect: true},
+          autocomplete: false
         },
         placeholder: "string",
         eventDelegates: {
