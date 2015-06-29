@@ -1,24 +1,84 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="_io-editable.html">
+<link rel="import" href="../iron-input/iron-input.html">
+<link rel="import" href="_io-base.html">
 
 <dom-module id="io-string">
   <link rel="import" type="css" href="_io-base.css">
-  <link rel="import" type="css" href="_io-editable.css">
-  <template></template>
+  <style>
+    input {
+      position: relative;
+      font: inherit;
+      padding: 0;
+      margin: 0;
+      border: none;
+      background: transparent;
+      color: inherit;
+    }
+    input:focus {
+      outline: 0;
+    }
+    #invisibleValue {
+      position: absolute;
+      visibility: hidden;
+      white-space: pre;
+    }
+  </style>
+  <template>
+    <input id="input" is="iron-input"
+        bind-value="{{immediatevalue}}"
+        on-blur="_commitValue"
+        placeholder="{{_placeholder}}"
+        spellcheck="false">
+      <span id="invisibleValue">{{_placeholder}}</span>
+    </input>
+  </template>
 </dom-module>
 <script>
+(function() {
+  var rect;
+  /*
+  `<io-string>` is a custom HTML element that can be used as input/output for string variables.
+
+  Example:
+
+      <io-string
+          value="{{stringvalue}}">
+      </io-string>
+
+  @demo demo.html
+  */
   Polymer({
     is: 'io-string',
     properties: {
-      type: {
-        type: String,
+      _placeholder: {
         value: 'string',
-        reflectToAttribute: true
+        type: String,
+        computed: '_computePlaceholder(immediatevalue)'
       }
     },
-    // TODO: turn of spellcheck
     behaviors: [
-      Polymer.IoEditable
-    ]
+      Polymer.IoBase
+    ],
+    _valueChanged: function() {
+      if (typeof this.value === 'number') this.immediatevalue = String(this.value);
+      else if (this.value === false) this.immediatevalue = String(this.value);
+      else this.immediatevalue = this.value;
+    },
+    _immediatevalueChanged: function() {
+      this.async(function() {
+        rect = this.$.invisibleValue.getBoundingClientRect();
+        this.$.input.style.width = rect.width + 1 + 'px';
+      }.bind(this));      
+    },
+    /**
+     * Passes focus to internal input value editor
+     */
+    focus: function() {
+      this.$.input.focus();
+    },
+    _commitValue: function() {
+      this.setValue(this.immediatevalue);
+    }
   });
+}());
 </script>

@@ -8,49 +8,57 @@
 <link rel="import" href="io-function.html">
 
 <dom-module id="io-value">
-  <template></template>
-  <script type="text/javascript">
-  (function() {
+  <script>
+    /*
+    `<io-value>` is a custom HTML element that can be used as input/output for variables of various data types such as boolean, string, number or object. The element will instantiate a type-specific value editor when value type changes.
 
-    var range = document.createRange();
-    var sel, value;
+    Example:
 
+        <io-value value="{{valueofanytype}}"></io-value>
+
+    This element is reliant on a set of type-specific such as `<io-boolean>`, `<io-string>`, `<io-number>` and `<io-object>`. You can use these elements when you need an editor for a specific type.
+        
+    Example:
+
+        <io-boolean value="{{booleanvalue}}"></io-boolean>
+        <io-string value="{{stringvalue}}"></io-string>
+        <io-number value="{{numbervalue}}"></io-number>
+        <io-object value="{{objectvalue}}"></io-object>
+
+    @demo demo.html
+    */
     Polymer({
       is: 'io-value',
       properties: {
+        /**
+         * value
+         */
         value: {
           value: null,
           notify: true,
           observer: '_valueChanged'
         },
+        /**
+         * immediate value (updated on each keystroke).
+         */
         immediatevalue: {
           value: null,
           notify: true,
           observer: '_immediatevalueChanged'
         },
+        /**
+         * If disabled, value cannot be changed by user action.
+         */
         disabled: {
           value: false,
           notify: true,
           type: Boolean,
           observer: '_disabledChanged'
         },
-        expanded: {
-          value: false,
-          notify: true,
-          type: Boolean,
-          observer: '_expandedChanged'
-        },
-        corelist: {
-          value: false,
-          type: Boolean,
-          observer: '_corelistChanged'
-        },
-        clickmasked: {
-          value: false,
-          type: Boolean,
-          observer: '_clickmaskedChanged'
-        },
-        editor: {
+        /**
+         * Type-specific editor instance.
+         */
+        _editor: {
           value: null,
           type: HTMLElement
         }
@@ -59,13 +67,13 @@
         Polymer.IoValidator
       ],
       ready: function() {
-        if (this.value === undefined) { // || this.value === null ?
+        if (this.value === undefined) {
           this._valueChanged();
         }
       },
       _valueChanged: function() {
         this.immediatevalue = this.value;
-        this.editor.value = this.value;
+        this._editor.value = this.value;
       },
       _immediatevalueChanged: function() {
         // Set empty string editor for undefined/null/NaN
@@ -80,7 +88,7 @@
           this._setEditor('io-string');
         } else if (typeof this.immediatevalue === 'object') {
           this._setEditor('io-object');
-          this.editor.value = this.immediatevalue; // ?
+          this._editor.value = this.immediatevalue; // ?
         } else if (typeof this.immediatevalue === 'function') {
           this._setEditor('io-function');
         } else if (typeof this.immediatevalue === 'boolean') {
@@ -88,29 +96,15 @@
         } else if (typeof this.immediatevalue === 'number') {
           this._setEditor('io-number');
         }
-        this.editor.immediatevalue = this.immediatevalue;
+        this._editor.immediatevalue = this.immediatevalue;
       },
       _disabledChanged: function() {
-        this.editor.disabled = this.disabled;
-      },
-      _expandedChanged: function() {
-        this.editor.expanded = this.expanded;
-      },
-      _corelistChanged: function() {
-        this.editor.corelist = this.corelist;
-        if (this.corelist) {
-          this.editor.setAttribute('fit', '');
-        } else {
-          this.editor.removeAttribute('fit');
-        }
-      },
-      _clickmaskedChanged: function() {
-        this.editor.clickmasked = this.clickmasked;
+        this._editor.disabled = this.disabled;
       },
       _valueSet: function(event) {
         // String type values have multiple special cases that convert to different types.
         if (event.path[0] !== this) {        
-          value = event.path[0].value;
+          var value = event.path[0].value;
           if (typeof value === 'string') {        
             if (value === 'true') {
               this.value = true;
@@ -137,41 +131,29 @@
         if (typeof this.value === 'string') return;
         if (typeof this.value === 'boolean' || typeof this.value === 'number') {
           this._setEditor('io-string');
-          // TODO: handle object and function
-          this.editor.textContent = String(this.value);
-          this.editor._selectContent(true);
-          this.editor.invalid = false;
+          // TODO: handle lid = false;
         }
       },
       _setEditor: function(editorName) {
-        if (this.editor && this.editor.localName === editorName) return;
+        if (this._editor && this._editor.localName === editorName) return;
         this.textContent = '';
-        this.editor = document.createElement(editorName);
-        this.appendChild(this.editor);
+        this._editor = document.createElement(editorName);
+        this.appendChild(this._editor);
 
-        this.editor.value = this.value;
-        this.editor.immediatevalue = this.immediatevalue;
-        this.editor.disabled = this.disabled;
-        this.editor.expanded = this.expanded;
-        this.editor.corelist = this.corelist;
-        this.editor.clickmasked = this.clickmasked;
+        this._editor.value = this.value;
+        this._editor.immediatevalue = this.immediatevalue;
+        this._editor.disabled = this.disabled;
 
-        this.editor.addEventListener('value-changed', function(event) {
+        this._editor.addEventListener('value-changed', function(event) {
           this.value = event.detail.value;
         }.bind(this));
-        this.editor.addEventListener('immediatevalue-changed', function(event) {
+        this._editor.addEventListener('immediatevalue-changed', function(event) {
           this.immediatevalue = event.detail.value;
         }.bind(this));
-        this.editor.addEventListener('expanded-changed', function(event) {
-          this.expanded = event.detail.value;
-        }.bind(this));
 
-        this.editor.addEventListener('io-value-set', this._valueSet.bind(this));
-        this.editor.addEventListener('contextmenu', this._contextmenuAction.bind(this));
-        // TODO: profile memory
-        this._corelistChanged();
+        this._editor.addEventListener('io-value-set', this._valueSet.bind(this));
+        this._editor.addEventListener('contextmenu', this._contextmenuAction.bind(this));
       }
     });
-  }());
   </script>
 </polymer-element>

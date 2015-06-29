@@ -33,12 +33,12 @@
       <io-boolean-icon id="expandicon" tabindex="-1" value="{{expanded}}" trueicon="expand-more" falseicon="chevron-right"></io-boolean-icon>
       <span on-tap="toggleExpanded">
         <span class="io-constructor-name">{{value.constructor.name}}</span>
-        <span class="io-constructor-length">{{observedkeys.length}}</span>
+        <span class="io-constructor-length">{{_observedkeys.length}}</span>
       </span>
     </span>
     <template is="dom-if" if="{{expanded}}">
       <div id="io-properties"><!-- flex?="{{corelist}}" -->
-        <template is="dom-repeat" items="{{observedkeys}}">
+        <template is="dom-repeat" items="{{_observedkeys}}">
           <io-object-item
               object="{{value}}"
               value="{{item.value}}"
@@ -51,23 +51,45 @@
   </template>
 </dom-module>
 
-<script type="text/javascript">
+<script>
 (function() {
   var i, observedkeys, keys;
+  /*
+  `<io-object>` is a custom HTML element that can be used an editor for object/array values.
+
+  Example:
+
+      <io-object
+          value="{{objectvalue}}">
+      </io-object>
+
+  TODO: WORK IN PROGRESS
+
+  @demo demo.html
+  */
   Polymer({
     is: 'io-object',
     properties: {
+      /**
+       * Object value
+       */
       value: {
-        // notify: true,
+        notify: true,
         observer: '_valueChanged'
       },
+      /**
+       * Determines if the input can be focused and edited by user action.
+       */
       disabled: {
         value: false,
         type: Boolean
       },
+      /**
+       * Determines if the editor is expanded
+       */
       expanded: {
         value: false,
-        // notify: true,
+        notify: true,
         type: Boolean,
         observer: '_expandedChanged'
       },
@@ -75,48 +97,46 @@
       //   value: false,
       //   type: Boolean
       // },
-      //
-      observedkeys: {
+      _observedkeys: {
+        value: null,
         type: Array
       }
     },
     hostAttributes: {
-      vertical: true,
-      layout: true,
       oncontextmenu: 'return false;',
       role: 'tree'
     },
-    listeners: {
-      'io-object-add-item-after': '_onAddItemAfter'
-    },
+    // listeners: {
+    //   'io-object-add-item-after': '_onAddItemAfter'
+    // },
     toggleExpanded: function() {
       this.expanded = !this.expanded;
     },
     focus: function() {
       this.$.expandicon.focus();
     },
-    _onAddItemAfter: function(event) {
-      event.stopPropagation();
-      observedkeys = [];
-      for (i = 0; i < this.observedkeys.length; i++) {
-        observedkeys.push(this.observedkeys[i]);
-        if (this.observedkeys[i].key === event.detail.key) {
-          observedkeys.push({
-            key: null, value: null
-          });
-        }
-      }
-      // TODO: does not work on non-chrome
-      this.observedkeys = observedkeys;
-      requestAnimationFrame(function() {
-        var item = this.$$('io-object-item[key="' + event.detail.key + '"]');
-        item.nextElementSibling.keyeditor.focus();
-      }.bind(this));
-    },
+    // _onAddItemAfter: function(event) {
+    //   event.stopPropagation();
+    //   observedkeys = [];
+    //   for (i = 0; i < this._observedkeys.length; i++) {
+    //     observedkeys.push(this._observedkeys[i]);
+    //     if (this._observedkeys[i].key === event.detail.key) {
+    //       observedkeys.push({
+    //         key: null, value: null
+    //       });
+    //     }
+    //   }
+    //   // TODO: does not work on non-chrome
+    //   this._observedkeys = observedkeys;
+    //   requestAnimationFrame(function() {
+    //     var item = this.$$('io-object-item[key="' + event.detail.key + '"]');
+    //     item.nextElementSibling.keyeditor.focus();
+    //   }.bind(this));
+    // },
     _expandedChanged: function() {
-      if (this.expanded && this.observedkeys && this.observedkeys.length === 0) {
-        this.observedkeys = [{key: null, value: null}];
-      }
+      // if (this.expanded && this._observedkeys && this._observedkeys.length === 0) {
+      //   this._observedkeys = [{key: null, value: null}];
+      // }
       if (this.expanded) {
         this.setAttribute('aria-expanded', '');
       } else {
@@ -125,7 +145,7 @@
     },
     _valueChanged: function(value, oldValue) {
       //TODO: smarted observe
-      this.observedkeys = [];
+      this._observedkeys = [];
       if (!this.value || typeof this.value !== 'object') return;
       this.__updateKeys = this._updateKeys.bind(this);
       this.__updateKeys();
@@ -148,7 +168,7 @@
           observedkeys.push({key: keys[i], value: this.value[keys[i]]});
         }
       }
-      this.observedkeys = observedkeys;
+      this._observedkeys = observedkeys;
     }
   });
 }());

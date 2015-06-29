@@ -4,6 +4,21 @@
   Polymer.IoBase = {
     properties: {
       /**
+       * Value
+       */
+      value: {
+        value: null,
+        notify: true,
+        observer: '_valueChanged'
+      },
+      /**
+       * Immediate value
+       */
+      immediatevalue: {
+        value: null,
+        observer: '_immediatevalueChanged'
+      },
+      /**
        * Determines if the input can be focused and edited by user action.
        */
       disabled: {
@@ -11,31 +26,13 @@
         type: Boolean,
         observer: '_disabledChanged',
         reflectToAttribute: true
-      },
-      /**
-       * Becomes true if value does not match the specified type.
-       */
-      invalid: {
-        value: false,
-        type: Boolean,
-        observer: '_invalidChanged',
-        reflectToAttribute: true
-      },
-      /**
-       * If true, element cannot be focused with a single click.
-       */
-      clickmasked: {
-        value: false,
-        type: Boolean
       }
     },
     hostAttributes: {
-      tabindex: 0,
       role: 'input'
     },
     listeners: {
       'mousedown': '_onMousedown',
-      'dblclick': '_onDblclick',
       'contextmenu': '_onDblclick'
     },
     /**
@@ -49,42 +46,41 @@
       this.value = value;
       /**
        * This event is fired when value is set by user action.
+       * This is a non-bubbling event.
        * @event io-value-set
+       * @param {Object} detail value change data
+       * @param {Object} detail.value new value
+       * @param {Object} detail.oldValue old value
        */
-      this.fire('io-value-set', null, {bubbles: true});
+      this.fire('io-value-set', {value: value, oldValue: oldValue}, {bubbles: true});
     },
     _onMousedown: function(event) {
       // Blur currently focused
       if (document.activeElement !== this) {
         document.activeElement.blur();
       }
-      // prevent focus
-      if (this.clickmasked || this.invalid) {
-        event.preventDefault();
-      }
-    },
-    _onDblclick: function(event) {
-      if (this.clickmasked) {
-        event.preventDefault();
-        event.stopPropagation();
-        this.focus();
-      }
     },
     _disabledChanged: function() {
       if (this.disabled) {
-        this.removeAttribute('tabindex');
         this.setAttribute('aria-disabled', '');
       } else {
-        this.setAttribute('tabindex', 0);
         this.removeAttribute('aria-disabled');
       }
     },
-    _invalidChanged: function() {
-      if (this.invalid) {
-        this.setAttribute('aria-invalid', '');
-      } else {
-        this.removeAttribute('aria-invalid');
-      }
+    _valueChanged: function() {
+      this.immediatevalue = this.value;
+    },
+    _immediatevalueChanged: function() {
+    },
+    _computePlaceholder: function(value) {
+      if (typeof value === 'boolean') return String(value);
+      else if (value === null) return 'null';
+      else if (value === undefined) return 'undefined';
+      else if (typeof value === 'number') return String(value);
+      else if (typeof value === 'string' && value !== '') return value;
+      else if (typeof value === 'function') return 'function';
+      else if (typeof value === 'object') return 'object';
+      else return String(value) || this.properties.placeholder.value;
     }
   };
 </script>

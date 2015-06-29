@@ -3,26 +3,16 @@
 <script>
   /* @polymerBehavior Polymer.IoBoolean */
   Polymer.IoBoolean = [Polymer.IoBase, {
-    properties: {
-      /**
-       * Element's value
-       */
-      value: {
-        value: false,
-        notify: true,
-        type: Boolean,
-        observer: '_valueChanged'
-      }
-    },
     listeners: {
       'keydown': '_onKeydown',
       'tap': '_onTap'
     },
     hostAttributes: {
-      clickmasked: true,
+      tabindex: 0,
       role: 'checkbox'
     },
     _onTap: function(event) {
+      event.preventDefault(); // prevent focus
       this.toggle();
     },
     _onKeydown: function(event) {

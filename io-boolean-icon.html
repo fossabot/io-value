@@ -14,6 +14,17 @@
   <template><iron-icon id="icon"></iron-icon></template>
 </dom-module>
 <script>
+  /*
+  `<io-boolean-icon>` is a custom HTML element that can be used as input/output for boolean variables. It displayes boolean values as string.
+
+  Example:
+
+      <io-boolean-icon
+          value="{{booleanvalue}}" trueicon="done" falseicon="clear">
+      </io-boolean-icon>
+
+  @demo demo.html
+  */
   Polymer({
     is: 'io-boolean-icon',
     properties: {
@@ -38,7 +49,6 @@
       Polymer.IoBoolean
     ],
     _update: function() {
-      this.invalid = typeof this.value !== 'boolean';
       this.$.icon.icon = this.value ? this.trueicon : this.falseicon
     }
   });

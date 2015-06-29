@@ -7,6 +7,17 @@
   <template></template>
 </dom-module>
 <script>
+  /*
+  `<io-boolean>` is a custom HTML element that can be used as input/output for boolean variables. It displayes boolean values as string.
+
+  Example:
+
+      <io-boolean
+          value="{{booleanvalue}}" truestr="yes" falsestr="no">
+      </io-boolean>
+
+  @demo demo.html
+  */
   Polymer({
     is: 'io-boolean',
     properties: {
@@ -31,7 +42,6 @@
       Polymer.IoBoolean
     ],
     _update: function() {
-      this.invalid = typeof this.value !== 'boolean';
       this.textContent = this.value ? this.truestr : this.falsestr
     }
   });
