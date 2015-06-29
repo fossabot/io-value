@@ -80,7 +80,7 @@
       else if (typeof value === 'string' && value !== '') return value;
       else if (typeof value === 'function') return 'function';
       else if (typeof value === 'object') return 'object';
-      else return String(value) || this.properties.placeholder.value;
+      else return String(value) || this.properties.placeholder ? this.properties.placeholder.value || typeof this.value;
     }
   };
 </script>
