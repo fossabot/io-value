@@ -6,22 +6,24 @@
 
 <dom-module id="io-object">
   <style>
-    .io-constructor {
+    #constructor {
       cursor: pointer;
       white-space: nowrap;
     }
-    .io-constructor-name {
+    #name {
       font-style: italic;
     }
-    .io-constructor-length {
-    }
-    .io-constructor-length::before {
+    #length::before {
       content: '[';
     }
-    .io-constructor-length::after {
+    #length::after {
       content: ']';
     }
-    #io-properties {
+    #expandicon:focus {
+      background: transparent;
+      box-shadow: none;
+     }
+    #properties {
       /* TODO: test with fixed height and iron-list */
       /*overflow-x: hidden;*/
       /*overflow-y: auto;*/ 
@@ -29,15 +31,15 @@
     }
   </style>
   <template>
-    <span class="io-constructor">
+    <span id="constructor">
       <io-boolean-icon id="expandicon" tabindex="-1" value="{{expanded}}" trueicon="expand-more" falseicon="chevron-right"></io-boolean-icon>
       <span on-tap="toggleExpanded">
-        <span class="io-constructor-name">{{value.constructor.name}}</span>
-        <span class="io-constructor-length">{{_observedkeys.length}}</span>
+        <span id="name">{{value.constructor.name}}</span>
+        <span id="length">{{_observedkeys.length}}</span>
       </span>
     </span>
     <template is="dom-if" if="{{expanded}}">
-      <div id="io-properties"><!-- flex?="{{corelist}}" -->
+      <div id="properties"><!-- flex?="{{corelist}}" -->
         <template is="dom-repeat" items="{{_observedkeys}}">
           <io-object-item
               object="{{value}}"
