@@ -5,8 +5,8 @@
   var metaKeys = [65 /*a*/, 82 /*r*/, 88 /*x*/, 67 /*c*/, 86 /*v*/, 90 /*z*/, 89 /*y*/];
   var numberKeys = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 189 /*-*/, 190 /*.*/];
   var editKeys = [8 /*backspace*/, 46 /*del*/];
-  /* @polymerBehavior Polymer.IoValidator */
-  Polymer.IoValidator = {
+  /* @polymerBehavior Polymer.IoInputValidator */
+  Polymer.IoInputValidator = {
     isNavigationKey: function(event) {
       if (navigationKeys.indexOf(event.which) !== -1) {
         return true;
