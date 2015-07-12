@@ -3,9 +3,8 @@
 <link rel="import" href="../io-boolean/io-boolean.html">
 <link rel="import" href="../io-input/io-input.html">
 <link rel="import" href="../io-object/io-object.html">
-<!-- <link rel="import" href="../io-function/io-function.html"> -->
 
-<!-- 
+<!--
 `<io-value>` is a custom HTML element that can be used as input/output for variables of various data types such as boolean, string, number or object. The element will instantiate a type-specific value editor when value type changes.
 
 Example:
@@ -13,7 +12,7 @@ Example:
     <io-value value="{{valueofanytype}}"></io-value>
 
 This element is reliant on a set of type-specific such as `<io-boolean>`, `<io-iput>` and `<io-object>`. You can use these elements when you need an editor for a specific type.
-    
+
 Example:
 
     <io-boolean value="{{booleanvalue}}"></io-boolean>
@@ -28,6 +27,9 @@ Example:
   <style>
   :host {
     display: inline-block;
+  }
+  :host * {
+    display: inline;
   }
   </style>
   <template></template>
@@ -116,9 +118,9 @@ Example:
       if (!this._editor || this._editor.localName !== editor) {
 
         this.innerHTML = '';
-        // TODO: remove listeners?
 
         this._editor = document.createElement(editor);
+        this._editor.classList.toggle('io-value', true);
         if (typeof this.immediatevalue === 'number') {
           this._editor.type = 'float';
         }
@@ -139,7 +141,7 @@ Example:
 
     },
     _setEditorJob: function() {
-      this.debounce('io-value-set-editor', this._setEditor, 100);
+      this.debounce('io-value-set-editor', this._setEditor);
     }
   });
 </script>

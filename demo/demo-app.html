@@ -121,6 +121,7 @@
           'number': 1337,
           'string': 'hello string',
           'object': {answer: 42},
+          'array': [true, 1337, 'hello string', {answer: 42}, {}, undefined, null, function() {}],
           'emptyObject': {},
           'undefined': undefined,
           'null': null,
@@ -129,19 +130,13 @@
         notify: true
       },
       arrayvalue: {
-        value: [true, 1337, 'hello string', {answer: 42}, {}, undefined, null, function() {}]
+        value: [true, 1337, 'hello string', {answer: 42}, {}, undefined, null, function() {}],
+        notify: true
       },
       funcvalue: {
         value: function() { return function() {} },
         notify: true
-      },
-    },
-    ready: function() {
-      this.undefvalue = undefined;
-      // this.objvalue['undefined'] = undefined;
-      // this.objvalue['func'] = function() {};
-      this.objvalue['array'] = this.arrayvalue;
-      this.arrayvalue.push(this.objvalue);
+      }
     }
   });
 </script>

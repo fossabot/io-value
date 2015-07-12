@@ -16,6 +16,9 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#~1.0.6",
+    "io-input": "arodic/io-input#~1.0.0",
+    "io-object": "arodic/io-object#~1.0.0",
+    "io-boolean": "arodic/io-boolean#~1.0.0",
     "iron-component-page": "PolymerElements/iron-component-page#~1.0.4"
   }
 }
