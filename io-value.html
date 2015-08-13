@@ -29,7 +29,7 @@ Example:
     display: inline-block;
   }
   :host * {
-    display: inline;
+    vertical-align: top;
   }
   </style>
   <template></template>
@@ -50,15 +50,14 @@ Example:
        */
       immediatevalue: {
         notify: true,
-        // observer: '_immediatevalueChanged'
+        observer: '_immediatevalueChanged'
       },
       /**
        * If disabled, value cannot be changed by user action.
        */
       disabled: {
-        notify: true,
         type: Boolean,
-        // observer: '_disabledChanged'
+        observer: '_disabledChanged'
       },
       /**
        * Type-specific editor instance.
@@ -72,15 +71,25 @@ Example:
         this._valueChanged();
       }
     },
+    /**
+     * Passes focus to internal input value editor
+     */
+    focus: function() {
+      if (this._editor) {
+        this._editor.focus();
+      }
+    },
     _valueChanged: function() {
       this.immediatevalue = this.value;
       this._setEditorJob();
     },
     _immediatevalueChanged: function() {
-      this._editor.immediatevalue = this.immediatevalue;
+      if (this._editor) {
+        this._editor.immediatevalue = this.immediatevalue;
+      }
     },
     _disabledChanged: function() {
-      this._editor.disabled = this.disabled;
+      if (this._editor) this._editor.disabled = this.disabled;
     },
     _valueSet: function(event) {
       /**
