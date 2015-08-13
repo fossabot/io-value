@@ -1,6 +1,6 @@
 {
   "name": "io-value",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "homepage": "https://github.com/arodic/io-value",
   "authors": [
     "Aleksandar Rodic <aleksandar.xyz@gmail.com>"
@@ -16,9 +16,9 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#~1.0.6",
-    "io-input": "arodic/io-input#~1.0.1",
-    "io-object": "arodic/io-object#~1.0.1",
-    "io-boolean": "arodic/io-boolean#~1.0.1",
+    "io-input": "arodic/io-input#~1.0.2",
+    "io-object": "arodic/io-object#~1.0.2",
+    "io-boolean": "arodic/io-boolean#~1.0.2",
     "iron-component-page": "PolymerElements/iron-component-page#~1.0.4"
   }
 }
