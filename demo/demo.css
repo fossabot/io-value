@@ -13,11 +13,11 @@ body{
 .label {
   display: inline-block;
   margin: 0.5em;
-  min-width: 100px;
+  width: 100px;
 }
 
 .demo {
   background: white;
   margin: 0.5em;
-  min-width: 100px;
+  width: 100px;
 }

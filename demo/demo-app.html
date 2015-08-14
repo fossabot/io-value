@@ -85,6 +85,18 @@
     <io-value class="demo" value="{{arrayvalue}}"></io-value>
     <io-value class="demo" value="{{funcvalue}}"></io-value>
 
+    <br />
+
+    <io-value value="{{boolvalue}}"></io-value>
+    <io-value value="{{strvalue}}"></io-value>
+    <io-value value="{{numvalue}}"></io-value>
+    <io-value value="{{undefvalue}}"></io-value>
+    <io-value value="{{nullvalue}}"></io-value>
+    <io-value value="{{nanvalue}}"></io-value>
+    <io-value value="{{objvalue}}"></io-value>
+    <io-value value="{{arrayvalue}}"></io-value>
+    <io-value value="{{funcvalue}}"></io-value>
+
   </template>
 </dom-module>
 <script>
@@ -121,8 +133,9 @@
           'number': 1337,
           'string': 'hello string',
           'object': {answer: 42},
-          'array': [true, 1337, 'hello string', {answer: 42}, {}, undefined, null, function() {}],
+          'array': [],
           'emptyObject': {},
+          'emptyArray': [],
           'undefined': undefined,
           'null': null,
           'func': function() {}
@@ -130,13 +143,17 @@
         notify: true
       },
       arrayvalue: {
-        value: [true, 1337, 'hello string', {answer: 42}, {}, undefined, null, function() {}],
+        value: [true, 1337, 'hello string', {answer: 42}, {}, [], undefined, null, function() {}],
         notify: true
       },
       funcvalue: {
         value: function() { return function() {} },
         notify: true
       }
+    },
+    ready: function () {
+      this.objvalue.array = this.arrayvalue;
+      this.arrayvalue[3] = this.objvalue;
     }
   });
 </script>
