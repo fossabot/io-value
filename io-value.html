@@ -130,7 +130,7 @@ Example:
         this.innerHTML = '';
 
         this._editor = document.createElement(editor);
-        this._editor.classList.toggle('io-value', true);
+        this.toggleClass('io-value', true, this._editor);
         if (typeof this.immediatevalue === 'number') {
           this._editor.type = 'float';
         }

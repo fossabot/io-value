@@ -1,3 +1,9 @@
+## v1.0.2
+
+Bugfixes:
+
+  - IE toggle class fix
+
 ## v1.0.1
 
 Breaking Changes:
