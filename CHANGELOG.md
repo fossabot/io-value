@@ -1,3 +1,16 @@
+## v1.1.0
+
+Breaking Changes:
+
+  - Removed immediatevalue attribute.
+
+## v1.0.3
+
+New Features:
+
+  - Accepting parent attribute for configuration feature.
+  - Added io-options and value configuration.
+
 ## v1.0.2
 
 Bugfixes:

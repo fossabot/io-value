@@ -1,0 +1,85 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<script type="text/javascript">
+(function() {
+
+  /*
+   Global io-value configutation.
+
+   Polymer.ioValueConfig is a list of conditions and configurations
+   used by io-value to determine which editor to use depending on
+   a specified value, key and parent object.
+
+   You can add your own configutations here.
+
+   @polymerBehavior Polymer.ioValueConfig
+  */
+  Polymer.ioValueConfig = [
+    {
+      condition: function (value, key, parent) {
+        return value === undefined ||
+               value === null ||
+               typeof value === 'function' ||
+               (typeof value === 'number' && isNaN(value))
+      },
+      config: {
+        editor: 'io-input',
+        properties: {
+          type: 'any'
+        }
+      }
+    },
+    {
+      condition: function (value, key, parent) {
+        return typeof value === 'string'
+      },
+      config: {
+        editor: 'io-input',
+        properties: {
+          type: 'string'
+        }
+      }
+    },
+    {
+      condition: function (value, key, parent) {
+        return typeof value === 'number'
+      },
+      config: {
+        editor: 'io-input',
+        properties: {
+          type: 'float'
+        }
+      }
+    },
+    {
+      condition: function (value, key, parent) {
+        return typeof value === 'boolean'
+      },
+      config: {
+        editor: 'io-boolean',
+        properties: {
+          icon: true
+        }
+      }
+    },
+    {
+      condition: function (value, key, parent) {
+        return typeof value === 'object';
+      },
+      config: {
+        editor: 'io-object'
+      }
+    }
+  ];
+
+  var i;
+  Polymer.ioValueConfig.getConfig = function (value, key, parent) {
+    for (i = 0; i < this.length; i++) {
+      if (this[i].condition(value, key, parent)) {
+        return this[i]['config'];
+      }
+    }
+  }
+
+}());
+</script>

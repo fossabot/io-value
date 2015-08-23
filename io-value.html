@@ -3,6 +3,9 @@
 <link rel="import" href="../io-boolean/io-boolean.html">
 <link rel="import" href="../io-input/io-input.html">
 <link rel="import" href="../io-object/io-object.html">
+<link rel="import" href="../io-options/io-options.html">
+
+<link rel="import" href="io-value-config.html">
 
 <!--
 `<io-value>` is a custom HTML element that can be used as input/output for variables of various data types such as boolean, string, number or object. The element will instantiate a type-specific value editor when value type changes.
@@ -36,6 +39,7 @@ Example:
   <template></template>
 </polymer-element>
 <script>
+
   Polymer({
     is: 'io-value',
     properties: {
@@ -47,11 +51,26 @@ Example:
         observer: '_valueChanged'
       },
       /**
-       * immediate value (updated on each keystroke).
+       * If value attribute is a property of an object,
+       * this attribute should correspond to its key.
        */
-      immediatevalue: {
-        notify: true,
-        observer: '_immediatevalueChanged'
+      key: {
+        value: null,
+      },
+      /**
+       * If value attribute is a property of an object,
+       * this attribute should reference to its parent obect.
+       */
+      parent: {
+        value: null,
+      },
+      /**
+       * Optional configuration for custom editor.
+       * If not set, configration is automatically picked from
+       * global Polymer.ioValueConfig array.
+       */
+      config: {
+        value: null,
       },
       /**
        * If disabled, value cannot be changed by user action.
@@ -81,13 +100,7 @@ Example:
       }
     },
     _valueChanged: function() {
-      this.immediatevalue = this.value;
       this._setEditorJob();
-    },
-    _immediatevalueChanged: function() {
-      if (this._editor) {
-        this._editor.immediatevalue = this.immediatevalue;
-      }
     },
     _disabledChanged: function() {
       if (this._editor) this._editor.disabled = this.disabled;
@@ -104,34 +117,37 @@ Example:
       this.fire('io-value-set', {value: event.detail.value, oldValue: event.detail.oldValue}, {bubbles: false});
     },
     _setEditor: function() {
+      var config = this.config ||
+        Polymer.ioValueConfig.getConfig(this.value, this.key, this.parent);
 
-      var editor;
-      if (typeof this.immediatevalue === 'string') {
-        editor = 'io-input';
-      } else if (this.immediatevalue === undefined) {
-        editor = 'io-input';
-      } else if (this.immediatevalue === null) {
-        editor = 'io-input';
-      } else if (this.immediatevalue === NaN) {
-        editor = 'io-input';
-      } else if (typeof this.immediatevalue === 'object') {
-        editor = 'io-object';
-      } else if (typeof this.immediatevalue === 'function') {
-        editor = 'io-input';
-      } else if (typeof this.immediatevalue === 'boolean') {
-        editor = 'io-boolean';
-      } else if (typeof this.immediatevalue === 'number') {
-        editor = 'io-input';
-      }
+      // if (!config.editor) {
+      //   if (typeof this.value === 'string') {
+      //     config.editor = 'io-input';
+      //   } else if (this.value === undefined) {
+      //     config.editor = 'io-input';
+      //   } else if (this.value === null) {
+      //     config.editor = 'io-input';
+      //   } else if (this.value === NaN) {
+      //     config.editor = 'io-input';
+      //   } else if (typeof this.value === 'object') {
+      //     config.editor = 'io-object';
+      //   } else if (typeof this.value === 'function') {
+      //     config.editor = 'io-input';
+      //   } else if (typeof this.value === 'boolean') {
+      //     config.editor = 'io-boolean';
+      //   } else if (typeof this.value === 'number') {
+      //     config.editor = 'io-input';
+      //   }
+      // }
 
       // Set editor
-      if (!this._editor || this._editor.localName !== editor) {
+      if (!this._editor || this._editor.localName !== config.editor) {
 
         this.innerHTML = '';
 
-        this._editor = document.createElement(editor);
+        this._editor = document.createElement(config.editor);
         this.toggleClass('io-value', true, this._editor);
-        if (typeof this.immediatevalue === 'number') {
+        if (typeof this.value === 'number') {
           this._editor.type = 'float';
         }
         this.appendChild(this._editor);
@@ -139,15 +155,17 @@ Example:
         this._editor.addEventListener('value-changed', function(event) {
           this.value = event.detail.value;
         }.bind(this));
-        this._editor.addEventListener('immediatevalue-changed', function(event) {
-          this.immediatevalue = event.detail.value;
-        }.bind(this));
         this._editor.addEventListener('io-value-set', this._valueSet.bind(this));
       };
 
       this._editor.value = this.value;
-      this._editor.immediatevalue = this.immediatevalue;
       this._editor.disabled = this.disabled;
+
+      if (config.properties) {
+        for (var i in config.properties) {
+          this._editor[i] = config.properties[i];
+        }
+      }
 
     },
     _setEditorJob: function() {
