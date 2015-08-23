@@ -3,6 +3,7 @@
 Breaking Changes:
 
   - Removed immediatevalue attribute.
+  - Added global Polymer.ioValueConfig.
 
 ## v1.0.3
 

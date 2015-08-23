@@ -89,22 +89,6 @@
 
         });
 
-        test('io-value should pass immediatevalue property to its editor and vice versa.', function(done) {
-          iovalue.immediatevalue = 1;
-          timePasses(1).then(function() {
-            assert.equal(iovalue._editor.immediatevalue, 1, '_editor value');
-            iovalue._editor.immediatevalue = 2;
-            timePasses(1).then(function() {
-              assert.equal(iovalue.immediatevalue, 2, 'io-value value');
-              done();
-            }).catch(function(e) {
-              done(e);
-            });
-          }).catch(function(e) {
-            done(e);
-          });
-        });
-
         test('io-value should pass value property to its editor and vice versa.', function(done) {
           iovalue.value = 1;
           timePasses(1).then(function() {
