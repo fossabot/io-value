@@ -2,6 +2,7 @@
 
 <script type="text/javascript">
 (function() {
+  var i;
 
   /*
    Global io-value configutation.
@@ -11,72 +12,68 @@
    a specified value, key and parent object.
 
    You can add your own configutations here.
+   Make sure you put you custom configurations at the beggining of the list.
 
    @polymerBehavior Polymer.ioValueConfig
   */
   Polymer.ioValueConfig = [
-    {
-      condition: function (value, key, parent) {
-        return value === undefined ||
-               value === null ||
-               typeof value === 'function' ||
-               (typeof value === 'number' && isNaN(value))
-      },
-      config: {
-        editor: 'io-input',
-        properties: {
-          type: 'any'
+    function (value, key, parent) {
+      if (value === undefined ||
+          value === null ||
+          typeof value === 'function' ||
+          (typeof value === 'number' && isNaN(value))) {
+        return {
+          editor: 'io-input',
+          properties: {
+            type: 'any'
+          }
         }
       }
     },
-    {
-      condition: function (value, key, parent) {
-        return typeof value === 'string'
-      },
-      config: {
-        editor: 'io-input',
-        properties: {
-          type: 'string'
+    function (value, key, parent) {
+      if (typeof value === 'string') {
+        return {
+          editor: 'io-input',
+          properties: {
+            type: 'string'
+          }
         }
       }
     },
-    {
-      condition: function (value, key, parent) {
-        return typeof value === 'number'
-      },
-      config: {
-        editor: 'io-input',
-        properties: {
-          type: 'float'
+    function (value, key, parent) {
+      if (typeof value === 'number') {
+        return {
+          editor: 'io-input',
+          properties: {
+            type: 'float'
+          }
         }
       }
     },
-    {
-      condition: function (value, key, parent) {
-        return typeof value === 'boolean'
-      },
-      config: {
-        editor: 'io-boolean',
-        properties: {
-          icon: true
+    function (value, key, parent) {
+      if (typeof value === 'boolean') {
+        return {
+          editor: 'io-boolean',
+          properties: {
+            icon: true
+          }
         }
       }
     },
-    {
-      condition: function (value, key, parent) {
-        return typeof value === 'object';
-      },
-      config: {
-        editor: 'io-object'
+    function (value, key, parent) {
+      if (typeof value === 'object') {
+        return {
+          editor: 'io-object'
+        }
       }
     }
   ];
 
-  var i;
   Polymer.ioValueConfig.getConfig = function (value, key, parent) {
     for (i = 0; i < this.length; i++) {
-      if (this[i].condition(value, key, parent)) {
-        return this[i]['config'];
+      config = this[i](value, key, parent);
+      if (config) {
+        return config;
       }
     }
   }
