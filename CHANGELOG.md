@@ -1,3 +1,8 @@
+## v1.1.2
+
+  - Polymer version bump.
+  - Removed .bowerrc
+
 ## v1.1.0
 
 Breaking Changes:
