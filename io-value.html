@@ -156,7 +156,7 @@ Example:
           this.value = event.detail.value;
         }.bind(this));
         this._editor.addEventListener('io-value-set', this._valueSet.bind(this));
-      };
+      }
 
       this._editor.value = this.value;
       this._editor.disabled = this.disabled;

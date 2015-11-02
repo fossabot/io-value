@@ -27,7 +27,7 @@
           properties: {
             type: 'any'
           }
-        }
+        };
       }
     },
     function (value, key, parent) {
@@ -37,7 +37,7 @@
           properties: {
             type: 'string'
           }
-        }
+        };
       }
     },
     function (value, key, parent) {
@@ -47,7 +47,7 @@
           properties: {
             type: 'float'
           }
-        }
+        };
       }
     },
     function (value, key, parent) {
@@ -57,14 +57,14 @@
           properties: {
             icon: true
           }
-        }
+        };
       }
     },
     function (value, key, parent) {
       if (typeof value === 'object') {
         return {
           editor: 'io-object'
-        }
+        };
       }
     }
   ];
@@ -76,7 +76,7 @@
         return config;
       }
     }
-  }
+  };
 
 }());
 </script>
