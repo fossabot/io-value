@@ -1,11 +1,10 @@
 {
   "name": "io-value",
-  "version": "1.2.1",
-  "homepage": "https://github.com/arodic/io-value",
+  "version": "1.2.2",
   "authors": [
-    "Aleksandar Rodic <aleksandar.xyz@gmail.com>"
+    "Aki Rodic <aleksandar.xyz@gmail.com>"
   ],
-  "description": "Custom HTML element created editor for any data type.",
+  "description": "Custom HTML element created editor for any data type",
   "main": "io-value.html",
   "keywords": [
     "io-value", "output", "i/o", "io", "ui", "polymer", "element", "web-components"
@@ -15,10 +14,10 @@
     "**/.*"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#~1.2.1",
-    "io-input": "arodic/io-input#~1.2.1",
-    "io-object": "arodic/io-object#~1.2.1",
-    "io-boolean": "arodic/io-boolean#~1.2.1",
-    "io-options": "arodic/io-options#~1.2.1"
+    "polymer": "Polymer/polymer#~1.2.2",
+    "io-input": "arodic/io-input#~1.2.2",
+    "io-object": "arodic/io-object#~1.2.2",
+    "io-boolean": "arodic/io-boolean#~1.2.2",
+    "io-options": "arodic/io-options#~1.2.2"
   }
 }
