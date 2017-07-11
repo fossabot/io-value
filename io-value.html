@@ -106,21 +106,23 @@ Example:
           value: Infinity
         }
       },
-      attached: function() {
+      ready: function() {
         this._focusListener = this._focusHandler.bind(this);
         this._value = "undefined";
         this.addEventListener('focus', this._focusListener);
         // this.super();
+        this._update(); //TODO: remove after conversion to ES6
       },
-      detached: function() {
-        this.removeEventListener('focus', this._focusListener);
-        this.removeEventListener('blur', this._blurListener);
-        this.removeEventListener('click', this._toggleListener);
-        this.removeEventListener('keydown', this._toggleListener);
-        this.removeEventListener('mousedown', this._downListener);
-        this.removeEventListener('touchstart', this._downListener);
-        // this.super();
-      },
+      // TODO: add back after conversion to ES6
+      // detached: function() {
+      //   this.removeEventListener('focus', this._focusListener);
+      //   this.removeEventListener('blur', this._blurListener);
+      //   this.removeEventListener('click', this._toggleListener);
+      //   this.removeEventListener('keydown', this._toggleListener);
+      //   this.removeEventListener('mousedown', this._downListener);
+      //   this.removeEventListener('touchstart', this._downListener);
+      //   // this.super();
+      // },
       /* Used to set value from the input (editor). */
       _setValue: function(value) {
         if (this.disabled || value === this.value) {
