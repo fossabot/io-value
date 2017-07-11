@@ -10,6 +10,11 @@
   "keywords": [
     "io-value", "input", "output", "i/o", "io", "ui", "polymer", "element", "web-components"
   ],
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/arodic/io-value.git"
+  },
   "license": "MIT",
   "ignore": [
     "**/.*"
@@ -28,6 +33,5 @@
   },
   "resolutions": {
     "polymer": "^2.0.0"
-  },
-  "private": true
+  }
 }

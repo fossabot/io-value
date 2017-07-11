@@ -1,13 +1,14 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
-
-    <title>io-elements test</title>
+    <meta charset="UTF-8">
+    <title>io-value basic tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
 
     <link rel="import" href="../io-value.html">
   </head>
@@ -53,14 +54,12 @@
           var elementSpan = element.shadowRoot.querySelector('span');
           assert.equal(elementSpan.innerHTML, 'new-value');
         });
-        //
-        // test('invalid value type sets "invalid" property', function() {
-        //   var element = fixture('WrongTypeTestFixture');
-        //   assert.equal(element.value, 'new-value');
-        //   setTimeout(function () {
-        //     assert.equal(element.getAttribute('invalid'), '');
-        //   })
-        // });
+
+        test('invalid value type sets "invalid" property', function() {
+          var element = fixture('WrongTypeTestFixture');
+          assert.equal(element.value, 'new-value');
+          assert.equal(element.getAttribute('invalid'), '');
+        });
 
       });
     </script>

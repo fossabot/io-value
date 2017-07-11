@@ -1,0 +1,26 @@
+language: node_js
+sudo: required
+before_script:
+  - npm install -g bower polymer-cli@next
+  - polymer install --variants
+  - sudo mv /usr/bin/google-chrome /usr/bin/google-chrome-old
+  - sudo mv /usr/bin/google-chrome-beta /usr/bin/google-chrome
+env:
+  global:
+    - secure: nIuqYLrCl5UadNj5F4lOLm0jxMPMYZ1xoQRVteJVAHxkB8EZqSOXByCO3PbwyIHtY3AKPrNNMP/hAIC5QaPmUNoTRsFnakxK7m05YAavg+E/lAm6HKNFhdLgnJx1J5hmzryXq7lIH0Ukk7hswQy5eJlWMDfFdLvzDsa1NM9oNeahExrWzLunc2qfQ2sELiQmtcfuheKUYauA9ucWgl3IYJYD0pl4oi6zTiRwDWkqX+vL0CHAb6Uk+c+g+BCU/HfiHBa5yIyqm0bvKsrClHNyW3ZmJStMkdXr700WVZ5DrPX47rQAiNEP4axbpT44A169Pmy108X0sLmXALVM58YaC0GTnGYwP/qJHz7ruT4+MmsOVRg6ItvEDN+Xf7nOUhFkhy9EbvyhQQKseyP9j4eu14qXHeHAWPcKq2FDE+7V7dkkqBdTzbS4gt92FdvlwJ3I7CYCX2u8AyuLGrevhmdzolmBW3qqFw74/xukkQTeCrIJFv7iEn+hDUJdwaSMpAGwPLSGvFrOSxHHinaIM2sr9WQQJ3a5wCQ1stu7XW60+cF3xCXiDEiEgzIbctfR20ukZbzdAbvoXWYSqDhhvJED58bEM9N1tSi7QLRpInnuA40t+GRMi+UxoHiFO8AxKByzRExAWB6+g6dh2FT5EoLzThYnIuSxPqTn8hwo3tAdupU=
+    - GH_REF: github.com/arodic/io-value.git
+node_js: stable
+addons:
+  firefox: latest
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-beta
+  sauce_connect: true
+script:
+  - xvfb-run polymer test
+  - >-
+    if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then polymer test -s 'default';
+    fi
+dist: trusty
