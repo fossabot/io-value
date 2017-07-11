@@ -9,10 +9,9 @@ A shared `input` element is attached while editing actions are performed.
 
 Example:
 
-    <paper-button class="pink">link</paper-button>
-    <paper-button raised class="indigo">raised</paper-button>
-    <paper-button toggles raised class="green">toggles</paper-button>
-    <paper-button disabled class="disabled">disabled</paper-button>
+    <io-value type="string" value="hello"></io-value>
+    <io-value type="number" value="1337"></io-value>
+    <io-value type="boolean" value="true"></io-value>
 
 @demo demo/
 -->
@@ -64,71 +63,73 @@ Example:
     editor.addEventListener('touchstart', function (event) { event.stopPropagation() });
     editor.addEventListener('focus', function (event) { event.stopPropagation() });
 
-    class IoValue extends Polymer.Element {
-      static get is() { return 'io-value'; }
-      static get properties() {
-       return {
-         value: {
-           notify: true,
-           observer: '_update'
-         },
-         type: {
-           type: String,
-           observer: '_typeChanged',
-           reflectToAttribute: true
-         },
-         /**
-          * If true, the button should be styled with a shadow.
-          */
-         disabled: {
-           type: Boolean,
-           value: false,
-           observer: '_disabledChanged',
-           reflectToAttribute: true
-         },
-         invalid: {
-           type: Boolean,
-           value: false,
-           reflectToAttribute: true
-         },
-         step: {
-           type: Number,
-           value: 0.001
-         },
-         min: {
-           type: Number,
-           value: -Infinity
-         },
-         max: {
-           type: Number,
-           value: Infinity
-         }
-       }
-      }
-      connectedCallback() {
+    Polymer({
+      is: 'io-value',
+      properties: {
+        /* Value to be edited with this element. */
+        value: {
+          notify: true,
+          observer: '_update'
+        },
+        /* Restricts value input to specified type such as string, number or boolean. */
+        type: {
+          type: String,
+          observer: '_typeChanged',
+          reflectToAttribute: true
+        },
+        /* Disables interactions with the element. Removes tabindex attribute. */
+        disabled: {
+          type: Boolean,
+          value: false,
+          observer: '_disabledChanged',
+          reflectToAttribute: true
+        },
+        /* Automatically set to true if assigned value mismatches type. Reflects to attribute. */
+        invalid: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+        /* Increment step for number type. */
+        step: {
+          type: Number,
+          value: 0.001
+        },
+        /* Min value for number type. */
+        min: {
+          type: Number,
+          value: -Infinity
+        },
+        /* Max value for number type. */
+        max: {
+          type: Number,
+          value: Infinity
+        }
+      },
+      attached: function() {
         this._focusListener = this._focusHandler.bind(this);
         this._value = "undefined";
         this.addEventListener('focus', this._focusListener);
-        super.connectedCallback();
-      }
-      disconnectedCallback() {
+        // this.super();
+      },
+      detached: function() {
         this.removeEventListener('focus', this._focusListener);
         this.removeEventListener('blur', this._blurListener);
         this.removeEventListener('click', this._toggleListener);
         this.removeEventListener('keydown', this._toggleListener);
         this.removeEventListener('mousedown', this._downListener);
         this.removeEventListener('touchstart', this._downListener);
-        super.disconnectedCallback();
-      }
-      /* Used to set value. Fires non-bubbling event io-value-set */
-      setValue(value) {
+        // this.super();
+      },
+      /* Used to set value from the input (editor). */
+      _setValue: function(value) {
         if (this.disabled || value === this.value) {
           return;
         }
         let oldValue = this.value;
         this.value = value;
         /**
-         * This non-bubbling event is fired when value is set by setValue method.
+         * Fired when value is set by user interaction (editor).
          *
          * @event io-value-set
          * @param {Object} detail value change data
@@ -140,8 +141,8 @@ Example:
           bubbles: false,
           composed: true
         }));
-      }
-      _focusHandler(event) {
+      },
+      _focusHandler: function(event) {
         this._blurListener = this._blurHandler.bind(this);
         this.addEventListener('blur', this._blurListener);
         this._removeEditor();
@@ -150,31 +151,31 @@ Example:
         } else {
           this._addEditor();
         }
-      }
-      _blurHandler(event) {
+      },
+      _blurHandler: function(event) {
         this.removeEventListener('keydown', this._toggleListener);
         this.removeEventListener('blur', this._blurListener);
         if (this.type === 'number') {
           if (editor.value !== '') {
-            this.setValue(Math.round(Number(editor.value) / this.step) * this.step);
+            this._setValue(Math.round(Number(editor.value) / this.step) * this.step);
           }
         } else if (this._edit) {
-          this.setValue(editor.value);
+          this._setValue(editor.value);
         }
         this._removeEditor();
-      }
-      _toggleHandler(event) {
+      },
+      _toggleHandler: function(event) {
         if (event.which == 13 || event.which == 32) {
           event.preventDefault();
-          this.setValue(!this.value);
+          this._setValue(!this.value);
         } else if (event.type == 'click') {
-          this.setValue(!this.value);
+          this._setValue(!this.value);
         }
-      }
-      _downHandler(event) {
+      },
+      _downHandler: function(event) {
         event.preventDefault();
-      }
-      _addEditor() {
+      },
+      _addEditor: function() {
         editor.type = this.type || 'string';
         editor.value = String(this.value);
         if (this.type === 'number') {
@@ -190,8 +191,8 @@ Example:
         editor.select();
         this.classList.add('edit');
         this._edit = true;
-      }
-      _removeEditor() {
+      },
+      _removeEditor: function() {
         if (editor.parentNode && this._edit) {
           editor.type = '';
           editor.value = '';
@@ -199,8 +200,8 @@ Example:
         }
         this.classList.remove('edit');
         this._edit = false;
-      }
-      _typeChanged() {
+      },
+      _typeChanged: function() {
         if (this.type === 'boolean') {
           this._toggleListener = this._toggleHandler.bind(this);
           this._downListener = this._downHandler.bind(this);
@@ -212,15 +213,15 @@ Example:
           this.removeEventListener('mousedown', this._downListener);
           this.removeEventListener('touchstart', this._downListener);
         }
-      }
-      _disabledChanged() {
+      },
+      _disabledChanged: function() {
         if (this.disabled) {
           this.removeAttribute('tabindex');
         } else {
           this.setAttribute('tabindex', 0);
         }
-      }
-      _update() {
+      },
+      _update: function() {
         this.invalid = (typeof this.value !== this.type && this.type) ? true : false;
         let value = this.value;
         if (typeof this.value == 'number' && this.value !== NaN) {
@@ -229,9 +230,7 @@ Example:
         }
         this._value = String(value);
       }
-    }
-
-    window.customElements.define(IoValue.is, IoValue);
+    });
 
   </script>
 </dom-module>
