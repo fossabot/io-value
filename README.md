@@ -2,7 +2,7 @@
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://beta.webcomponents.org/element/arodic/io-value)
 
 
-##&lt;io-value&gt;
+## &lt;io-value&gt;
 
 `io-value` is an ultra-lightweight editor for primitive data types (string, number, boolean). It wraps a simple inline-block element with minimal styling and very few listeners. A shared `input` element is attached while editing actions are performed.
 
@@ -34,6 +34,6 @@ Example:
 <io-value type="boolean" value="true"></io-value>
 ```
 
-Preview Image:
+Preview:
 
-![io-value preview](https://raw.githubusercontent.com/arodic/io-value/master/preview.png)
+![io-value preview]( https://raw.githubusercontent.com/arodic/io-value/master/preview.png "io-value preview")

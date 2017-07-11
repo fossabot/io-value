@@ -1,6 +1,22 @@
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="io-styles.html">
 
+
+<!--
+`io-value` is an ultra-lightweight editor for primitive data types (string, number, boolean).
+It wraps a simple inline-block element with minimal styling and very few listeners.
+A shared `input` element is attached while editing actions are performed.
+
+Example:
+
+    <paper-button class="pink">link</paper-button>
+    <paper-button raised class="indigo">raised</paper-button>
+    <paper-button toggles raised class="green">toggles</paper-button>
+    <paper-button disabled class="disabled">disabled</paper-button>
+
+@demo demo/
+-->
+
 <dom-module id="io-value">
   <template>
     <style is="custom-style" include="io-styles">
