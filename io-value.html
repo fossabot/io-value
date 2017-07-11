@@ -31,6 +31,7 @@ Example:
     :host([type="boolean"]) {
       cursor: pointer;
       color: var(--io-color-boolean);
+      user-select: none;
     }
     :host(.edit) {
       position: relative;
@@ -119,8 +120,6 @@ Example:
       //   this.removeEventListener('blur', this._blurListener);
       //   this.removeEventListener('click', this._toggleListener);
       //   this.removeEventListener('keydown', this._toggleListener);
-      //   this.removeEventListener('mousedown', this._downListener);
-      //   this.removeEventListener('touchstart', this._downListener);
       //   // this.super();
       // },
       /* Used to set value from the input (editor). */
@@ -174,9 +173,6 @@ Example:
           this._setValue(!this.value);
         }
       },
-      _downHandler: function(event) {
-        event.preventDefault();
-      },
       _addEditor: function() {
         editor.type = this.type || 'string';
         editor.value = String(this.value);
@@ -206,14 +202,9 @@ Example:
       _typeChanged: function() {
         if (this.type === 'boolean') {
           this._toggleListener = this._toggleHandler.bind(this);
-          this._downListener = this._downHandler.bind(this);
           this.addEventListener('click', this._toggleListener);
-          this.addEventListener('mousedown', this._downListener);
-          this.addEventListener('touchstart', this._downListener);
         } else {
           this.removeEventListener('click', this._toggleListener);
-          this.removeEventListener('mousedown', this._downListener);
-          this.removeEventListener('touchstart', this._downListener);
         }
       },
       _disabledChanged: function() {
