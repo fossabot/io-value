@@ -1,176 +1,218 @@
-<link rel="import" href="../polymer/polymer.html">
-
-<link rel="import" href="../io-boolean/io-boolean.html">
-<link rel="import" href="../io-input/io-input.html">
-<link rel="import" href="../io-object/io-object.html">
-<link rel="import" href="../io-options/io-options.html">
-
-<link rel="import" href="io-value-config.html">
-
-<!--
-`<io-value>` is a custom HTML element that can be used as input/output for variables of various data types such as boolean, string, number or object. The element will instantiate a type-specific value editor when value type changes.
-
-Example:
-
-    <io-value value="{{valueofanytype}}"></io-value>
-
-This element is reliant on a set of type-specific such as `<io-boolean>`, `<io-iput>` and `<io-object>`. You can use these elements when you need an editor for a specific type.
-
-Example:
-
-    <io-boolean value="{{booleanvalue}}"></io-boolean>
-    <io-input value="{{stringvalue}}"></io-input>
-    <io-input type="float" value="{{numbervalue}}"></io-input>
-    <io-object value="{{objectvalue}}"></io-object>
-
-@demo demo/index.html Basic Demo
--->
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="io-styles.html">
 
 <dom-module id="io-value">
-  <style>
-  :host {
-    display: inline-block;
-  }
-  :host * {
-    vertical-align: top;
-    width: 100%;
-  }
-  </style>
-  <template></template>
-</polymer-element>
-<script>
-
-  Polymer({
-    is: 'io-value',
-    properties: {
-      /**
-       * value
-       */
-      value: {
-        notify: true,
-        observer: '_valueChanged'
-      },
-      /**
-       * If value attribute is a property of an object,
-       * this attribute should correspond to its key.
-       */
-      key: {
-        value: null,
-      },
-      /**
-       * If value attribute is a property of an object,
-       * this attribute should reference to its parent obect.
-       */
-      parent: {
-        value: null,
-      },
-      /**
-       * Optional configuration for custom editor.
-       * If not set, configration is automatically picked from
-       * global Polymer.ioValueConfig array.
-       */
-      config: {
-        value: null,
-      },
-      /**
-       * If disabled, value cannot be changed by user action.
-       */
-      disabled: {
-        type: Boolean,
-        value: false,
-        observer: '_disabledChanged'
-      },
-      /**
-       * Type-specific editor instance.
-       */
-      _editor: {
-        type: HTMLElement
-      }
-    },
-    ready: function() {
-      if (this.value === undefined) {
-        this._valueChanged();
-      }
-    },
-    /**
-     * Passes focus to internal input value editor
-     */
-    focus: function() {
-      if (this._editor) {
-        this._editor.focus();
-      }
-    },
-    _valueChanged: function() {
-      this._setEditorJob();
-    },
-    _disabledChanged: function() {
-      if (this._editor) this._editor.disabled = this.disabled;
-    },
-    _valueSet: function(event) {
-      /**
-       * This event is fired when value is set by user action.
-       * This is a non-bubbling event.
-       * @event io-value-set
-       * @param {Object} detail value change data
-       * @param {Object} detail.value new value
-       * @param {Object} detail.oldValue old value
-       */
-      this.fire('io-value-set', {value: event.detail.value, oldValue: event.detail.oldValue}, {bubbles: false});
-    },
-    _setEditor: function() {
-      var config = this.config ||
-        Polymer.ioValueConfig.getConfig(this.value, this.key, this.parent);
-
-      // if (!config.editor) {
-      //   if (typeof this.value === 'string') {
-      //     config.editor = 'io-input';
-      //   } else if (this.value === undefined) {
-      //     config.editor = 'io-input';
-      //   } else if (this.value === null) {
-      //     config.editor = 'io-input';
-      //   } else if (this.value === NaN) {
-      //     config.editor = 'io-input';
-      //   } else if (typeof this.value === 'object') {
-      //     config.editor = 'io-object';
-      //   } else if (typeof this.value === 'function') {
-      //     config.editor = 'io-input';
-      //   } else if (typeof this.value === 'boolean') {
-      //     config.editor = 'io-boolean';
-      //   } else if (typeof this.value === 'number') {
-      //     config.editor = 'io-input';
-      //   }
-      // }
-
-      // Set editor
-      if (!this._editor || this._editor.localName !== config.editor) {
-
-        this.innerHTML = '';
-
-        this._editor = document.createElement(config.editor);
-        this.toggleClass('io-value', true, this._editor);
-        if (typeof this.value === 'number') {
-          this._editor.type = 'float';
-        }
-        this.appendChild(this._editor);
-
-        this._editor.addEventListener('value-changed', function(event) {
-          this.value = event.detail.value;
-        }.bind(this));
-        this._editor.addEventListener('io-value-set', this._valueSet.bind(this));
-      }
-
-      this._editor.value = this.value;
-      this._editor.disabled = this.disabled;
-
-      if (config.properties) {
-        for (var i in config.properties) {
-          this._editor[i] = config.properties[i];
-        }
-      }
-
-    },
-    _setEditorJob: function() {
-      this.debounce('io-value-set-editor', this._setEditor);
+  <template>
+    <style is="custom-style" include="io-styles">
+    :host {
+      cursor: text;
     }
-  });
-</script>
+    :host([type="number"]) {
+      color: var(--io-color-number);
+    }
+    :host([type="string"]) {
+      color: var(--io-color-string);
+    }
+    :host([type="boolean"]) {
+      cursor: pointer;
+      color: var(--io-color-boolean);
+    }
+    :host(.edit) {
+      position: relative;
+    }
+    :host(.edit) span {
+      visibility: hidden;
+    }
+    input {
+      position: absolute;
+      display: inline-block;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: var(--io-bg-focused);
+      padding: 0;
+      border: 0;
+      font-size: inherit;
+      font-style: inherit;
+      font-family: inherit;
+    }
+    </style>
+    <span>[[_value]]</span>
+  </template>
+  <script>
+
+    const editor = document.createElement('input');
+    editor.noS
+    editor.addEventListener('mousedown', function (event) { event.stopPropagation() });
+    editor.addEventListener('touchstart', function (event) { event.stopPropagation() });
+    editor.addEventListener('focus', function (event) { event.stopPropagation() });
+
+    class IoValue extends Polymer.Element {
+      static get is() { return 'io-value'; }
+      static get properties() {
+       return {
+         value: {
+           notify: true,
+           observer: '_update'
+         },
+         type: {
+           type: String,
+           observer: '_typeChanged',
+           reflectToAttribute: true
+         },
+         disabled: {
+           type: Boolean,
+           value: false,
+           observer: '_disabledChanged',
+           reflectToAttribute: true
+         },
+         invalid: {
+           type: Boolean,
+           value: false,
+           reflectToAttribute: true
+         },
+         step: {
+           type: Number,
+           value: 0.001
+         },
+         min: {
+           type: Number,
+           value: -Infinity
+         },
+         max: {
+           type: Number,
+           value: Infinity
+         }
+       }
+      }
+      connectedCallback() {
+        this._focusListener = this._focusHandler.bind(this);
+        this._value = "undefined";
+        this.addEventListener('focus', this._focusListener);
+        super.connectedCallback();
+      }
+      disconnectedCallback() {
+        this.removeEventListener('focus', this._focusListener);
+        this.removeEventListener('blur', this._blurListener);
+        this.removeEventListener('click', this._toggleListener);
+        this.removeEventListener('keydown', this._toggleListener);
+        this.removeEventListener('mousedown', this._downListener);
+        this.removeEventListener('touchstart', this._downListener);
+        super.disconnectedCallback();
+      }
+      /* Used to set value. Fires non-bubbling event io-value-set */
+      setValue(value) {
+        if (this.disabled || value === this.value) {
+          return;
+        }
+        let oldValue = this.value;
+        this.value = value;
+        /**
+         * This non-bubbling event is fired when value is set by setValue method.
+         *
+         * @event io-value-set
+         * @param {Object} detail value change data
+         * @param {Object} detail.value new value
+         * @param {Object} detail.oldValue old value
+         */
+        this.dispatchEvent(new CustomEvent('io-value-set', {
+          detail: {value: value, oldValue: oldValue},
+          bubbles: false,
+          composed: true
+        }));
+      }
+      _focusHandler(event) {
+        this._blurListener = this._blurHandler.bind(this);
+        this.addEventListener('blur', this._blurListener);
+        this._removeEditor();
+        if (this.type === 'boolean') {
+          this.addEventListener('keydown', this._toggleListener);
+        } else {
+          this._addEditor();
+        }
+      }
+      _blurHandler(event) {
+        this.removeEventListener('keydown', this._toggleListener);
+        this.removeEventListener('blur', this._blurListener);
+        if (this.type === 'number') {
+          if (editor.value !== '') {
+            this.setValue(Math.round(Number(editor.value) / this.step) * this.step);
+          }
+        } else if (this._edit) {
+          this.setValue(editor.value);
+        }
+        this._removeEditor();
+      }
+      _toggleHandler(event) {
+        if (event.which == 13 || event.which == 32) {
+          event.preventDefault();
+          this.setValue(!this.value);
+        } else if (event.type == 'click') {
+          this.setValue(!this.value);
+        }
+      }
+      _downHandler(event) {
+        event.preventDefault();
+      }
+      _addEditor() {
+        editor.type = this.type || 'string';
+        editor.value = String(this.value);
+        if (this.type === 'number') {
+          if (typeof this.value !== 'number' || this.value === null || isNaN(this.value)) {
+            editor.value = 0;
+          }
+        }
+        editor.step = this.step;
+        editor.min = Math.min(this.min, this.value);
+        editor.max = Math.max(this.max, this.value);
+        this.shadowRoot.appendChild(editor);
+        editor.focus();
+        editor.select();
+        this.classList.add('edit');
+        this._edit = true;
+      }
+      _removeEditor() {
+        if (editor.parentNode && this._edit) {
+          editor.type = '';
+          editor.value = '';
+          editor.parentNode.removeChild(editor);
+        }
+        this.classList.remove('edit');
+        this._edit = false;
+      }
+      _typeChanged() {
+        if (this.type === 'boolean') {
+          this._toggleListener = this._toggleHandler.bind(this);
+          this._downListener = this._downHandler.bind(this);
+          this.addEventListener('click', this._toggleListener);
+          this.addEventListener('mousedown', this._downListener);
+          this.addEventListener('touchstart', this._downListener);
+        } else {
+          this.removeEventListener('click', this._toggleListener);
+          this.removeEventListener('mousedown', this._downListener);
+          this.removeEventListener('touchstart', this._downListener);
+        }
+      }
+      _disabledChanged() {
+        if (this.disabled) {
+          this.removeAttribute('tabindex');
+        } else {
+          this.setAttribute('tabindex', 0);
+        }
+      }
+      _update() {
+        this.invalid = (typeof this.value !== this.type && this.type) ? true : false;
+        let value = this.value;
+        if (typeof this.value == 'number' && this.value !== NaN) {
+          value = Math.round(this.value / this.step) * this.step;
+          value = value.toFixed(-Math.log10(this.step));
+        }
+        this._value = String(value);
+      }
+    }
+
+    window.customElements.define(IoValue.is, IoValue);
+
+  </script>
+</dom-module>

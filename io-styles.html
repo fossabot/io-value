@@ -1,0 +1,30 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="io-styles">
+  <template>
+    <style is="custom-style">
+    :host {
+      --io-color: rgb(0, 0, 0);
+      --io-color-invalid: tomato;
+      --io-color-disabled: rgba(0, 0, 0, 0.25);
+      --io-color-constructor: black;
+      --io-color-label: rgb(136, 19, 145);
+      --io-color-number: rgb(28, 0, 207);
+      --io-color-boolean: rgb(170, 13, 145);
+      --io-color-string: rgb(196, 26, 22);
+      --io-bg-focused: rgba(255, 255, 0, 0.2);
+    }
+    :host {
+      display: inline-block;
+      color: var(--io-color);
+    }
+    :host([disabled]) {
+      cursor: not-allowed;
+      color: var(--io-color-disabled) !important;
+    }
+    :host([invalid]) {
+      color: var(--io-color-invalid) !important;
+    }
+    </style>
+  </template>
+</dom-module>

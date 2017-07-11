@@ -1,122 +1,68 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-
-    <title>io-value tests</title>
-
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>io-elements test</title>
 
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-
     <script src="../../web-component-tester/browser.js"></script>
-    <script src="../../test-fixture/test-fixture-mocha.js"></script>
 
-    <link rel="import" href="../../test-fixture/test-fixture.html">
     <link rel="import" href="../io-value.html">
-
   </head>
   <body>
 
-    <test-fixture id="iovalue">
+    <test-fixture id="BasicTestFixture">
       <template>
         <io-value></io-value>
       </template>
     </test-fixture>
 
+    <test-fixture id="ChangedPropertyTestFixture">
+      <template>
+        <io-value value="new-value"></io-value>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="WrongTypeTestFixture">
+      <template>
+        <io-value type="boolean" value="new-value"></io-value>
+      </template>
+    </test-fixture>
+
     <script>
+      suite('io-value', function() {
 
-
-      suite('<io-value>', function() {
-        var iovalue;
-
-        function timePasses(ms) {
-          return new Promise(function(resolve) {
-            window.setTimeout(function() {
-              resolve();
-            }, ms);
-          });
-        }
-
-        setup(function() {
-          iovalue = fixture('iovalue');
+        test('instantiating the element with default properties works', function() {
+          var element = fixture('BasicTestFixture');
+          assert.equal(element.value, undefined);
+          assert.equal(element.step, 0.001);
+          assert.equal(element.min, -Infinity);
+          assert.equal(element.max, Infinity);
+          assert.equal(element.disabled, false);
+          assert.equal(element.invalid, false);
+          var elementSpan = element.shadowRoot.querySelector('span');
+          assert.equal(element.getAttribute('tabindex'), 0);
+          assert.equal(elementSpan.innerHTML, 'undefined');
         });
 
-        test('io-value should instantiate io-boolean when boolean value is set.', function(done) {
-          iovalue.value = true;
-          timePasses(1).then(function() {
-            assert.equal(iovalue._editor.localName, 'io-boolean', '_editor');
-            done();
-          }).catch(function(e) {
-            done(e);
-          });
-
+        test('setting a property on the element works', function() {
+          var element = fixture('ChangedPropertyTestFixture');
+          assert.equal(element.value, 'new-value');
+          var elementSpan = element.shadowRoot.querySelector('span');
+          assert.equal(elementSpan.innerHTML, 'new-value');
         });
-
-        test('io-value should instantiate io-input[type=string] when string value is set.', function(done) {
-          iovalue.value = '';
-          timePasses(1).then(function() {
-            assert.equal(iovalue._editor.localName, 'io-input', '_editor');
-            assert.equal(iovalue._editor.type, 'string', 'io-input type');
-            done();
-          }).catch(function(e) {
-            done(e);
-          });
-
-        });
-
-        test('io-value should instantiate io-input[type=float] when number value is set.', function(done) {
-          iovalue.value = 123;
-          timePasses(1).then(function() {
-            assert.equal(iovalue._editor.localName, 'io-input', '_editor');
-            assert.equal(iovalue._editor.type, 'float', 'io-input type');
-            done();
-          }).catch(function(e) {
-            done(e);
-          });
-
-        });
-
-        test('io-value should instantiate io-object when object value is set.', function(done) {
-          iovalue.value = {};
-          timePasses(1).then(function() {
-            assert.equal(iovalue._editor.localName, 'io-object', '_editor');
-            done();
-          }).catch(function(e) {
-            done(e);
-          });
-
-        });
-
-        test('io-value should pass value property to its editor and vice versa.', function(done) {
-          iovalue.value = 1;
-          timePasses(1).then(function() {
-            assert.equal(iovalue._editor.value, 1, '_editor value');
-            iovalue._editor.value = 2;
-            timePasses(1).then(function() {
-              assert.equal(iovalue.value, 2, 'io-value value');
-              done();
-            }).catch(function(e) {
-              done(e);
-            });
-          }).catch(function(e) {
-            done(e);
-          });
-        });
-
-        test('io-value should pass disabled property to its editor.', function(done) {
-          iovalue.disabled = true;
-          timePasses(1).then(function() {
-            assert.equal(iovalue._editor.disabled, true, '_editor value');
-            done();
-          }).catch(function(e) {
-            done(e);
-          });
-        });
+        //
+        // test('invalid value type sets "invalid" property', function() {
+        //   var element = fixture('WrongTypeTestFixture');
+        //   assert.equal(element.value, 'new-value');
+        //   setTimeout(function () {
+        //     assert.equal(element.getAttribute('invalid'), '');
+        //   })
+        // });
 
       });
-
     </script>
 
   </body>
