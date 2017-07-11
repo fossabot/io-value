@@ -1,18 +1,19 @@
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="io-styles.html">
 
-
 <!--
 `io-value` is an ultra-lightweight editor for primitive data types (string, number, boolean).
 It wraps a simple inline-block element with minimal styling and very few listeners.
 A shared `input` element is attached while editing actions are performed.
-
 Example:
 
     <io-value type="string" value="hello"></io-value>
     <io-value type="number" value="1337"></io-value>
     <io-value type="boolean" value="true"></io-value>
 
+@polymerElement
+@extends Polymer.Element
+@summary `io-value` is an ultra-lightweight editor for primitive data types
 @demo demo/
 -->
 
@@ -59,71 +60,70 @@ Example:
   <script>
 
     const editor = document.createElement('input');
-    editor.noS
     editor.addEventListener('mousedown', function (event) { event.stopPropagation() });
     editor.addEventListener('touchstart', function (event) { event.stopPropagation() });
     editor.addEventListener('focus', function (event) { event.stopPropagation() });
 
-    Polymer({
-      is: 'io-value',
-      properties: {
-        /* Value to be edited with this element. */
-        value: {
-          notify: true,
-          observer: '_update'
-        },
-        /* Restricts value input to specified type such as string, number or boolean. */
-        type: {
-          type: String,
-          observer: '_typeChanged',
-          reflectToAttribute: true
-        },
-        /* Disables interactions with the element. Removes tabindex attribute. */
-        disabled: {
-          type: Boolean,
-          value: false,
-          observer: '_disabledChanged',
-          reflectToAttribute: true
-        },
-        /* Automatically set to true if assigned value mismatches type. Reflects to attribute. */
-        invalid: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
-        },
-        /* Increment step for number type. */
-        step: {
-          type: Number,
-          value: 0.001
-        },
-        /* Min value for number type. */
-        min: {
-          type: Number,
-          value: -Infinity
-        },
-        /* Max value for number type. */
-        max: {
-          type: Number,
-          value: Infinity
+    class IoValue extends Polymer.Element {
+      static get is() { return 'io-value'; }
+      static get properties() {
+        return {
+          /* Value to be edited with this element. */
+          value: {
+            notify: true,
+            observer: '_update'
+          },
+          /* Restricts value input to specified type such as string, number or boolean. */
+          type: {
+            type: String,
+            observer: '_typeChanged',
+            reflectToAttribute: true
+          },
+          /* Disables interactions with the element. Removes tabindex attribute. */
+          disabled: {
+            type: Boolean,
+            value: false,
+            observer: '_disabledChanged',
+            reflectToAttribute: true
+          },
+          /* Automatically set to true if assigned value mismatches type. Reflects to attribute. */
+          invalid: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
+          /* Increment step for number type. */
+          step: {
+            type: Number,
+            value: 0.001
+          },
+          /* Min value for number type. */
+          min: {
+            type: Number,
+            value: -Infinity
+          },
+          /* Max value for number type. */
+          max: {
+            type: Number,
+            value: Infinity
+          }
         }
-      },
-      ready: function() {
+      }
+      connectedCallback() {
         this._focusListener = this._focusHandler.bind(this);
         this._value = "undefined";
         this.addEventListener('focus', this._focusListener);
-        // this.super();
-        this._update(); //TODO: remove after conversion to ES6
-      },
-      // TODO: add back after conversion to ES6
-      // detached: function() {
-      //   this.removeEventListener('focus', this._focusListener);
-      //   this.removeEventListener('blur', this._blurListener);
-      //   this.removeEventListener('click', this._toggleListener);
-      //   this.removeEventListener('keydown', this._toggleListener);
-      //   // this.super();
-      // },
+        super.connectedCallback();
+      }
+      disconnectedCallback() {
+        this.removeEventListener('focus', this._focusListener);
+        this.removeEventListener('blur', this._blurListener);
+        this.removeEventListener('click', this._toggleListener);
+        this.removeEventListener('keydown', this._toggleListener);
+        super.disconnectedCallback();
+      }
       /* Used to set value from the input (editor). */
-      _setValue: function(value) {
+      _setValue(value) {
         if (this.disabled || value === this.value) {
           return;
         }
@@ -142,8 +142,8 @@ Example:
           bubbles: false,
           composed: true
         }));
-      },
-      _focusHandler: function(event) {
+      }
+      _focusHandler(event) {
         this._blurListener = this._blurHandler.bind(this);
         this.addEventListener('blur', this._blurListener);
         this._removeEditor();
@@ -152,8 +152,8 @@ Example:
         } else {
           this._addEditor();
         }
-      },
-      _blurHandler: function(event) {
+      }
+      _blurHandler(event) {
         this.removeEventListener('keydown', this._toggleListener);
         this.removeEventListener('blur', this._blurListener);
         if (this.type === 'number') {
@@ -164,16 +164,16 @@ Example:
           this._setValue(editor.value);
         }
         this._removeEditor();
-      },
-      _toggleHandler: function(event) {
+      }
+      _toggleHandler(event) {
         if (event.which == 13 || event.which == 32) {
           event.preventDefault();
           this._setValue(!this.value);
         } else if (event.type == 'click') {
           this._setValue(!this.value);
         }
-      },
-      _addEditor: function() {
+      }
+      _addEditor() {
         editor.type = this.type || 'string';
         editor.value = String(this.value);
         if (this.type === 'number') {
@@ -189,8 +189,8 @@ Example:
         editor.select();
         this.classList.add('edit');
         this._edit = true;
-      },
-      _removeEditor: function() {
+      }
+      _removeEditor() {
         if (editor.parentNode && this._edit) {
           editor.type = '';
           editor.value = '';
@@ -198,23 +198,23 @@ Example:
         }
         this.classList.remove('edit');
         this._edit = false;
-      },
-      _typeChanged: function() {
+      }
+      _typeChanged() {
         if (this.type === 'boolean') {
           this._toggleListener = this._toggleHandler.bind(this);
           this.addEventListener('click', this._toggleListener);
         } else {
           this.removeEventListener('click', this._toggleListener);
         }
-      },
-      _disabledChanged: function() {
+      }
+      _disabledChanged() {
         if (this.disabled) {
           this.removeAttribute('tabindex');
         } else {
           this.setAttribute('tabindex', 0);
         }
-      },
-      _update: function() {
+      }
+      _update() {
         this.invalid = (typeof this.value !== this.type && this.type) ? true : false;
         let value = this.value;
         if (typeof this.value == 'number' && this.value !== NaN) {
@@ -223,7 +223,9 @@ Example:
         }
         this._value = String(value);
       }
-    });
+    }
+
+    window.customElements.define(IoValue.is, IoValue);
 
   </script>
 </dom-module>
