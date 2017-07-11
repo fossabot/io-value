@@ -4,8 +4,9 @@
 
 ##&lt;io-value&gt;
 
-`io-value` is a custom editor for primitive data types
+`io-value` is an ultra-lightweight editor for primitive data types (string, number, boolean). It wraps a simple inline-block element with minimal styling and very few listeners. A shared `input` element is attached while editing actions are performed.
 
+Example:
 
 <!---
 ```
@@ -32,3 +33,7 @@
 <io-value type="number" value="1337"></io-value>
 <io-value type="boolean" value="true"></io-value>
 ```
+
+Preview Image:
+
+![io-value preview](https://raw.githubusercontent.com/arodic/io-value/master/preview.png)
