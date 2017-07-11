@@ -1,9 +1,34 @@
+[![Build status](https://travis-ci.org/arodic/io-value.svg?branch=master)](https://travis-ci.org/arodic/io-value)
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://beta.webcomponents.org/element/arodic/io-value)
+
+
 ##&lt;io-value&gt;
 
 `io-value` is a custom editor for primitive data types
 
-Example:
 
+<!---
+```
+<custom-element-demo>
+  <template>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="io-value.html">
+    <style>
+    io-value {
+      display: block;
+      margin: 1px;
+      border: 1px solid #eee;
+    }
+    </style>
+    <div id="container">
+      <next-code-block></next-code-block>
+    </div>
+  </template>
+</custom-element-demo>
+```
+-->
 ```html
-<io-value value="hello"></io-value>
+<io-value type="string" value="hello"></io-value>
+<io-value type="number" value="1337"></io-value>
+<io-value type="boolean" value="true"></io-value>
 ```

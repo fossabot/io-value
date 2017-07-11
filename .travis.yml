@@ -1,7 +1,7 @@
 language: node_js
 sudo: required
 before_script:
-  - npm install -g bower polymer-cli@next
+  - npm install -g bower polymer-cli
   - polymer install --variants
   - sudo mv /usr/bin/google-chrome /usr/bin/google-chrome-old
   - sudo mv /usr/bin/google-chrome-beta /usr/bin/google-chrome
@@ -17,6 +17,7 @@ addons:
       - google-chrome
     packages:
       - google-chrome-beta
+  sauce_connect: false
 script:
   - xvfb-run polymer test
   - >-
