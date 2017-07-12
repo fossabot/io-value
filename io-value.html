@@ -1,19 +1,29 @@
+<!--
+@license
+Copyright (c) 2015-2017 Aleksandar Rodic. All rights reserved.
+This code may only be used under the MIT style license found at
+https://raw.githubusercontent.com/arodic/io-value/master/LICENSE
+-->
+
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="io-styles.html">
 
 <!--
 `io-value` is an ultra-lightweight editor for primitive data types (string, number, boolean).
+
 It wraps a simple inline-block element with minimal styling and very few listeners.
+
 A shared `input` element is attached while editing actions are performed.
+
 Example:
 
     <io-value type="string" value="hello"></io-value>
     <io-value type="number" value="1337"></io-value>
     <io-value type="boolean" value="true"></io-value>
 
-@polymerElement
+@IoElement
 @extends Polymer.Element
-@summary `io-value` is an ultra-lightweight editor for primitive data types
+@summary `io-value` is an ultra-lightweight editor for primitive data types.
 @demo demo/ io-value demo
 -->
 
