@@ -15,23 +15,23 @@
 
     <custom-style>
       <style is="custom-style" include="demo-pages-shared-styles">
-        div.row {
-          @apply --layout-horizontal;
-        }
-        div.header, span.alignright {
-          color: rgba(128, 122, 255, 0.75);
-        }
-        span.alignright {
-          text-align: right;
-          padding-right: 0.2em;;
-        }
-        div.row * {
-          margin: 1px;
-          @apply --layout-flex;
-        }
-        io-value {
-          border: 1px solid #eee;
-        }
+      div.row {
+        @apply --layout-horizontal;
+      }
+      div.header, span.alignright {
+        color: rgba(128, 122, 255, 0.75);
+      }
+      span.alignright {
+        text-align: right;
+        padding-right: 0.2em;;
+      }
+      div.row * {
+        margin: 1px;
+        @apply --layout-flex;
+      }
+      io-value {
+        border: 1px solid #eee;
+      }
       </style>
     </custom-style>
   </head>
@@ -107,32 +107,32 @@
 
     </div>
 
-      <script>
-        const values = {
-          number: 1337,
-          string: 'hello',
-          boolean: true,
-          null: null,
-          NaN: NaN,
-          undefined: undefined
-        }
+    <script>
+      const values = {
+        number: 1337,
+        string: 'hello',
+        boolean: true,
+        null: null,
+        NaN: NaN,
+        undefined: undefined
+      }
 
-        window.addEventListener('WebComponentsReady', function() {
-          for (var v in values) {
-            let elems = document.querySelectorAll('[type=' + v + ']');
-            elems.forEach(function (elem) {
+      window.addEventListener('WebComponentsReady', function() {
+        for (var v in values) {
+          let elems = document.querySelectorAll('[type=' + v + ']');
+          elems.forEach(function (elem) {
+            elem.value = values[v];
+          })
+          let rows = document.querySelectorAll('.row.' + v);
+          rows.forEach(function (row) {
+            row.childNodes.forEach(function (elem) {
               elem.value = values[v];
-            })
-            let rows = document.querySelectorAll('.row.' + v);
-            rows.forEach(function (row) {
-              row.childNodes.forEach(function (elem) {
-                elem.value = values[v];
-              });
-            })
-          }
-        });
+            });
+          })
+        }
+      });
 
-      </script>
+    </script>
 
     </div>
 
