@@ -14,7 +14,7 @@ Example:
 @polymerElement
 @extends Polymer.Element
 @summary `io-value` is an ultra-lightweight editor for primitive data types
-@demo demo/
+@demo demo/ io-value demo
 -->
 
 <dom-module id="io-value">
@@ -58,12 +58,6 @@ Example:
     <span>[[_value]]</span>
   </template>
   <script>
-
-    const editor = document.createElement('input');
-    editor.addEventListener('mousedown', function (event) { event.stopPropagation() });
-    editor.addEventListener('touchstart', function (event) { event.stopPropagation() });
-    editor.addEventListener('focus', function (event) { event.stopPropagation() });
-
     class IoValue extends Polymer.Element {
       static get is() { return 'io-value'; }
       static get properties() {

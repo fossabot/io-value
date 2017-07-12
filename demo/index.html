@@ -18,13 +18,12 @@
         div.row {
           @apply --layout-horizontal;
         }
-        div.header {
+        div.header, span.alignright {
           color: rgba(128, 122, 255, 0.75);
         }
         span.alignright {
           text-align: right;
-          padding-right: 1em;
-          color: rgba(128, 122, 255, 0.75);
+          padding-right: 0.2em;;
         }
         div.row * {
           margin: 1px;
@@ -40,60 +39,74 @@
 
     <div class="vertical-section-container centered">
 
+      <h3>io-value with three attribute types.</h3>
+      <demo-snippet>
+        <template>
+          <io-value type="string"></io-value>
+          <io-value type="number" step=1></io-value>
+          <io-value type="boolean"></io-value>
+        </template>
+      </demo-snippet>
+
+      <h3>io-value with disabled attribute.</h3>
+      <demo-snippet>
+        <template>
+          <div class="row">
+            <io-value class="string" type="string" disabled></io-value>
+          </div>
+        </template>
+      </demo-snippet>
+
       <h3>io-value matrix with various data types and type attributes.</h3>
       <demo-snippet>
         <template>
           <div class="row header">
-            <span class="alignright">values▾ types▸</span>
+            <span class="alignright"></span>
             <span>string</span>
             <span>number</span>
             <span>boolean</span>
-            <span>disabled</span>
           </div>
-          <div class="row">
+          <div class="row string">
             <span class="alignright">string:</span>
-            <io-value class="string" type="string"></io-value>
-            <io-value class="string" type="number"></io-value>
-            <io-value class="string" type="boolean"></io-value>
-            <io-value class="string" disabled></io-value>
+            <io-value type="string"></io-value>
+            <io-value type="number"></io-value>
+            <io-value type="boolean"></io-value>
           </div>
-          <div class="row">
+          <div class="row number">
             <span class="alignright">number:</span>
-            <io-value class="number" type="string"></io-value>
-            <io-value class="number" type="number"></io-value>
-            <io-value class="number" type="boolean"></io-value>
-            <io-value class="number" disabled></io-value>
+            <io-value type="string"></io-value>
+            <io-value type="number"></io-value>
+            <io-value type="boolean"></io-value>
           </div>
-          <div class="row">
+          <div class="row boolean">
             <span class="alignright">boolean:</span>
-            <io-value class="boolean" type="string"></io-value>
-            <io-value class="boolean" type="number"></io-value>
-            <io-value class="boolean" type="boolean"></io-value>
-            <io-value class="boolean" disabled></io-value>
+            <io-value type="string"></io-value>
+            <io-value type="number"></io-value>
+            <io-value type="boolean"></io-value>
           </div>
-          <div class="row">
+          <div class="row null">
             <span class="alignright">null:</span>
-            <io-value class="null" type="string"></io-value>
-            <io-value class="null" type="number"></io-value>
-            <io-value class="null" type="boolean"></io-value>
-            <io-value class="null" disabled></io-value>
+            <io-value type="string"></io-value>
+            <io-value type="number"></io-value>
+            <io-value type="boolean"></io-value>
           </div>
-          <div class="row">
+          <div class="row NaN">
             <span class="alignright">NaN:</span>
-            <io-value class="NaN" type="string"></io-value>
-            <io-value class="NaN" type="number"></io-value>
-            <io-value class="NaN" type="boolean"></io-value>
-            <io-value class="NaN" disabled></io-value>
+            <io-value type="string"></io-value>
+            <io-value type="number"></io-value>
+            <io-value type="boolean"></io-value>
           </div>
-          <div class="row">
+          <div class="row undefined">
             <span class="alignright">undefined:</span>
-            <io-value class="undefined" type="string"></io-value>
-            <io-value class="undefined" type="number"></io-value>
-            <io-value class="undefined" type="boolean"></io-value>
-            <io-value class="undefined" disabled></io-value>
+            <io-value type="string"></io-value>
+            <io-value type="number"></io-value>
+            <io-value type="boolean"></io-value>
           </div>
         </template>
       </demo-snippet>
+
+    </div>
+
       <script>
         const values = {
           number: 1337,
@@ -101,15 +114,20 @@
           boolean: true,
           null: null,
           NaN: NaN,
-          undefined: undefined,
-          array: [1, 2, 3, 4]
+          undefined: undefined
         }
-        values.object = values;
+
         window.addEventListener('WebComponentsReady', function() {
           for (var v in values) {
-            let elems = document.querySelectorAll('.' + v);
+            let elems = document.querySelectorAll('[type=' + v + ']');
             elems.forEach(function (elem) {
               elem.value = values[v];
+            })
+            let rows = document.querySelectorAll('.row.' + v);
+            rows.forEach(function (row) {
+              row.childNodes.forEach(function (elem) {
+                elem.value = values[v];
+              });
             })
           }
         });

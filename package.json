@@ -1,6 +1,6 @@
 {
   "name": "io-value",
-  "version": "2.0.0",
+  "version": "2.0.5",
   "private": true,
   "main": "index.js",
   "repository": "https://github.com/arodic/io-value.git",
