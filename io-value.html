@@ -195,8 +195,10 @@ Example:
       editor.min = Math.min(this.min, this.value);
       editor.max = Math.max(this.max, this.value);
       this.shadowRoot.appendChild(editor);
-      editor.focus();
-      editor.select();
+      setTimeout(function () {
+        editor.focus();
+        editor.select();
+      })
       this.classList.add('edit');
       this._edit = true;
     }
@@ -229,7 +231,7 @@ Example:
       let value = this.value;
       if (typeof this.value == 'number' && this.value !== NaN) {
         value = Math.round(this.value / this.step) * this.step;
-        value = value.toFixed(-Math.log10(this.step));
+        value = value.toFixed(-Math.round(Math.log(this.step) / Math.LN10));
       }
       this._value = String(value);
     }
