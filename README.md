@@ -1,5 +1,6 @@
 [![Build status](https://travis-ci.org/arodic/io-value.svg?branch=master)](https://travis-ci.org/arodic/io-value)
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://beta.webcomponents.org/element/arodic/io-value)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fjr00814263%2Fio-value.svg?type=shield)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fjr00814263%2Fio-value?ref=badge_shield)
 
 
 ## &lt;io-value&gt;
@@ -37,3 +38,7 @@ Example:
 Preview:
 
 ![io-value preview]( https://raw.githubusercontent.com/arodic/io-value/master/preview.png "io-value preview")
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fjr00814263%2Fio-value.svg?type=large)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fjr00814263%2Fio-value?ref=badge_large)
