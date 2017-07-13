@@ -1,0 +1,56 @@
+<!--
+@license
+Copyright (c) 2015-2017 Aleksandar Rodic. All rights reserved.
+This code may only be used under the MIT style license found at
+https://raw.githubusercontent.com/arodic/io-value/master/LICENSE
+-->
+
+<!--
+`io-base` is a base class for io-elements.
+
+@IoElement
+@extends HTMLElement
+@summary `io-base` is a base class for io-elements.
+-->
+
+<script>
+
+class IoBase extends HTMLElement {
+  static get is() { return 'io-base'; }
+  static get observedAttributes() {
+    return [];
+  }
+  constructor() {
+    super();
+    var propConfigs = this.__proto__.constructor.properties || {};
+    for (var propKey in propConfigs) {
+      let propConfig = propConfigs[propKey];
+      Io.defineProperty(this, propKey, propConfig);
+    }
+  }
+  attributeChangedCallback(name, oldValue, newValue) {
+    this[name] = newValue;
+  }
+}
+
+window.Io = {}
+
+Io.defineProperty = function (classRef, propKey, propConfig) {
+  Object.defineProperty(classRef, propKey, {
+    get: function() {
+      return this['_' + propKey];
+    },
+    set: function(value) {
+      this['_' + propKey] = value;
+      if (propConfig.observer) this[propConfig.observer](value);
+    },
+    enumerable: true,
+    configurable: true
+  });
+}
+
+Io.Base = IoBase;
+window.customElements.define(IoBase.is, IoBase);
+
+
+</script>

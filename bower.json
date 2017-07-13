@@ -1,6 +1,6 @@
 {
   "name": "io-value",
-  "version": "2.0.6",
+  "version": "2.0.8",
   "homepage": "https://github.com/arodic/io-value",
   "authors": [
     "Aleksandar Rodic <aleksandar.xyz@gmail.com>"
@@ -9,6 +9,7 @@
   "main": "io-value.html",
   "keywords": [
     "io-value",
+    "io-elements",
     "input",
     "output",
     "editor",
